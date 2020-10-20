@@ -40,9 +40,9 @@ namespace DeveloperCourse.FirstLesson
 
         #region Implement IEnumerable Methods
 
-        public IEnumerator<T> GetEnumerator() => new StructCollectionEnumerator<T>(this);
+        public IEnumerator<T> GetEnumerator() => new StructCollectionEnumerator(this);
 
-        IEnumerator IEnumerable.GetEnumerator() => new StructCollectionEnumerator<T>(this);
+        IEnumerator IEnumerable.GetEnumerator() => new StructCollectionEnumerator(this);
 
         #endregion
 
@@ -119,7 +119,7 @@ namespace DeveloperCourse.FirstLesson
         
         #endregion
 
-        private class StructCollectionEnumerator<T> : IEnumerator<T> where T : struct
+        private class StructCollectionEnumerator : IEnumerator<T>
         {
             #region Feilds
 
