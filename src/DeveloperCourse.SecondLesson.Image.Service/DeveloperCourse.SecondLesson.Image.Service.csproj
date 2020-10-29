@@ -5,12 +5,12 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <DocumentationFile>bin\Debug\DeveloperCourse.SecondLesson.Service.Image.xml</DocumentationFile>
+        <DocumentationFile>bin\Debug\DeveloperCourse.SecondLesson.Image.Service.xml</DocumentationFile>
         <NoWarn>1701;1702;1591</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <DocumentationFile>bin\Release\DeveloperCourse.SecondLesson.Service.Image.xml</DocumentationFile>
+        <DocumentationFile>bin\Release\DeveloperCourse.SecondLesson.Image.Service.xml</DocumentationFile>
         <NoWarn>1701;1702;1591</NoWarn>
     </PropertyGroup>
 
