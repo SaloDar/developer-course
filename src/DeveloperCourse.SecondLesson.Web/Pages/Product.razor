@@ -1,0 +1,113 @@
+@page "/product/{Id:guid}"
+@using DeveloperCourse.ThirdLesson.View.DTOs
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+
+<BSBreadcrumb>
+    <BSBreadcrumbItem><a href="/products">Products</a></BSBreadcrumbItem>
+    <BSBreadcrumbItem IsActive="true">@(_product?.Name ?? "Product not found")</BSBreadcrumbItem>
+</BSBreadcrumb>
+
+@if (_product == null)
+{
+    <p>
+        <em>Product not foound...</em>
+    </p>
+    @*     <BSAlert Color="Color.Danger">Product not found.</BSAlert> *@
+}
+else
+{
+    <BSContainer>
+        <BSRow>
+            <BSCol>
+                <h2>@_product.Name</h2>
+            </BSCol>
+        </BSRow>
+        <BSRow>
+            <BSCol>
+                <p style="font-size: small">SKU : @_product.Sku</p>
+            </BSCol>
+        </BSRow>
+        <BSRow>
+            <BSCol>
+                @if (_product?.Images?.Any() ?? false)
+                {
+                    <BSCarousel NumberOfItems="@_imageCount" Fade="true">
+                        <BSCarouselIndicators NumberOfItems="@_imageCount"/>
+                        <div class="carousel-inner">
+
+                            @foreach (var productImage in _product.Images)
+                            {
+                                <BSCarouselItem src="@productImage.Link.ToString()" style="height:386px; background-size:cover; background-position: center center;"/>
+                            }
+                        </div>
+                        <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@_imageCount"/>
+                        <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@_imageCount"/>
+                    </BSCarousel>
+                }
+                else
+                {
+                    <img src="/icons/cloud.svg" style="height:386px; background-size:cover; background-position: center center; display: flex;margin: auto;"/>
+                }
+
+            </BSCol>
+            <BSCol SM="3">
+                <h4 style="margin: 10px 0 10px 0">Prices</h4>
+                @if (_product?.Prices?.Any() ?? false)
+                {
+                    <BSListGroup>
+                        @foreach (var productPrice in _product.Prices)
+                        {
+                            <BSListGroupItem>@productPrice.Amount @productPrice.Currency.ToString()</BSListGroupItem>
+                        }
+                    </BSListGroup>
+                }
+                else
+                {
+                    <p style="font-size: medium">Prices is not available.</p>
+                }
+
+                <h4 style="margin: 10px 0 10px 0">Description</h4>
+                <p style="font-size: medium">@_product.Description</p>
+            </BSCol>
+        </BSRow>
+    </BSContainer>
+}
+
+
+@code {
+
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private ProductDto _product;
+
+    private int _imageCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    private void Navigate()
+    {
+        NavigationManager.NavigateTo("products");
+    }
+
+    private async Task UpdateData()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<GetProductResponse>($"{Config.ProductBase}/{Id}");
+
+            _product = response.Product;
+            _imageCount = _product?.Images?.Count() ?? 0;
+        }
+        catch (Exception)
+        {
+            _product = null;
+        }
+    }
+
+}

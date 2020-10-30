@@ -1,0 +1,14 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "DeveloperCourse.ThirdLesson.Service.Price": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger/",
+      "applicationUrl": "http://localhost:4200",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

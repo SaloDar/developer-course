@@ -1,0 +1,83 @@
+@page "/products"
+@using DeveloperCourse.ThirdLesson.View.DTOs
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+
+<h1>Products</h1>
+
+@if (_products == null)
+{
+    <p>
+        <em>Products not found...</em>
+    </p>
+
+    @*     <BSAlert Color="Color.Danger">Products not found.</BSAlert> *@
+}
+else
+{
+    <BSCard CardType="CardType.Deck">
+        @foreach (var product in _products)
+        {
+            var image = "/icons/cloud.svg";
+            var serverImage = product.Images?.FirstOrDefault();
+
+            if (serverImage?.Link != null)
+            {
+                image = serverImage.Link.ToString();
+            }
+
+            <BSCard>
+                <BSCard CardType="CardType.Image" VerticalAlignment="VerticalAlignment.Top" src="@image" style="height:200px; background-size:cover; background-position: center center;"/>
+                <BSCard CardType="CardType.Body">
+                    <BSCard CardType="CardType.Title">@product.Name</BSCard>
+                    <BSCard CardType="CardType.Subtitle">SKU : @product.Sku</BSCard>
+                    <BSCard CardType="CardType.Text">@product.Description</BSCard>
+                    <BSButton Color="Color.Secondary" OnClick="@(() => Info(product))">View info...</BSButton>
+                </BSCard>
+            </BSCard>
+        }
+    </BSCard>
+}
+
+@code {
+
+    private System.Threading.Timer _timer;
+
+    private ProductDto[] _products;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _timer = new System.Threading.Timer(async (object stateInfo) =>
+        {
+            await UpdateData();
+            StateHasChanged();
+        }, new System.Threading.AutoResetEvent(false), 1000, 10000);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<GetAllProductsResponse>(Config.ProductBase);
+            _products = response.Products.ToArray();
+        }
+        catch (Exception)
+        {
+            _products = null;
+        }
+    }
+
+    private void Info(ProductDto product)
+    {
+        NavigationManager.NavigateTo($"/product/{product.Id}");
+    }
+
+}
