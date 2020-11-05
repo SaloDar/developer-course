@@ -1,21 +1,27 @@
-using System;
+using DeveloperCourse.SecondLesson.Shared.Entities;
 
 namespace DeveloperCourse.SecondLesson.Product.Service.Entities
 {
-    public class Product
+    public class Product : BaseEntity
     {
-        public Guid Id { get; set; }
+        public string Name { get; protected set; }
 
-        public string Name { get; set; }
+        public string Description { get; protected set; }
 
-        public string Description { get; set; }
+        public string Sku { get; protected set; }
 
-        public string Sku { get; set; }
+        public string Weight { get; protected set; }
 
-        public string Weight { get; set; }
-
-        public Product()
+        protected Product()
         {
+        }
+
+        public Product(string name, string description, string sku, string weight)
+        {
+            Name = name;
+            Description = description;
+            Sku = sku;
+            Weight = weight;
         }
     }
 }

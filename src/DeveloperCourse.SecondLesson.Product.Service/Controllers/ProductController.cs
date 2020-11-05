@@ -17,7 +17,7 @@ namespace DeveloperCourse.SecondLesson.Product.Service.Controllers
         private readonly IMapper _mapper;
 
         private readonly IProductService _productService;
-
+        
         public ProductController(ILogger<ProductController> logger, IMapper mapper, IProductService productService)
         {
             _logger = logger;

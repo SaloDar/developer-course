@@ -5,8 +5,10 @@ using System.Reflection;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Product.Service.Clients;
 using DeveloperCourse.SecondLesson.Product.Service.Infrastructure.Configs;
+using DeveloperCourse.SecondLesson.Product.Service.Infrastructure.Extensions;
 using DeveloperCourse.SecondLesson.Product.Service.Infrastructure.Middlewares;
 using DeveloperCourse.SecondLesson.Product.Service.Interfaces;
+using DeveloperCourse.SecondLesson.Product.Service.Repositories;
 using DeveloperCourse.SecondLesson.Product.Service.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,8 +48,10 @@ namespace DeveloperCourse.SecondLesson.Product.Service
 
             services.AddOptions();
             services.AddMemoryCache();
+            
+            services.AddProductDbOptions(Configuration);
 
-            services.AddSingleton<IMemoryStore, MemoryStore>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             var refitSettings = new RefitSettings
             {
@@ -73,10 +77,10 @@ namespace DeveloperCourse.SecondLesson.Product.Service
                     c.BaseAddress = webApiConfig.Routes.ImageApi;
                 });
 
-            services.AddTransient<IProductService, ProductService>();
-
             services.AddTransient<ApiErrorHandlingMiddleware>();
 
+            services.AddTransient<IProductService, ProductService>();
+            
             services.AddCors(options =>
                 options.AddDefaultPolicy(x =>
                     x.SetIsOriginAllowed(url => true)

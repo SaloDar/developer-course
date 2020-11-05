@@ -13,7 +13,7 @@ namespace DeveloperCourse.SecondLesson.Product.Service.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IMemoryStore _memoryStore;
+        private readonly ILogger<ProductService> _logger;
 
         private readonly IImageClient _imageClient;
 
@@ -21,22 +21,22 @@ namespace DeveloperCourse.SecondLesson.Product.Service.Services
 
         private readonly IMapper _mapper;
 
-        private readonly ILogger<ProductService> _logger;
 
-        public ProductService(IMemoryStore memoryStore, IImageClient imageClient, IPriceClient priceClient,
-            IMapper mapper,
-            ILogger<ProductService> logger)
+        private readonly IProductRepository _productRepository;
+
+        public ProductService(ILogger<ProductService> logger, IImageClient imageClient, IPriceClient priceClient, 
+            IMapper mapper, IProductRepository productRepository)
         {
-            _memoryStore = memoryStore;
+            _logger = logger;
             _imageClient = imageClient;
             _priceClient = priceClient;
             _mapper = mapper;
-            _logger = logger;
+            _productRepository = productRepository;
         }
 
         public async Task<IEnumerable<ProductDto>> GetAllProducts()
         {
-            var products = _memoryStore.Products.ToList();
+            var products = await _productRepository.GetAll();
 
             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products).ToList();
 
@@ -79,7 +79,7 @@ namespace DeveloperCourse.SecondLesson.Product.Service.Services
 
         public async Task<ProductDto> GetProduct(Guid productId)
         {
-            var product = _memoryStore.Products.FirstOrDefault(x => x.Id == productId);
+            var product = await _productRepository.GetById(productId);
 
             if (product == null)
             {
