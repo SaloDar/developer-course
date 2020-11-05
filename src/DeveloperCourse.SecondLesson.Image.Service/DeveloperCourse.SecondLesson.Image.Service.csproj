@@ -34,6 +34,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DeveloperCourse.SecondLesson.Image.Domain\DeveloperCourse.SecondLesson.Image.Domain.csproj" />
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Shared\DeveloperCourse.SecondLesson.Shared.csproj" />
     </ItemGroup>
     
 </Project>

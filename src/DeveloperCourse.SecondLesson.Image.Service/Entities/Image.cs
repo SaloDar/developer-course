@@ -1,17 +1,22 @@
 using System;
+using DeveloperCourse.SecondLesson.Shared.Entities;
 
 namespace DeveloperCourse.SecondLesson.Image.Service.Entities
 {
-    public class Image
+    public class Image : BaseEntity
     {
-        public Guid Id { get; set; }
+        public Guid ProductId { get; protected set; }
 
-        public Guid ProductId { get; set; }
+        public string Link { get; protected set; }
 
-        public Uri Link { get; set; }
-
-        public Image()
+        protected Image()
         {
+        }
+
+        public Image(Guid productId, Uri link)
+        {
+            ProductId = productId;
+            Link = link.ToString();
         }
     }
 }
