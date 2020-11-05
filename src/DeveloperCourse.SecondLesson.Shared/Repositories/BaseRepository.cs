@@ -21,7 +21,7 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
         
         private readonly DbOptions _dbOptions;
 
-        private readonly string _tableName;
+        protected readonly string _tableName;
         
         #endregion
 
