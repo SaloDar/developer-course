@@ -4,15 +4,13 @@
 @inject NavigationManager NavigationManager
 
 
-<h1>Products</h1>
+<h1 style="text-align: center;">Products</h1>
 
 @if (_products == null)
 {
-    <p>
-        <em>Products not found...</em>
-    </p>
-
-    @*     <BSAlert Color="Color.Danger">Products not found.</BSAlert> *@
+    <div style="position:relative; top: 40vh; width:100%; text-align:center">
+        <p style="font-size: 3rem;"><i class="fas fa-spin fa-spinner"></i>Loading...</p>
+    </div>
 }
 else
 {
@@ -44,7 +42,7 @@ else
 
     private System.Threading.Timer _timer;
 
-    private ProductDto[] _products;
+    private ICollection<ProductDto> _products;
 
     protected override void OnInitialized()
     {
@@ -67,7 +65,8 @@ else
         try
         {
             var response = await Http.GetFromJsonAsync<GetAllProductsResponse>(Config.ProductBase);
-            _products = response.Products.ToArray();
+            
+            _products = response.Products.OrderBy(x => x.Name).ToList();
         }
         catch (Exception)
         {
