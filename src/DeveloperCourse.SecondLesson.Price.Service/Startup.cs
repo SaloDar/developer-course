@@ -4,8 +4,10 @@ using System.IO.Compression;
 using System.Reflection;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Price.Service.Infrastructure.Configs;
+using DeveloperCourse.SecondLesson.Price.Service.Infrastructure.Extensions;
 using DeveloperCourse.SecondLesson.Price.Service.Infrastructure.Middlewares;
 using DeveloperCourse.SecondLesson.Price.Service.Interfaces;
+using DeveloperCourse.SecondLesson.Price.Service.Repositories;
 using DeveloperCourse.SecondLesson.Price.Service.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -44,8 +46,11 @@ namespace DeveloperCourse.SecondLesson.Price.Service
 
             services.AddOptions();
             services.AddMemoryCache();
+            
+            services.AddPriceDbOptions(Configuration);
+            
+            services.AddTransient<IPriceRepository, PriceRepository>();
 
-            services.AddSingleton<IMemoryStore, MemoryStore>();
             services.AddTransient<IPriceService, PriceService>();
 
             services.AddTransient<ApiErrorHandlingMiddleware>();

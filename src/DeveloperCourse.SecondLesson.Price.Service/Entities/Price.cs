@@ -1,20 +1,31 @@
 using System;
+using DeveloperCourse.SecondLesson.Shared.Entities;
+using DeveloperCourse.SecondLesson.Shared.Repositories;
 using Money;
 
 namespace DeveloperCourse.SecondLesson.Price.Service.Entities
 {
-    public class Price
+    public class Price : BaseEntity
     {
-        public Guid Id { get; set; }
+        public Guid ProductId { get; protected set; }
 
-        public Guid ProductId { get; set; }
+        public decimal Amount { get; protected set; }
 
-        public decimal Amount { get; set; }
+        public Currency Currency { get; protected set; }
 
-        public Currency Currency { get; set; }
+        public bool IsLast { get; protected set; }
 
-        public Price()
+        protected Price()
         {
+        }
+
+        public Price(Guid productId, decimal amount, Currency currency)
+        {
+            Id = Guid.NewGuid();
+            ProductId = productId;
+            Amount = amount;
+            Currency = currency;
+            IsLast = true;
         }
     }
 }
