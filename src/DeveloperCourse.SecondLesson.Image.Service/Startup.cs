@@ -49,7 +49,7 @@ namespace DeveloperCourse.SecondLesson.Image.Service
 
             services.AddImageDbOptions(Configuration);
 
-            services.AddSingleton<IImageRepository, ImageRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
             
             services.AddTransient<IImageService, ImageService>();
 

@@ -49,7 +49,7 @@ namespace DeveloperCourse.SecondLesson.Price.Service
             
             services.AddPriceDbOptions(Configuration);
             
-            services.AddTransient<IPriceRepository, PriceRepository>();
+            services.AddScoped<IPriceRepository, PriceRepository>();
 
             services.AddTransient<IPriceService, PriceService>();
 
