@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Image.Service.Controllers.DTOs;
 using DeveloperCourse.SecondLesson.Image.Service.Interfaces;
@@ -16,7 +17,7 @@ namespace DeveloperCourse.SecondLesson.Image.Service.Controllers
         private readonly IMapper _mapper;
 
         private readonly IImageService _imageService;
-
+        
         public ImageController(ILogger<ImageController> logger, IMapper mapper, IImageService imageService)
         {
             _logger = logger;
@@ -25,17 +26,17 @@ namespace DeveloperCourse.SecondLesson.Image.Service.Controllers
         }
 
         [HttpGet]
-        public GetAllImagesResponse GetAllImages()
+        public async Task<GetAllImagesResponse> GetAllImages()
         {
-            var result = _imageService.GetAllImages();
+            var result = await _imageService.GetAllImages();
 
             return _mapper.Map<GetAllImagesResponse>(result);
         }
 
         [HttpGet("product/{id}")]
-        public GetProductImagesResponse GetProductImages(Guid id)
+        public async Task<GetProductImagesResponse> GetProductImages(Guid id)
         {
-            var result = _imageService.GetProductImages(id);
+            var result = await _imageService.GetProductImages(id);
 
             return _mapper.Map<GetProductImagesResponse>(result);
         }

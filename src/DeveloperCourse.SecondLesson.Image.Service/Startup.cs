@@ -4,8 +4,10 @@ using System.IO.Compression;
 using System.Reflection;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Image.Service.Infrastructure.Configs;
+using DeveloperCourse.SecondLesson.Image.Service.Infrastructure.Extensions;
 using DeveloperCourse.SecondLesson.Image.Service.Infrastructure.Middlewares;
 using DeveloperCourse.SecondLesson.Image.Service.Interfaces;
+using DeveloperCourse.SecondLesson.Image.Service.Repositories;
 using DeveloperCourse.SecondLesson.Image.Service.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -45,7 +47,10 @@ namespace DeveloperCourse.SecondLesson.Image.Service
             services.AddOptions();
             services.AddMemoryCache();
 
-            services.AddSingleton<IMemoryStore, MemoryStore>();
+            services.AddImageDbOptions(Configuration);
+
+            services.AddScoped<IImageRepository, ImageRepository>();
+            
             services.AddTransient<IImageService, ImageService>();
 
             services.AddTransient<ApiErrorHandlingMiddleware>();

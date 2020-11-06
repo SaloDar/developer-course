@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using DeveloperCourse.SecondLesson.Image.Service.DTOs;
+using DeveloperCourse.SecondLesson.Shared.Interfaces;
 
 namespace DeveloperCourse.SecondLesson.Image.Service.Interfaces
 {
     public interface IImageService
     {
-        IEnumerable<ImageDto> GetAllImages();
+        Task<IEnumerable<ImageDto>> GetAllImages();
 
-        IEnumerable<ImageDto> GetProductImages(Guid productId);
+        Task<IEnumerable<ImageDto>> GetProductImages(Guid productId);
     }
 }

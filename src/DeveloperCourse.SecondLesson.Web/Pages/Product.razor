@@ -5,16 +5,17 @@
 
 
 <BSBreadcrumb>
-    <BSBreadcrumbItem><a href="/products">Products</a></BSBreadcrumbItem>
+    <BSBreadcrumbItem>
+        <a href="/products">Products</a>
+    </BSBreadcrumbItem>
     <BSBreadcrumbItem IsActive="true">@(_product?.Name ?? "Product not found")</BSBreadcrumbItem>
 </BSBreadcrumb>
 
 @if (_product == null)
 {
-    <p>
-        <em>Product not foound...</em>
-    </p>
-    @*     <BSAlert Color="Color.Danger">Product not found.</BSAlert> *@
+    <div style="position:relative; top: 40vh; width:100%; text-align:center">
+        <p style="font-size: 3rem;"><i class="fas fa-spin fa-spinner"></i>Loading...</p>
+    </div>
 }
 else
 {

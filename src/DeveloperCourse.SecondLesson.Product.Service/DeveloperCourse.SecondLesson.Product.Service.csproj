@@ -35,4 +35,8 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Shared\DeveloperCourse.SecondLesson.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

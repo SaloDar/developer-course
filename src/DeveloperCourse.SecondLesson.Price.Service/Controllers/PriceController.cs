@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Price.Service.Controllers.DTOs;
 using DeveloperCourse.SecondLesson.Price.Service.Interfaces;
+using DeveloperCourse.SecondLesson.Price.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Money;
 
 namespace DeveloperCourse.SecondLesson.Price.Service.Controllers
 {
@@ -17,7 +21,7 @@ namespace DeveloperCourse.SecondLesson.Price.Service.Controllers
         private readonly IMapper _mapper;
 
         private readonly IPriceService _priceService;
-
+        
         public PriceController(ILogger<PriceController> logger, IMapper mapper, IPriceService priceService)
         {
             _logger = logger;
@@ -26,17 +30,17 @@ namespace DeveloperCourse.SecondLesson.Price.Service.Controllers
         }
 
         [HttpGet]
-        public GetAllPricesResponse GetAllPrices()
+        public async Task<GetAllPricesResponse> GetAllPrices()
         {
-            var result = _priceService.GetAllPrices().ToList();
+            var result = await _priceService.GetAllPrices();
 
             return _mapper.Map<GetAllPricesResponse>(result);
         }
 
         [HttpGet("product/{id}")]
-        public GetProductPricesResponse GetProductImages(Guid id)
+        public async Task<GetProductPricesResponse> GetProductImages(Guid id)
         {
-            var result = _priceService.GetProductPrices(id).ToList();
+            var result = await _priceService.GetProductPrices(id);
 
             return _mapper.Map<GetProductPricesResponse>(result);
         }
