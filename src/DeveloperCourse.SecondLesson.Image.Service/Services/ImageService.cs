@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Image.Service.DTOs;
 using DeveloperCourse.SecondLesson.Image.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DeveloperCourse.SecondLesson.Image.Service.Services
 {
@@ -12,24 +13,24 @@ namespace DeveloperCourse.SecondLesson.Image.Service.Services
     {
         private readonly IMapper _mapper;
 
-        private readonly IImageRepository _imageRepository;
+        private readonly IImageContext _imageContext;
 
-        public ImageService(IMapper mapper, IImageRepository imageRepository)
+        public ImageService(IMapper mapper, IImageContext imageContext)
         {
             _mapper = mapper;
-            _imageRepository = imageRepository;
+            _imageContext = imageContext;
         }
 
         public async Task<IEnumerable<ImageDto>> GetAllImages()
         {
-            var images = await _imageRepository.GetAll();
+            var images = await _imageContext.Images.ToListAsync();
 
             return _mapper.Map<IEnumerable<ImageDto>>(images).ToList();
         }
 
         public async Task<IEnumerable<ImageDto>> GetProductImages(Guid productId)
         {
-            var images = await _imageRepository.GetImageByProductId(productId);
+            var images = await _imageContext.Images.Where(x=>x.ProductId == productId).ToListAsync();
 
             return _mapper.Map<IEnumerable<ImageDto>>(images).ToList();
         }

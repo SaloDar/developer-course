@@ -19,5 +19,10 @@ namespace DeveloperCourse.SecondLesson.Shared.Entities
             LastSavedDate = DateTime.UtcNow;
             IsDeleted = false;
         }
+        
+        public void Deleted()
+        {
+            IsDeleted = true;
+        }
     }
 }

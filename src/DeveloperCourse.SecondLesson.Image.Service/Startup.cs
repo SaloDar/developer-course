@@ -3,16 +3,16 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Image.Service.DataAccess.Context;
 using DeveloperCourse.SecondLesson.Image.Service.Infrastructure.Configs;
-using DeveloperCourse.SecondLesson.Image.Service.Infrastructure.Extensions;
 using DeveloperCourse.SecondLesson.Image.Service.Infrastructure.Middlewares;
 using DeveloperCourse.SecondLesson.Image.Service.Interfaces;
-using DeveloperCourse.SecondLesson.Image.Service.Repositories;
 using DeveloperCourse.SecondLesson.Image.Service.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -46,10 +46,10 @@ namespace DeveloperCourse.SecondLesson.Image.Service
 
             services.AddOptions();
             services.AddMemoryCache();
-
-            services.AddImageDbOptions(Configuration);
-
-            services.AddScoped<IImageRepository, ImageRepository>();
+            
+            services.AddDbContext<ImageContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Image")));
+            
+            services.AddScoped<IImageContext, ImageContext>();
             
             services.AddTransient<IImageService, ImageService>();
 
