@@ -190,6 +190,8 @@ namespace DeveloperCourse.FirstTask
 
             public void Dispose()
             {
+                _currentValue = default;
+                GC.SuppressFinalize(this);
             }
 
             #endregion
