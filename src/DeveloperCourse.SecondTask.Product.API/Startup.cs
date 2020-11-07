@@ -10,7 +10,7 @@ using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.API.Services;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Extensions;
-using DeveloperCourse.SecondTask.Product.API.Repositories;
+using DeveloperCourse.SecondTask.Product.DataAccess.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;

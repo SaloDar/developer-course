@@ -1,6 +1,5 @@
+using DeveloperCourse.SecondTask.Infrastructure.Extensions;
 using DeveloperCourse.SecondTask.Price.DataAccess.Configs;
-using DeveloperCourse.SecondTask.Price.API.Infrastructure.Configs;
-using DeveloperCourse.SecondLesson.Shared.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

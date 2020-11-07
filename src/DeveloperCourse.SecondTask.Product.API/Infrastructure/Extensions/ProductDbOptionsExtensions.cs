@@ -1,4 +1,4 @@
-using DeveloperCourse.SecondLesson.Infrastructure.Extensions;
+using DeveloperCourse.SecondTask.Infrastructure.Extensions;
 using DeveloperCourse.SecondTask.Product.DataAccess.Configs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
