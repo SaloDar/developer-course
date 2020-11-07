@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace DeveloperCourse.FirstLesson
+namespace DeveloperCourse.FirstTask
 {
     public static class Program
     {

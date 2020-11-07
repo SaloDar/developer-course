@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace DeveloperCourse.FirstLesson
+namespace DeveloperCourse.FirstTask
 {
     public class StructCollection<T> : IEnumerable<T> where T : struct
     {

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.FirstLesson", "DeveloperCourse.FirstLesson\DeveloperCourse.FirstLesson.csproj", "{510939D6-1F7D-491A-8D73-7F50AC49C881}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.FirstTask", "DeveloperCourse.FirstTask\DeveloperCourse.FirstTask.csproj", "{510939D6-1F7D-491A-8D73-7F50AC49C881}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondLesson.Image.Service", "DeveloperCourse.SecondLesson.Image.Service\DeveloperCourse.SecondLesson.Image.Service.csproj", "{A0522661-CBC7-417F-8B99-CE4C5326B239}"
 EndProject
@@ -11,6 +11,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondLesson.Web", "DeveloperCourse.SecondLesson.Web\DeveloperCourse.SecondLesson.Web.csproj", "{CB851AE8-D34C-4C12-A758-D30EDFB82F3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondLesson.Shared", "DeveloperCourse.SecondLesson.Shared\DeveloperCourse.SecondLesson.Shared.csproj", "{4B14125E-B702-4E22-9E4F-32096D5C10AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FirstTask", "FirstTask", "{CEAF1BBA-849D-414E-8DA8-E4F99F45A288}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SecondTask", "SecondTask", "{CEA8FCF5-100B-4DEE-A1AE-386FC672275D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{783FAC88-151F-43C2-8D5D-01A307F5FDE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,5 +48,9 @@ Global
 		{4B14125E-B702-4E22-9E4F-32096D5C10AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B14125E-B702-4E22-9E4F-32096D5C10AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B14125E-B702-4E22-9E4F-32096D5C10AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{510939D6-1F7D-491A-8D73-7F50AC49C881} = {CEAF1BBA-849D-414E-8DA8-E4F99F45A288}
+		{783FAC88-151F-43C2-8D5D-01A307F5FDE0} = {CEA8FCF5-100B-4DEE-A1AE-386FC672275D}
 	EndGlobalSection
 EndGlobal
