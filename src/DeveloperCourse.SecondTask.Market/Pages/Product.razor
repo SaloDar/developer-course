@@ -4,7 +4,6 @@
 @inject IProductService ProductService
 @inject NavigationManager NavigationManager
 
-
 <BSBreadcrumb>
     <BSBreadcrumbItem>
         <a href="/products">Products</a>
@@ -90,11 +89,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         await UpdateData();
-    }
-
-    private void Navigate()
-    {
-        NavigationManager.NavigateTo("products");
     }
 
     private async Task UpdateData()
