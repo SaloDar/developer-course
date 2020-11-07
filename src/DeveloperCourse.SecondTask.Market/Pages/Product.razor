@@ -60,7 +60,7 @@ else
                     <BSListGroup>
                         @foreach (var productPrice in _product.Prices)
                         {
-                            <BSListGroupItem>@productPrice.Amount @productPrice.Currency.ToString()</BSListGroupItem>
+                            <BSListGroupItem>@productPrice.Retail @productPrice.Currency.ToString()</BSListGroupItem>
                         }
                     </BSListGroup>
                 }

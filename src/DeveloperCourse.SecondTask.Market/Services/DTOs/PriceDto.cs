@@ -9,7 +9,7 @@ namespace DeveloperCourse.ThirdLesson.View.Services.DTOs
 
         public Guid ProductId { get; set; }
 
-        public decimal Amount { get; set; }
+        public decimal Retail { get; set; }
 
         public Currency Currency { get; set; }
     }

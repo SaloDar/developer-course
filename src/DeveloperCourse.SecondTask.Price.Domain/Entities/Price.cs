@@ -7,8 +7,10 @@ namespace DeveloperCourse.SecondTask.Price.Domain.Entities
     public class Price : BaseEntity
     {
         public Guid ProductId { get; protected set; }
+        
+        public decimal Retail { get; protected set; }
 
-        public decimal Amount { get; protected set; }
+        public decimal Cost { get; protected set; }
 
         public Currency Currency { get; protected set; }
 
@@ -18,11 +20,12 @@ namespace DeveloperCourse.SecondTask.Price.Domain.Entities
         {
         }
 
-        public Price(Guid productId, decimal amount, Currency currency)
+        public Price(Guid productId, decimal retail, decimal cost, Currency currency)
         {
             Id = Guid.NewGuid();
             ProductId = productId;
-            Amount = amount;
+            Retail = retail;
+            Cost = cost;
             Currency = currency;
             IsLast = true;
         }
