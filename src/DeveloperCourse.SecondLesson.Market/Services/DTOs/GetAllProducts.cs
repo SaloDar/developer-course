@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-namespace DeveloperCourse.ThirdLesson.View.DTOs
+namespace DeveloperCourse.ThirdLesson.View.Services.DTOs
 {
-    public class GetAllProductsResponse
+    public class GetAllProducts
     {
         public IEnumerable<ProductDto> Products { get; set; }
     }

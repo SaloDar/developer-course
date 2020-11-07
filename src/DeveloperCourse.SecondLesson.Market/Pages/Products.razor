@@ -1,6 +1,8 @@
 @page "/products"
-@using DeveloperCourse.ThirdLesson.View.DTOs
-@inject HttpClient Http
+@using DeveloperCourse.ThirdLesson.View.Services.DTOs
+@using DeveloperCourse.ThirdLesson.View.Services
+@using System.Net
+@inject IProductService ProductService
 @inject NavigationManager NavigationManager
 
 
@@ -64,7 +66,7 @@ else
     {
         try
         {
-            var response = await Http.GetFromJsonAsync<GetAllProductsResponse>(Config.ProductBase);
+            var response = await ProductService.GetAllProducts();
             
             _products = response.Products.OrderBy(x => x.Name).ToList();
         }

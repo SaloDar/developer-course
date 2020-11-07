@@ -1,7 +1,7 @@
 using System;
 using Money;
 
-namespace DeveloperCourse.ThirdLesson.View.DTOs
+namespace DeveloperCourse.ThirdLesson.View.Services.DTOs
 {
     public class PriceDto
     {
