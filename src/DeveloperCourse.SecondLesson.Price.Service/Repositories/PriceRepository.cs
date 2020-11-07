@@ -19,7 +19,7 @@ namespace DeveloperCourse.SecondLesson.Price.Service.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.QueryAsync<Entities.Price>($"SELECT * FROM [{_tableName}] WHERE [ProductId] = @productId AND [IsDeleted] = 0", new {productId});
+            return await db.QueryAsync<Entities.Price>($"SELECT * FROM [{TableName}] WHERE [ProductId] = @productId AND [IsDeleted] = 0", new {productId});
         }
     }
 }

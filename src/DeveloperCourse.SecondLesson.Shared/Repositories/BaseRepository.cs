@@ -21,7 +21,7 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
         
         private readonly DbOptions _dbOptions;
 
-        protected readonly string _tableName;
+        protected string TableName { get; }
         
         #endregion
 
@@ -34,7 +34,7 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
         public BaseRepository(IOptions<DbOptions> dbOptions, string tableName)
         {
             _dbOptions = dbOptions.Value;
-            _tableName = tableName;
+            TableName = tableName;
         }
 
         #endregion
@@ -45,7 +45,7 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.QueryFirstOrDefaultAsync<TEntity>($"SELECT * FROM [{_tableName}] WHERE [Id] = @id AND [IsDeleted] = 0", new {id});
+            return await db.QueryFirstOrDefaultAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [Id] = @id AND [IsDeleted] = 0", new {id});
         }
 
         public virtual async Task<TEntity> Create(TEntity entity)
@@ -57,7 +57,7 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
 
             using var db = CreateConnection();
 
-            return await db.QueryFirstOrDefaultAsync<TEntity>($"INSERT INTO [{_tableName}] ({valueNames}) OUTPUT INSERTED.* VALUES ({valueVars})", entity);
+            return await db.QueryFirstOrDefaultAsync<TEntity>($"INSERT INTO [{TableName}] ({valueNames}) OUTPUT INSERTED.* VALUES ({valueVars})", entity);
         }
 
         public virtual async Task<bool> Update(TEntity entity)
@@ -68,7 +68,7 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
 
             using var db = CreateConnection();
 
-            await db.ExecuteAsync($"UPDATE [{_tableName}] SET {values} WHERE [id] = @id AND [IsDeleted] = 0", entity);
+            await db.ExecuteAsync($"UPDATE [{TableName}] SET {values} WHERE [id] = @id AND [IsDeleted] = 0", entity);
 
             return true;
         }
@@ -77,21 +77,21 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{_tableName}] SET IsDeleted = 1 WHERE [id] = @id AND [IsDeleted] = 0", new {id}) != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 1 WHERE [id] = @id AND [IsDeleted] = 0", new {id}) != 0;
         }
 
         public virtual async Task<bool> Restore(Guid id)
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{_tableName}] SET IsDeleted = 0 WHERE [id] = @id AND [IsDeleted] = 1", new {id}) != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 0 WHERE [id] = @id AND [IsDeleted] = 1", new {id}) != 0;
         }
         
         public virtual async Task<IEnumerable<TEntity>> GetAll()
         {
             using var db = CreateConnection();
 
-            return await db.QueryAsync<TEntity>($"SELECT * FROM [{_tableName}] WHERE [IsDeleted] = 0");
+            return await db.QueryAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [IsDeleted] = 0");
         }
         
         public virtual async Task<IEnumerable<TEntity>> CreateMany(IEnumerable<TEntity> entities)
@@ -103,9 +103,9 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
 
             using var db = CreateConnection();
 
-            await db.ExecuteAsync($"INSERT INTO [{_tableName}] ({valueNames}) VALUES ({valueVars})", entities);
+            await db.ExecuteAsync($"INSERT INTO [{TableName}] ({valueNames}) VALUES ({valueVars})", entities);
             
-            return await db.QueryAsync<TEntity>($"SELECT * FROM [{_tableName}] WHERE [Id] IN ('{string.Join("','", entities.Select(x=>x.Id))}') AND [IsDeleted] = 0");
+            return await db.QueryAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [Id] IN ('{string.Join("','", entities.Select(x=>x.Id))}') AND [IsDeleted] = 0");
         }
 
         public virtual async Task<bool> UpdateMany(IEnumerable<TEntity> entities)
@@ -116,21 +116,21 @@ namespace DeveloperCourse.SecondLesson.Shared.Repositories
 
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{_tableName}] SET {values} WHERE [id] = @id AND [IsDeleted] = 0", entities) != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET {values} WHERE [id] = @id AND [IsDeleted] = 0", entities) != 0;
         }
 
         public virtual async Task<bool> DeleteMany(IEnumerable<Guid> id)
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{_tableName}] SET IsDeleted = '1' WHERE [Id] IN ('{string.Join("','", id)}')") != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '1' WHERE [Id] IN ('{string.Join("','", id)}')") != 0;
         }
 
         public virtual async Task<bool> RestoreMany(IEnumerable<Guid> id)
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{_tableName}] SET IsDeleted = '0' WHERE [Id] IN ('{string.Join("','", id)}')") != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '0' WHERE [Id] IN ('{string.Join("','", id)}')") != 0;
         }
 
         #endregion
