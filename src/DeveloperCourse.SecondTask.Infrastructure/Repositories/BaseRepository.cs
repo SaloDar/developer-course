@@ -16,6 +16,11 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
     public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
     {
         #region Fields
+
+        protected List<string> IgnoredFieldsWhenUpdate => new List<string>
+        {
+            "Id", "CreatedDate", "IsDeleted"
+        };
         
         private readonly DbOptions _dbOptions;
 
@@ -60,15 +65,14 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 
         public virtual async Task<bool> Update(TEntity entity)
         {
-            var entityProps = GetEntityProps();
+            var entityProps = GetEntityProps()
+                .Where(x => !IgnoredFieldsWhenUpdate.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
 
             var values = string.Join(',', entityProps.Select(x => $"{x}=@{x}"));
 
             using var db = CreateConnection();
-
-            await db.ExecuteAsync($"UPDATE [{TableName}] SET {values} WHERE [id] = @id AND [IsDeleted] = 0", entity);
-
-            return true;
+            
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET {values} WHERE [id] = @id AND [IsDeleted] = 0", entity) != 0;
         }
 
         public virtual async Task<bool> Delete(Guid id)
@@ -108,7 +112,8 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 
         public virtual async Task<bool> UpdateMany(IEnumerable<TEntity> entities)
         {
-            var entityProps = GetEntityProps();
+            var entityProps = GetEntityProps()
+                .Where(x => !IgnoredFieldsWhenUpdate.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
 
             var values = string.Join(',', entityProps.Select(x => $"{x}=@{x}"));
 
