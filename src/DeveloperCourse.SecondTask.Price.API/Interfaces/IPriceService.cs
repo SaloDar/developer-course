@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DeveloperCourse.SecondTask.Price.API.DTOs;
+using Money;
 
 namespace DeveloperCourse.SecondTask.Price.API.Interfaces
 {
@@ -11,5 +11,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Interfaces
         Task<IEnumerable<PriceDto>> GetAllPrices();
 
         Task<IEnumerable<PriceDto>> GetProductPrices(Guid productId);
+
+        Task<PriceDto> CreatePrice(Guid productId, decimal retailPrice, decimal costPrice, Currency currency);
     }
 }

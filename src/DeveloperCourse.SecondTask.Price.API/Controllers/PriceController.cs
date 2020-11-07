@@ -35,6 +35,15 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
 
             return _mapper.Map<GetAllPricesResponse>(result);
         }
+        
+        [HttpPost]
+        public async Task<CreatePriceResponse> CreatePrice(CreatePriceRequest request)
+        {
+            var result = await _priceService.CreatePrice(request.ProductId, request.RetailPrice, 
+                request.CostPrice, request.Currency);
+
+            return _mapper.Map<CreatePriceResponse>(result);
+        }
 
         [HttpGet("product/{id}")]
         public async Task<GetProductPricesResponse> GetProductImages(Guid id)
