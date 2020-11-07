@@ -19,7 +19,7 @@ namespace DeveloperCourse.SecondLesson.Image.Service.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.QueryAsync<Entities.Image>($"SELECT * FROM [{_tableName}] WHERE [ProductId] = @productId AND [IsDeleted] = 0", new {productId});
+            return await db.QueryAsync<Entities.Image>($"SELECT * FROM [{TableName}] WHERE [ProductId] = @productId AND [IsDeleted] = 0", new {productId});
         }
     }
 }
