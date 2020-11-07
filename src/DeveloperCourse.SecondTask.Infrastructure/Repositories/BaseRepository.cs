@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using DeveloperCourse.SecondLesson.Shared.Configs;
-using DeveloperCourse.SecondLesson.Shared.Entities;
-using DeveloperCourse.SecondLesson.Shared.Interfaces;
+using DeveloperCourse.SecondLesson.Domain.Entities;
+using DeveloperCourse.SecondLesson.Domain.Interfaces;
+using DeveloperCourse.SecondTask.Infrastructure.Configs;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 
-namespace DeveloperCourse.SecondLesson.Shared.Repositories
+namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 {
     public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
     {

@@ -1,4 +1,4 @@
-namespace DeveloperCourse.SecondLesson.Shared.Configs
+namespace DeveloperCourse.SecondTask.Infrastructure.Configs
 {
     public class DbOptions
     {

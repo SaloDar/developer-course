@@ -1,8 +1,8 @@
 using System;
-using DeveloperCourse.SecondLesson.Shared.Configs;
+using DeveloperCourse.SecondTask.Infrastructure.Configs;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DeveloperCourse.SecondLesson.Shared.Extensions
+namespace DeveloperCourse.SecondTask.Infrastructure.Extensions
 {
     public static class DbOptionsExtensions
     {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DeveloperCourse.SecondLesson.Shared.Entities;
+using DeveloperCourse.SecondLesson.Domain.Entities;
 
-namespace DeveloperCourse.SecondLesson.Shared.Interfaces
+namespace DeveloperCourse.SecondLesson.Domain.Interfaces
 {
     public interface IBaseRepository<TEntity> where TEntity : BaseEntity
     {
