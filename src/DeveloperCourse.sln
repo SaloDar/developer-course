@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondTask.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondTask.Product.API", "DeveloperCourse.SecondTask.Product.API\DeveloperCourse.SecondTask.Product.API.csproj", "{92CAFE51-63C5-4517-8A4D-9A127435253F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondLesson.Market", "DeveloperCourse.SecondLesson.Market\DeveloperCourse.SecondLesson.Market.csproj", "{CB851AE8-D34C-4C12-A758-D30EDFB82F3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondTask.Market", "DeveloperCourse.SecondTask.Market\DeveloperCourse.SecondTask.Market.csproj", "{CB851AE8-D34C-4C12-A758-D30EDFB82F3B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FirstTask", "FirstTask", "{CEAF1BBA-849D-414E-8DA8-E4F99F45A288}"
 EndProject
