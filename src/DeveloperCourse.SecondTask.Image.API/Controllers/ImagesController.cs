@@ -28,7 +28,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         }
 
         /// <summary>
-        /// Retrieves all images, or all images by product identifier.
+        /// Retrieves all images.
         /// </summary>
         /// <returns>Returns images</returns>
         /// <response code="200">Returns images</response>
