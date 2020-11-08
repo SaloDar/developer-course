@@ -7,10 +7,10 @@ namespace DeveloperCourse.ThirdLesson.View.Services
 {
     public interface IPriceService
     {
-        [Get("/price")]
-        Task<GetAllPrices> GetAllPrices();
-
-        [Get("/price/product/{productId}")]
-        Task<GetProductPrices> GetProductImages(Guid productId);
+        [Get("/prices")]
+        Task<GetPricesDto> GetPrices(Guid? productId = null, bool? lasted = null);  
+        
+        [Get("/prices/{id}")]
+        Task<GetPriceDto> GetPrice(Guid id);
     }
 }

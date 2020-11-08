@@ -1,6 +1,6 @@
 namespace DeveloperCourse.ThirdLesson.View.Services.DTOs
 {
-    public class GetProduct
+    public class GetProductDto
     {
         public ProductDto Product { get; set; }
     }

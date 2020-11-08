@@ -64,7 +64,7 @@ else
     {
         try
         {
-            var response = await ProductService.GetAllProducts();
+            var response = await ProductService.GetProducts();
             
             _products = response.Products.OrderBy(x => x.Name).ToList();
         }

@@ -7,10 +7,10 @@ namespace DeveloperCourse.ThirdLesson.View.Services
 {
     public interface IProductService
     {
-        [Get("/product")]
-        Task<GetAllProducts> GetAllProducts();
+        [Get("/products")]
+        Task<GetProductsDto> GetProducts();
 
-        [Get("/product/{productId}")]
-        Task<GetProduct> GetProduct(Guid productId);
+        [Get("/products/{productId}")]
+        Task<GetProductDto> GetProduct(Guid productId);
     }
 }

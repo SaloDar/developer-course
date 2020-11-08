@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 namespace DeveloperCourse.ThirdLesson.View.Services.DTOs
 {
-    public class GetProductImages
+    public class GetPriceDto
     {
-        public IEnumerable<ImageDto> Images { get; set; }
+        public PriceDto Price { get; set; }
     }
 }
