@@ -13,7 +13,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers.DTOs
         public Guid? ProductId { get; set; } = null;
 
         /// <summary>
-        /// Is lasted prices.
+        /// Is lasted prices, for filter the prices.
         /// </summary>
         /// <example>true</example>
         [FromQuery(Name = "lasted")]
