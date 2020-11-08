@@ -8,10 +8,12 @@ namespace DeveloperCourse.SecondTask.Price.API.Interfaces
 {
     public interface IPriceService
     {
-        Task<IEnumerable<PriceDto>> GetAllPrices();
-
-        Task<IEnumerable<PriceDto>> GetProductPrices(Guid productId);
-
+        Task<PriceDto> GetPrice(Guid id);
+        
+        Task DeletePrice(Guid id);
+        
+        Task<IEnumerable<PriceDto>> GetPrices(Guid? productId = null);
+        
         Task<PriceDto> CreatePrice(Guid productId, decimal retailPrice, decimal costPrice, Currency currency);
     }
 }

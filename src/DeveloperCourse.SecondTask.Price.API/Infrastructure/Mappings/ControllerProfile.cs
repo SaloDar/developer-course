@@ -11,13 +11,13 @@ namespace DeveloperCourse.SecondTask.Price.API.Infrastructure.Mappings
         {
             CreateMap<SecondTask.Price.Domain.Entities.Price, PriceDto>();
 
-            CreateMap<IEnumerable<PriceDto>, GetAllPricesResponse>()
+            CreateMap<IEnumerable<PriceDto>, GetPricesResponse>()
                 .ForMember(x => x.Prices, x => x.MapFrom(t => t));
-
-            CreateMap<IEnumerable<PriceDto>, GetProductPricesResponse>()
-                .ForMember(x => x.Prices, x => x.MapFrom(t => t));  
             
             CreateMap<PriceDto, CreatePriceResponse>()
+                .ForMember(x => x.Price, x => x.MapFrom(t => t));   
+            
+            CreateMap<PriceDto, GetPriceResponse>()
                 .ForMember(x => x.Price, x => x.MapFrom(t => t));
         }
     }
