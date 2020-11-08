@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace DeveloperCourse.SecondLesson.Image.Service.DataAccess.Migrations
+namespace DeveloperCourse.SecondTask.Image.DataAccess.Migrations
 {
     public partial class init : Migration
     {

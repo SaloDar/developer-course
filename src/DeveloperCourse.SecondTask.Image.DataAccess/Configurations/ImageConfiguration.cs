@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DeveloperCourse.SecondTask.Image.DataAccess.Configurations
 {
-    public class ImageConfiguration : IEntityTypeConfiguration<SecondLesson.Image.Domain.Entities.Image>
+    public class ImageConfiguration : IEntityTypeConfiguration<Domain.Entities.Image>
     {
-        public void Configure(EntityTypeBuilder<SecondLesson.Image.Domain.Entities.Image> builder)
+        public void Configure(EntityTypeBuilder<Domain.Entities.Image> builder)
         {
             builder.ToTable("image");
             builder.HasKey(i => i.Id);

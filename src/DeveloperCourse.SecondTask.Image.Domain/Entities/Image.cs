@@ -1,7 +1,7 @@
 using System;
 using DeveloperCourse.SecondLesson.Domain.Entities;
 
-namespace DeveloperCourse.SecondLesson.Image.Domain.Entities
+namespace DeveloperCourse.SecondTask.Image.Domain.Entities
 {
     public class Image : BaseEntity
     {

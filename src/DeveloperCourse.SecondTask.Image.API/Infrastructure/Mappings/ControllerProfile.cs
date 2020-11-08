@@ -9,7 +9,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Infrastructure.Mappings
     {
         public ControllerProfile()
         {
-            CreateMap<SecondLesson.Image.Domain.Entities.Image, ImageDto>();
+            CreateMap<Domain.Entities.Image, ImageDto>();
 
             CreateMap<IEnumerable<ImageDto>, GetImagesResponse>()
                 .ForMember(x => x.Images, x => x.MapFrom(t => t));

@@ -6,9 +6,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using DeveloperCourse.SecondLesson.Image.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Image.API.DTOs;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
+using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,7 +81,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             var uploadedLink = await UploadImage(image);
 
-            var productImage = new SecondLesson.Image.Domain.Entities.Image(productId, uploadedLink);
+            var productImage = new Domain.Entities.Image(productId, uploadedLink);
 
             await _imageContext.Images.AddAsync(productImage);
            

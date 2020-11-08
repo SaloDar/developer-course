@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace DeveloperCourse.SecondLesson.Image.Domain.Interfaces
+namespace DeveloperCourse.SecondTask.Image.Domain.Interfaces
 {
     public interface IImageContext
     {
