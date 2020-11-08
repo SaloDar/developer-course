@@ -19,13 +19,13 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers.DTOs
         /// Product identifier.
         /// </summary>
         /// <example>BAD0468C-9CA9-4179-A20D-1F9EEE74318B</example>
-        [FromForm]
+        [FromForm(Name = "productId")]
         public Guid? ProductId { get; set; }
 
         /// <summary>
         /// Image.
         /// </summary>
-        [FromForm]
+        [FromForm(Name = "file")]
         public IFormFile File { get; set; }
     }
 }
