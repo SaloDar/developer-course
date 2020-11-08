@@ -18,6 +18,9 @@ namespace DeveloperCourse.SecondTask.Image.API.Infrastructure.Mappings
                 .ForMember(x => x.Image, x => x.MapFrom(t => t));
             
             CreateMap<ImageDto, GetImageResponse>()
+                .ForMember(x => x.Image, x => x.MapFrom(t => t)); 
+            
+            CreateMap<ImageDto, UpdateImageResponse>()
                 .ForMember(x => x.Image, x => x.MapFrom(t => t));
         }
     }

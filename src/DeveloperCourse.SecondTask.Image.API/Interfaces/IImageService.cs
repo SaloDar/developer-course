@@ -10,10 +10,12 @@ namespace DeveloperCourse.SecondTask.Image.API.Interfaces
     {
         Task<ImageDto> GetImage(Guid id);
 
-        Task<IEnumerable<ImageDto>> GetImages(Guid? productId);
+        Task<ImageDto> UpdateImage(Guid id, Guid? productId = null, IFormFile image = null);
+
+        Task<IEnumerable<ImageDto>> GetImages(Guid? productId = null);
 
         Task<ImageDto> CreateImage(Guid productId, IFormFile image);
-        
+
         Task DeleteImage(Guid id);
     }
 }

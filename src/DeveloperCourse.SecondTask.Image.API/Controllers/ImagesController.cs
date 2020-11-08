@@ -7,7 +7,6 @@ using DeveloperCourse.SecondTask.Image.API.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace DeveloperCourse.SecondTask.Image.API.Controllers
 {
@@ -74,7 +73,23 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
             var result = await _imageService.GetImage(request.Id);
 
             return _mapper.Map<GetImageResponse>(result);
-        } 
+        }
+
+        /// <summary>
+        /// Updated a specific image by unique id.
+        /// </summary>
+        /// <returns>Returns the updated image</returns>
+        /// <response code="200">Returns the updated image</response>
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(UpdateImageResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<UpdateImageResponse> UpdateImage([FromMultiSource] UpdateImageRequest request)
+        {
+            var result = await _imageService.UpdateImage(request.Id, request.ProductId, request.File);
+
+            return _mapper.Map<UpdateImageResponse>(result);
+        }
         
         /// <summary>
         /// Deletes a specific image by unique id.

@@ -26,6 +26,33 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
             _imageContext = imageContext;
         }
 
+        public async Task<ImageDto> UpdateImage(Guid id, Guid? productId = null, IFormFile image = null)
+        {
+            var productImage = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (productImage == null)
+            {
+                throw new Exception($"Image with id {id} was not found.");
+            }
+
+            if (productId != null && productId.Value != Guid.Empty)
+            {
+                productImage.ChangeProduct(productId.Value);
+            } 
+            
+            if (image != null)
+            {
+                var uploadedLink = await UploadImage(image);
+                
+                productImage.ChangeLink(uploadedLink);
+            }
+
+            await _imageContext.SaveChangesAsync();
+
+            return _mapper.Map<ImageDto>(productImage);
+
+        }
+
         public async Task<IEnumerable<ImageDto>> GetImages(Guid? productId)
         {
             var images = await _imageContext.Images.Where(x =>  !productId.HasValue || productId.Value == Guid.Empty || x.ProductId == productId).ToListAsync();
@@ -35,18 +62,45 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         public async Task<ImageDto> GetImage(Guid id)
         {
-            var images = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
+            var image = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
 
-            return _mapper.Map<ImageDto>(images);
+            if (image == null)
+            {
+                throw new Exception($"Image with id {id} was not found.");
+            }
+            
+            return _mapper.Map<ImageDto>(image);
         }
 
         public async Task<ImageDto> CreateImage(Guid productId, IFormFile image)
         {
             if (productId == Guid.Empty)
             {
-                throw new InvalidOperationException("GUID can't be empty");
+                throw new InvalidOperationException("Product id can't be empty");
             }
+
+            var uploadedLink = await UploadImage(image);
+
+            var productImage = new SecondLesson.Image.Domain.Entities.Image(productId, uploadedLink);
+
+            await _imageContext.Images.AddAsync(productImage);
+           
+            await _imageContext.SaveChangesAsync();
+
+            return _mapper.Map<ImageDto>(productImage);
+        }
+        
+        public async Task DeleteImage(Guid id)
+        {
+            var product = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
+
+            _imageContext.Images.Remove(product);
             
+            await _imageContext.SaveChangesAsync();
+        }
+
+        private async Task<Uri> UploadImage(IFormFile image)
+        {
             var contentType = image.ContentType.Split('/');
 
             if (!contentType?.FirstOrDefault()?.Equals("image", StringComparison.InvariantCultureIgnoreCase) ?? false)
@@ -69,22 +123,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
             //todo:replace to Yandex Object Storage request.
             var uploadedLink = new Uri("http://localhost");
 
-            var productImage = new SecondLesson.Image.Domain.Entities.Image(productId, uploadedLink);
-
-            await _imageContext.Images.AddAsync(productImage);
-           
-            await _imageContext.SaveChangesAsync();
-
-            return _mapper.Map<ImageDto>(productImage);
-        }
-        
-        public async Task DeleteImage(Guid id)
-        {
-            var product = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
-
-            _imageContext.Images.Remove(product);
-            
-            await _imageContext.SaveChangesAsync();
+            return uploadedLink;
         }
     }
 }

@@ -18,5 +18,15 @@ namespace DeveloperCourse.SecondLesson.Image.Domain.Entities
             ProductId = productId;
             Link = link.ToString();
         }
+
+        public void ChangeProduct(Guid productId)
+        {
+            ProductId = productId;
+        }
+
+        public void ChangeLink(Uri link)
+        {
+            Link = link.ToString();
+        }
     }
 }
