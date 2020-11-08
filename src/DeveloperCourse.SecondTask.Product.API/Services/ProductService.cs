@@ -22,10 +22,9 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         private readonly IMapper _mapper;
 
-
         private readonly IProductRepository _productRepository;
 
-        public ProductService(ILogger<ProductService> logger, IImageClient imageClient, IPriceClient priceClient, 
+        public ProductService(ILogger<ProductService> logger, IImageClient imageClient, IPriceClient priceClient,
             IMapper mapper, IProductRepository productRepository)
         {
             _logger = logger;
@@ -43,36 +42,9 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
             foreach (var product in productDtos)
             {
-                var productImages = new GetProductImages
-                {
-                    Images = new List<ImageDto>()
-                };
+                product.Images = await GetProductImages(product.Id);
 
-                var productPrices = new GetProductPrices
-                {
-                    Prices = new List<PriceDto>()
-                };
-
-                try
-                {
-                    productImages = await _imageClient.GetProductImages(product.Id);
-                }
-                catch (Exception)
-                {
-                    _logger.LogError($"Service {_imageClient.GetType()} api not available");
-                }
-
-                try
-                {
-                    productPrices = await _priceClient.GetProductImages(product.Id);
-                }
-                catch (Exception)
-                {
-                    _logger.LogError($"Service {_priceClient.GetType()} is not available");
-                }
-
-                product.Images = productImages.Images.ToList();
-                product.Prices = productPrices.Prices.ToList();
+                product.Prices  = await GetProductPrices(product.Id);
             }
 
             return productDtos;
@@ -89,38 +61,47 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
             var productDto = _mapper.Map<ProductDto>(product);
 
-            var productImages = new GetProductImages
-            {
-                Images = new List<ImageDto>()
-            };
+            productDto.Images = await GetProductImages(product.Id);
 
-            var productPrices = new GetProductPrices
-            {
-                Prices = new List<PriceDto>()
-            };
+            productDto.Prices  = await GetProductPrices(product.Id);
 
-            try
-            {
-                productImages = await _imageClient.GetProductImages(product.Id);
-            }
-            catch (Exception)
-            {
-                _logger.LogError($"Service {_imageClient.GetType()} api not available");
-            }
+            return productDto;
+        }
+
+        private async Task<List<PriceDto>> GetProductPrices(Guid productId)
+        {
+            var result = new List<PriceDto>();
 
             try
             {
-                productPrices = await _priceClient.GetProductImages(product.Id);
+                var response = await _priceClient.GetPrices(productId);
+
+                result = response.Prices?.ToList() ?? new List<PriceDto>();
             }
             catch (Exception)
             {
                 _logger.LogError($"Service {_priceClient.GetType()} is not available");
             }
 
-            productDto.Images = productImages.Images.ToList();
-            productDto.Prices = productPrices.Prices.ToList();
+            return result;
+        }
 
-            return productDto;
+        private async Task<List<ImageDto>> GetProductImages(Guid productId)
+        {
+            var result = new List<ImageDto>();
+
+            try
+            {
+                var response = await _imageClient.GetImages(productId);
+
+                result = response.Images?.ToList() ?? new List<ImageDto>();
+            }
+            catch (Exception)
+            {
+                _logger.LogError($"Service {_imageClient.GetType()} api not available");
+            }
+
+            return result;
         }
     }
 }

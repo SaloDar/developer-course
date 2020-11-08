@@ -1,10 +1,9 @@
-using System.Collections.Generic;
 using DeveloperCourse.SecondTask.Product.API.DTOs;
 
 namespace DeveloperCourse.SecondTask.Product.API.Clients.DTOs
 {
-    public class GetAllPrices
+    public class GetImageDto
     {
-        public IEnumerable<PriceDto> Prices { get; set; }
+        public ImageDto Image { get; set; }
     }
 }

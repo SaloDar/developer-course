@@ -7,10 +7,10 @@ namespace DeveloperCourse.SecondTask.Product.API.Clients
 {
     public interface IPriceClient
     {
-        [Get("/price")]
-        Task<GetAllPrices> GetAllPrices();
-
-        [Get("/price/product/{productId}")]
-        Task<GetProductPrices> GetProductImages(Guid productId);
+        [Get("/prices")]
+        Task<GetPricesDto> GetPrices(Guid? productId = null, bool? lasted = null);  
+        
+        [Get("/prices/{id}")]
+        Task<GetPriceDto> GetPrice(Guid id);
     }
 }
