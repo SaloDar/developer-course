@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondTask.Product.API.Controllers.DTOs;
@@ -26,17 +25,17 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         }
 
         [HttpGet]
-        public async Task<GetAllProductsResponse> GetProducts()
+        public async Task<GetProductsResponse> GetProducts()
         {
-            var result = await _productService.GetAllProducts();
+            var result = await _productService.GetProducts();
 
-            return _mapper.Map<GetAllProductsResponse>(result);
+            return _mapper.Map<GetProductsResponse>(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<GetProductResponse> GetProduct(Guid id)
+        public async Task<GetProductResponse> GetProduct(GetProductRequest request)
         {
-            var result = await _productService.GetProduct(id);
+            var result = await _productService.GetProduct(request.Id);
 
             return _mapper.Map<GetProductResponse>(result);
         }

@@ -34,7 +34,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             _productRepository = productRepository;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProducts()
+        public async Task<IEnumerable<ProductDto>> GetProducts()
         {
             var products = await _productRepository.GetAll();
 

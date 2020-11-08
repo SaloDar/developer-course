@@ -7,7 +7,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Interfaces
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDto>> GetAllProducts();
+        Task<IEnumerable<ProductDto>> GetProducts();
 
         Task<ProductDto> GetProduct(Guid productId);
     }
