@@ -12,5 +12,7 @@ namespace DeveloperCourse.SecondTask.Price.API.DTOs
         public decimal Retail { get; set; }
 
         public Currency Currency { get; set; }
+
+        public bool IsLast { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
         public async Task<PriceDto> GetPrice(Guid id)
         {
             var price = await _priceRepository.GetById(id);
-            
+
             if (price == null)
             {
                 throw new Exception($"Price with id {id} was not found.");
@@ -34,9 +34,51 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
             return _mapper.Map<PriceDto>(price);
         }
 
+        public async Task<PriceDto> UpdatePrice(Guid id, Guid? productId = null, decimal? retailPrice = null,
+            decimal? costPrice = null, Currency? currency = null)
+        {
+            var price = await _priceRepository.GetById(id);
+
+            if (price == null)
+            {
+                throw new Exception($"Price with id {id} was not found.");
+            }
+
+            if (productId != null && productId.Value != Guid.Empty)
+            {
+                price.ChangeProduct(productId.Value);
+            }
+
+            if (retailPrice.HasValue)
+            {
+                price.ChangeRetailPrice(retailPrice.Value);
+            }
+
+            if (costPrice.HasValue)
+            {
+                price.ChangeCostPrice(costPrice.Value);
+            }
+
+            if (currency.HasValue)
+            {
+                price.ChangeCurrencyPrice(currency.Value);
+            }
+
+            var updateResult = await _priceRepository.Update(price);
+
+            if (!updateResult)
+            {
+                throw new Exception($"Couldn't update price with id {id}.");
+            }
+
+            price = await _priceRepository.GetById(price.Id);
+
+            return _mapper.Map<PriceDto>(price);
+        }
+
         public async Task DeletePrice(Guid id)
         {
-            var result =  await _priceRepository.Delete(id);
+            var result = await _priceRepository.Delete(id);
 
             if (!result)
             {
@@ -44,24 +86,27 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
             }
         }
 
-        public async Task<IEnumerable<PriceDto>> GetPrices(Guid? productId = null)
+        public async Task<IEnumerable<PriceDto>> GetPrices(Guid? productId = null, bool? lasted = null)
         {
             List<Domain.Entities.Price> prices;
-            
+
             if (productId.HasValue && productId.Value != Guid.Empty)
             {
-                var productPrices = await _priceRepository.GetPricesByProductId(productId.Value);
+                var productPrices = lasted.HasValue
+                    ? await _priceRepository.GetPricesByProductId(productId.Value, lasted.Value)
+                    : await _priceRepository.GetPricesByProductId(productId.Value);
 
                 prices = productPrices?.ToList() ?? new List<Domain.Entities.Price>();
-
             }
             else
             {
-                var allPrices = await _priceRepository.GetAll();
-                
+                var allPrices = lasted.HasValue
+                    ? await _priceRepository.GetAll(lasted.Value)
+                    : await _priceRepository.GetAll();
+
                 prices = allPrices?.ToList() ?? new List<Domain.Entities.Price>();
             }
-            
+
             return _mapper.Map<IEnumerable<PriceDto>>(prices).ToList();
         }
 
@@ -69,7 +114,8 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
         {
             await _priceRepository.UpdateIsLastByProduct(productId, currency);
 
-            var newPrice = await _priceRepository.Create(new Domain.Entities.Price(productId, retailPrice, costPrice, currency));
+            var newPrice =
+                await _priceRepository.Create(new Domain.Entities.Price(productId, retailPrice, costPrice, currency));
 
             return _mapper.Map<PriceDto>(newPrice);
         }

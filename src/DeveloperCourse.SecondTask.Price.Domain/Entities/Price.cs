@@ -29,5 +29,25 @@ namespace DeveloperCourse.SecondTask.Price.Domain.Entities
             Currency = currency;
             IsLast = true;
         }
+
+        public void ChangeProduct(Guid productId)
+        {
+            ProductId = productId;
+        }
+
+        public void ChangeRetailPrice(decimal retailPrice)
+        {
+            Retail = retailPrice;
+        }
+
+        public void ChangeCostPrice(decimal costPrice)
+        {
+            Cost = costPrice;
+        }
+
+        public void ChangeCurrencyPrice(Currency currency)
+        {
+            Currency = currency;
+        }
     }
 }

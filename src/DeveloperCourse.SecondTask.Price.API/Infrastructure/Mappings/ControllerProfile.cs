@@ -18,6 +18,9 @@ namespace DeveloperCourse.SecondTask.Price.API.Infrastructure.Mappings
                 .ForMember(x => x.Price, x => x.MapFrom(t => t));   
             
             CreateMap<PriceDto, GetPriceResponse>()
+                .ForMember(x => x.Price, x => x.MapFrom(t => t));       
+            
+            CreateMap<PriceDto, UpdatePriceResponse>()
                 .ForMember(x => x.Price, x => x.MapFrom(t => t));
         }
     }
