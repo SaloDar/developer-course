@@ -8,10 +8,12 @@ namespace DeveloperCourse.SecondTask.Image.API.Interfaces
 {
     public interface IImageService
     {
-        Task<IEnumerable<ImageDto>> GetAllImages();
+        Task<ImageDto> GetImage(Guid id);
 
-        Task<IEnumerable<ImageDto>> GetProductImages(Guid productId);
+        Task<IEnumerable<ImageDto>> GetImages(Guid? productId);
+
+        Task<ImageDto> CreateImage(Guid productId, IFormFile image);
         
-        Task<ImageDto> CreateProductImage(Guid productId, IFormFile image);
+        Task DeleteImage(Guid id);
     }
 }

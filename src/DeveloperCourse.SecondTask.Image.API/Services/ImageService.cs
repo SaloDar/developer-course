@@ -26,21 +26,21 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
             _imageContext = imageContext;
         }
 
-        public async Task<IEnumerable<ImageDto>> GetAllImages()
+        public async Task<IEnumerable<ImageDto>> GetImages(Guid? productId)
         {
-            var images = await _imageContext.Images.ToListAsync();
+            var images = await _imageContext.Images.Where(x => productId == Guid.Empty || x.ProductId == productId).ToListAsync();
 
             return _mapper.Map<IEnumerable<ImageDto>>(images).ToList();
         }
 
-        public async Task<IEnumerable<ImageDto>> GetProductImages(Guid productId)
+        public async Task<ImageDto> GetImage(Guid id)
         {
-            var images = await _imageContext.Images.Where(x => x.ProductId == productId).ToListAsync();
+            var images = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
 
-            return _mapper.Map<IEnumerable<ImageDto>>(images).ToList();
+            return _mapper.Map<ImageDto>(images);
         }
 
-        public async Task<ImageDto> CreateProductImage(Guid productId, IFormFile image)
+        public async Task<ImageDto> CreateImage(Guid productId, IFormFile image)
         {
             var contentType = image.ContentType.Split('/');
 
@@ -71,6 +71,15 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
             await _imageContext.SaveChangesAsync();
 
             return _mapper.Map<ImageDto>(productImage);
+        }
+        
+        public async Task DeleteImage(Guid id)
+        {
+            var product = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
+
+            _imageContext.Images.Remove(product);
+            
+            await _imageContext.SaveChangesAsync();
         }
     }
 }
