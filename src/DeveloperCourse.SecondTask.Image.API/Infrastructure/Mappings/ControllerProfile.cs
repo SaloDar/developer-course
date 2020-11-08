@@ -14,7 +14,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Infrastructure.Mappings
             CreateMap<IEnumerable<ImageDto>, GetImagesResponse>()
                 .ForMember(x => x.Images, x => x.MapFrom(t => t));
 
-            CreateMap<ImageDto, CreateProductImageResponse>()
+            CreateMap<ImageDto, CreateImageResponse>()
                 .ForMember(x => x.Image, x => x.MapFrom(t => t));
             
             CreateMap<ImageDto, GetImageResponse>()

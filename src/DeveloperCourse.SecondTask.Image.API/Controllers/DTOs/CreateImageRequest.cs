@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DeveloperCourse.SecondTask.Image.API.Controllers.DTOs
 {
-    public class CreateProductImageRequest
+    public class CreateImageRequest
     {
         /// <summary>
         /// Product identifier.
