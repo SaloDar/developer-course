@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondTask.Image.API.Controllers.DTOs;
-using DeveloperCourse.SecondTask.Image.API.Infrastructure.Attributes;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
+using DeveloperCourse.SecondTask.Infrastructure.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
