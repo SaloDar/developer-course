@@ -52,7 +52,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         [ProducesResponseType(typeof(CreateProductImageResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<CreateProductImageResponse> CreateProductImage([FromForm] CreateProductImageRequest request)
+        public async Task<CreateProductImageResponse> CreateImage([FromForm] CreateProductImageRequest request)
         {
             var result = await _imageService.CreateImage(request.ProductId, request.File);
 
