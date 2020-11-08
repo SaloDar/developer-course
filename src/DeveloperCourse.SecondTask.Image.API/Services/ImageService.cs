@@ -92,9 +92,14 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
         
         public async Task DeleteImage(Guid id)
         {
-            var product = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
+            var image = await _imageContext.Images.FirstOrDefaultAsync(x => x.Id == id);
 
-            _imageContext.Images.Remove(product);
+            if (image == null)
+            {
+                throw new Exception($"Image with id {id} was not found.");
+            }
+            
+            _imageContext.Images.Remove(image);
             
             await _imageContext.SaveChangesAsync();
         }
