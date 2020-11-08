@@ -11,5 +11,5 @@ namespace DeveloperCourse.SecondTask.Image.API.Infrastructure.Attributes
                 BindingSource.Path, BindingSource.Query
             },
             nameof(FromMultiSourceAttribute));
-    }
+    } 
 }

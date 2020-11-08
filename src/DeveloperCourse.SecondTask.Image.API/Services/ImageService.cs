@@ -28,8 +28,8 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         public async Task<IEnumerable<ImageDto>> GetImages(Guid? productId)
         {
-            var images = await _imageContext.Images.Where(x => productId == Guid.Empty || x.ProductId == productId).ToListAsync();
-
+            var images = await _imageContext.Images.Where(x =>  !productId.HasValue || productId.Value == Guid.Empty || x.ProductId == productId).ToListAsync();
+            
             return _mapper.Map<IEnumerable<ImageDto>>(images).ToList();
         }
 
@@ -42,6 +42,11 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         public async Task<ImageDto> CreateImage(Guid productId, IFormFile image)
         {
+            if (productId == Guid.Empty)
+            {
+                throw new InvalidOperationException("GUID can't be empty");
+            }
+            
             var contentType = image.ContentType.Split('/');
 
             if (!contentType?.FirstOrDefault()?.Equals("image", StringComparison.InvariantCultureIgnoreCase) ?? false)
