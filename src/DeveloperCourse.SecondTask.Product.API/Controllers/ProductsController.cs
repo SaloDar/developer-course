@@ -10,15 +10,15 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
-        private readonly ILogger<ProductController> _logger;
+        private readonly ILogger<ProductsController> _logger;
 
         private readonly IMapper _mapper;
 
         private readonly IProductService _productService;
         
-        public ProductController(ILogger<ProductController> logger, IMapper mapper, IProductService productService)
+        public ProductsController(ILogger<ProductsController> logger, IMapper mapper, IProductService productService)
         {
             _logger = logger;
             _mapper = mapper;
@@ -26,7 +26,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         }
 
         [HttpGet]
-        public async Task<GetAllProductsResponse> GetAllProducts()
+        public async Task<GetAllProductsResponse> GetProducts()
         {
             var result = await _productService.GetAllProducts();
 
