@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using DeveloperCourse.ThirdLesson.View.Services.Image.DTOs.Responses;
+using DeveloperCourse.SecondTask.Market.Services.Image.DTOs.Responses;
 using Microsoft.AspNetCore.Http;
 using Refit;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Image
+namespace DeveloperCourse.SecondTask.Market.Services.Image
 {
     public interface IImageService
     {

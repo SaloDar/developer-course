@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Image.DTOs.Responses
+namespace DeveloperCourse.SecondTask.Market.Services.Image.DTOs.Responses
 {
     public class GetImagesResponse
     {

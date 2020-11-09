@@ -1,11 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using DeveloperCourse.ThirdLesson.View.Services.Price.DTOs.Requests;
-using DeveloperCourse.ThirdLesson.View.Services.Price.DTOs.Responses;
-using Money;
+using DeveloperCourse.SecondTask.Market.Services.Price.DTOs.Requests;
+using DeveloperCourse.SecondTask.Market.Services.Price.DTOs.Responses;
 using Refit;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Price
+namespace DeveloperCourse.SecondTask.Market.Services.Price
 {
     public interface IPriceService
     {

@@ -1,7 +1,7 @@
 using System;
 using Money;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Price.DTOs.Requests
+namespace DeveloperCourse.SecondTask.Market.Services.Price.DTOs.Requests
 {
     public class UpdatePriceRequest
     {

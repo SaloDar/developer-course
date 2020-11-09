@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using DeveloperCourse.ThirdLesson.View.Services.Image.DTOs;
-using DeveloperCourse.ThirdLesson.View.Services.Price.DTOs;
+using DeveloperCourse.SecondTask.Market.Services.Image.DTOs;
+using DeveloperCourse.SecondTask.Market.Services.Price.DTOs;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Product.DTOs
+namespace DeveloperCourse.SecondTask.Market.Services.Product.DTOs
 {
     public class ProductDto
     {

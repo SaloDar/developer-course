@@ -1,4 +1,4 @@
-namespace DeveloperCourse.ThirdLesson.View.Configs
+namespace DeveloperCourse.SecondTask.Market.Configs
 {
     public class AppConfiguration
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Price.DTOs.Responses
+namespace DeveloperCourse.SecondTask.Market.Services.Price.DTOs.Responses
 {
     public class GetPricesResponse
     {

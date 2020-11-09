@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using DeveloperCourse.ThirdLesson.View.Services.Product.DTOs.Responses;
+using DeveloperCourse.SecondTask.Market.Services.Product.DTOs.Responses;
 using Refit;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Product
+namespace DeveloperCourse.SecondTask.Market.Services.Product
 {
     public interface IProductService
     {

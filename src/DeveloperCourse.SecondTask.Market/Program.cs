@@ -3,11 +3,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BlazorStrap;
 using BlazorStrap.Extensions;
-using DeveloperCourse.ThirdLesson.View.Configs;
-using DeveloperCourse.ThirdLesson.View.Services;
-using DeveloperCourse.ThirdLesson.View.Services.Image;
-using DeveloperCourse.ThirdLesson.View.Services.Price;
-using DeveloperCourse.ThirdLesson.View.Services.Product;
+using DeveloperCourse.SecondTask.Market.Configs;
+using DeveloperCourse.SecondTask.Market.Services.Image;
+using DeveloperCourse.SecondTask.Market.Services.Price;
+using DeveloperCourse.SecondTask.Market.Services.Product;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Refit;
 
-namespace DeveloperCourse.ThirdLesson.View
+namespace DeveloperCourse.SecondTask.Market
 {
     public class Program
     {

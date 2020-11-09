@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <RazorLangVersion>3.0</RazorLangVersion>
-        <RootNamespace>DeveloperCourse.ThirdLesson.View</RootNamespace>
+        <RootNamespace>DeveloperCourse.SecondTask.Market</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,6 +12,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.1" PrivateAssets="all" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.1" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
         <PackageReference Include="Multi-Currency-Money" Version="1.1.0" />
         <PackageReference Include="Refit" Version="5.2.1" />
         <PackageReference Include="System.Net.Http.Json" Version="3.2.0" />

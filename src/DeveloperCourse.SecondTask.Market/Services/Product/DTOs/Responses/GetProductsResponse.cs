@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.Product.DTOs.Responses
+namespace DeveloperCourse.SecondTask.Market.Services.Product.DTOs.Responses
 {
     public class GetProductsResponse
     {
