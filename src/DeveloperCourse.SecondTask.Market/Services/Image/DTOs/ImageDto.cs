@@ -1,6 +1,6 @@
 using System;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.DTOs
+namespace DeveloperCourse.ThirdLesson.View.Services.Image.DTOs
 {
     public class ImageDto
     {

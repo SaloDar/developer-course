@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-namespace DeveloperCourse.ThirdLesson.View.Services.DTOs
+namespace DeveloperCourse.ThirdLesson.View.Services.Image.DTOs.Responses
 {
-    public class GetImageDto
+    public class GetImageReponse
     {
         public IEnumerable<ImageDto> Images { get; set; }
     }
