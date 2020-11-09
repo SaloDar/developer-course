@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using DeveloperCourse.SecondTask.Market.Services.Image.DTOs.Responses;
-using Microsoft.AspNetCore.Http;
 using Refit;
 
 namespace DeveloperCourse.SecondTask.Market.Services.Image
@@ -10,17 +9,28 @@ namespace DeveloperCourse.SecondTask.Market.Services.Image
     {
         [Multipart]
         [Post("/images")]
-        Task<CreateImageResponse> CreateImage(Guid id, Guid productId, IFormFile file);
+        Task<CreateImageResponse> CreateImage(string productId, StreamPart file);
 
         [Get("/images/{id}")]
         Task<GetImageReponse> GetImage(Guid id);
 
         [Get("/images")]
-        Task<GetImagesResponse> GetImages(Guid? productId = null);
+        Task<GetImagesResponse> GetImages();
+
+        [Get("/images")]
+        Task<GetImagesResponse> GetImages(Guid productId);
 
         [Multipart]
         [Patch("/images/{id}")]
-        Task<UpdateImageReponse> UpdateImage(Guid id, Guid? productId = null, IFormFile file = null);
+        Task<UpdateImageReponse> UpdateImage(Guid id, string productId);
+
+        [Multipart]
+        [Patch("/images/{id}")]
+        Task<UpdateImageReponse> UpdateImage(Guid id, StreamPart file);
+
+        [Multipart]
+        [Patch("/images/{id}")]
+        Task<UpdateImageReponse> UpdateImage(Guid id, string productId, StreamPart file);
 
         [Delete("/images/{id}")]
         Task DeleteImage(Guid id);

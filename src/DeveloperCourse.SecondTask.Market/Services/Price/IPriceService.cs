@@ -15,7 +15,16 @@ namespace DeveloperCourse.SecondTask.Market.Services.Price
         Task<GetPriceReponse> GetPrice(Guid id);
 
         [Get("/prices")]
-        Task<GetPricesResponse> GetPrices(Guid? productId = null, bool? lasted = null);
+        Task<GetPricesResponse> GetPrices();   
+        
+        [Get("/prices")]
+        Task<GetPricesResponse> GetPrices(Guid productId);   
+        
+        [Get("/prices")]
+        Task<GetPricesResponse> GetPrices(bool lasted); 
+        
+        [Get("/prices")]
+        Task<GetPricesResponse> GetPrices(Guid productId , bool lasted);
 
         [Patch("/prices/{id}")]
         Task<UpdatePriceResponse> UpdatePrice(Guid id, [Body] UpdatePriceRequest request);
