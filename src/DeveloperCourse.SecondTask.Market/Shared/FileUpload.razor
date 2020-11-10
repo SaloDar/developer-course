@@ -1,0 +1,22 @@
+@namespace DeveloperCourse.SecondTask.Market.Shared
+@using MatBlazor
+@inherits MatBlazor.BaseMatFileUpload
+
+<div @ref="@Ref" @attributes="@Attributes" class="@ClassMapper.AsString()" style="@StyleMapper.AsString()" id="@Id">
+    @if (AllowMultiple == true){
+        <input accept="image/*" type="file" @ref="@InputRef" multiple />
+    }
+    else {
+        <input accept="image/*" type="file" @ref="@InputRef" />
+    }
+    <div class="mat-file-upload-content">
+        <span>
+            <Icon Style="vertical-align: text-top;" Type="plus" Theme="outline"/>
+            @Label
+        </span>
+    </div>
+    @if (ProgressTotal != 0)
+    {
+    <MatProgressBar Class="mat-file-upload-progress" Progress="@(Math.Round((double)ProgressProgress / ProgressTotal, 2))"></MatProgressBar>
+    }
+</div>

@@ -1,61 +1,46 @@
 @page "/products"
-@using DeveloperCourse.ThirdLesson.View.Services
-@using DeveloperCourse.ThirdLesson.View.Services.Product
-@using DeveloperCourse.SecondTask.Market.Services.Product
-@using DeveloperCourse.SecondTask.Market.Services.Product.DTOs
 @inject IProductService ProductService
-@inject NavigationManager NavigationManager
+@using DeveloperCourse.SecondTask.Market.Services.Product.DTOs
+@using DeveloperCourse.SecondTask.Market.Services.Product
 
-<h1 style="text-align: center;">Products</h1>
-
-@if (_products == null)
-{
-    <div style="position:relative; top: 40vh; width:100%; text-align:center">
-        <p style="font-size: 3rem;"><i class="fas fa-spin fa-spinner"></i>Loading...</p>
-    </div>
-}
-else
-{
-    <BSCard CardType="CardType.Deck">
-        @foreach (var product in _products)
-        {
-            var image = "/icons/cloud.svg";
-            var serverImage = product.Images?.FirstOrDefault();
-
-            if (serverImage?.Link != null)
-            {
-                image = serverImage.Link.ToString();
-            }
-
-            <BSCard>
-                <BSCard CardType="CardType.Image" VerticalAlignment="VerticalAlignment.Top" src="@image" style="height:200px; background-size:cover; background-position: center center;"/>
-                <BSCard CardType="CardType.Body">
-                    <BSCard CardType="CardType.Title">@product.Name</BSCard>
-                    <BSCard CardType="CardType.Subtitle">SKU : @product.Sku</BSCard>
-                    <BSCard CardType="CardType.Text">@product.Description</BSCard>
-                    <BSButton Color="Color.Secondary" OnClick="@(() => Info(product))">View info...</BSButton>
-                </BSCard>
-            </BSCard>
-        }
-    </BSCard>
-}
+<AntList style="min-height: 350px;" DataSource="@(_products ?? new List<ProductDto>())" ItemLayout="@ListItemLayout.Vertical">
+    <Header>
+        <Title style="text-align: center;" Level="4">Products</Title>
+    </Header>
+    <ChildContent Context="item">
+        <Skeleton Loading="@(!IsLoaded)" Active Avatar AvatarShape="square">
+            <ListItem Actions="@(new[]{_productLink(item.Id)})">
+                <ListItemMeta Description="@item.Description">
+                    <AvatarTemplate>
+                        @if (item.Images != null && item.Images.Any(x => x.Link != null))
+                        {
+                            @_avatarLink(item?.Images?.FirstOrDefault()?.Link)
+                        }
+                        else
+                        {
+                            @_avatarStandard
+                        }
+                    </AvatarTemplate>
+                    <TitleTemplate>
+                        <a href="@($"product/{item.Id}")">@item.Name</a>
+                    </TitleTemplate>
+                </ListItemMeta>
+            </ListItem>
+        </Skeleton>
+    </ChildContent>
+</AntList>
 
 @code {
 
-    private System.Threading.Timer _timer;
-
     private ICollection<ProductDto> _products;
+    
+    private readonly RenderFragment<Guid> _productLink = context => @<a href="@($"product/{context}")"><Button Shape="round" Size="large">View</Button></a>;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
+    private readonly RenderFragment<Uri> _avatarLink = context => @<Avatar Shape="square" Size="64" Src="@(context.ToString())"></Avatar>;
+    
+    private readonly RenderFragment _avatarStandard =  @<Avatar Shape="square" Size="64" Icon="loading"></Avatar>;
 
-        _timer = new System.Threading.Timer(async (object stateInfo) =>
-        {
-            await UpdateData();
-            StateHasChanged();
-        }, new System.Threading.AutoResetEvent(false), 1000, 10000);
-    }
+    public bool IsLoaded => _products?.Any() ?? false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,18 +52,13 @@ else
         try
         {
             var response = await ProductService.GetProducts();
-            
+
             _products = response.Products.OrderBy(x => x.Name).ToList();
         }
         catch (Exception)
         {
             _products = null;
         }
-    }
-
-    private void Info(ProductDto product)
-    {
-        NavigationManager.NavigateTo($"/product/{product.Id}");
     }
 
 }

@@ -32,6 +32,8 @@ namespace DeveloperCourse.SecondTask.Market
             builder.Services.AddBootstrapCss();
             builder.Services.AddSvgLoader();
 
+            builder.Services.AddAntDesign();
+
             var appConfiguration = builder.Configuration.Get<AppConfiguration>();
 
             var refitSettings = new RefitSettings
@@ -63,7 +65,7 @@ namespace DeveloperCourse.SecondTask.Market
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Image;
                 });
-
+            
             builder.Services.AddScoped(sp => new HttpClient
             {
                 BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)

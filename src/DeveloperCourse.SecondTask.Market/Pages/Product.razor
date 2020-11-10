@@ -1,94 +1,175 @@
 @page "/product/{Id:guid}"
+@using Refit
+@using MatBlazor
+@using System.IO
+@using BlazorStrap.Extensions.BSDataTable
+@using DeveloperCourse.SecondTask.Market.Shared
+@using DeveloperCourse.SecondTask.Market.Services.Image
 @using DeveloperCourse.SecondTask.Market.Services.Product
+@using DeveloperCourse.SecondTask.Market.Services.Image.DTOs
+@using DeveloperCourse.SecondTask.Market.Services.Price.DTOs
 @using DeveloperCourse.SecondTask.Market.Services.Product.DTOs
 @inject IProductService ProductService
-@inject NavigationManager NavigationManager
+@inject IImageService ImageService
 
-<BSBreadcrumb>
-    <BSBreadcrumbItem>
-        <a href="/products">Products</a>
-    </BSBreadcrumbItem>
-    <BSBreadcrumbItem IsActive="true">@(_product?.Name ?? "Product not found")</BSBreadcrumbItem>
-</BSBreadcrumb>
-
-@if (_product == null)
-{
-    <div style="position:relative; top: 40vh; width:100%; text-align:center">
-        <p style="font-size: 3rem;"><i class="fas fa-spin fa-spinner"></i>Loading...</p>
-    </div>
-}
-else
-{
-    <BSContainer>
-        <BSRow>
-            <BSCol>
-                <h2>@_product.Name</h2>
-            </BSCol>
-        </BSRow>
-        <BSRow>
-            <BSCol>
-                <p style="font-size: small">SKU : @_product.Sku</p>
-            </BSCol>
-        </BSRow>
-        <BSRow>
-            <BSCol>
-                @if (_product?.Images?.Any() ?? false)
-                {
-                    <BSCarousel NumberOfItems="@_imageCount" Fade="true">
-                        <BSCarouselIndicators NumberOfItems="@_imageCount"/>
-                        <div class="carousel-inner">
-
-                            @foreach (var productImage in _product.Images)
+<div>
+    <Tabs DefaultActiveKey="Product">
+        <TabPane Key="Product">
+            <Tab>Overview</Tab>
+            <ChildContent>
+                <BSContainer>
+                    <BSRow>
+                        <BSCol>
+                            <h2>@_product?.Name</h2>
+                        </BSCol>
+                    </BSRow>
+                    <BSRow>
+                        <BSCol>
+                            <p style="font-size: small">SKU : @_product?.Sku</p>
+                        </BSCol>
+                    </BSRow>
+                    <BSRow>
+                        <BSCol>
+                            @if (IsImagesLoaded)
                             {
-                                <BSCarouselItem src="@productImage.Link.ToString()" style="height:386px; background-size:cover; background-position: center center;"/>
+                                <BSDataCarousel Items="@(_images ?? new List<ImageDto>())" HasControls="true" HasIndicators="true" Context="item">
+                                    <ItemTemplate>
+                                        <BSCarouselItem src="@item?.Link?.ToString()" style="height:386px; background-size:cover; background-position: center center;"/>
+                                    </ItemTemplate>
+                                </BSDataCarousel>
                             }
-                        </div>
-                        <BSCarouselControl CarouselDirection="CarouselDirection.Previous" NumberOfItems="@_imageCount"/>
-                        <BSCarouselControl CarouselDirection="CarouselDirection.Next" NumberOfItems="@_imageCount"/>
-                    </BSCarousel>
-                }
-                else
-                {
-                    <img src="/icons/cloud.svg" style="height:386px; background-size:cover; background-position: center center; display: flex;margin: auto;"/>
-                }
+                            else
+                            {
+                                <img src="/icons/cloud.svg" style="height:386px; background-size:cover; background-position: center center; display: flex;margin: auto;"/>
+                            }
+                        </BSCol>
+                        <BSCol SM="3">
+                            <h4 style="margin: 10px 0 10px 0">Prices</h4>
+                            @if (IsPricesLoaded)
+                            {
+                                <BSListGroup>
+                                    @foreach (var productPrice in (_prices ?? new List<PriceDto>()).Where(x=>x.IsLast))
+                                    {
+                                        <BSListGroupItem>@productPrice?.Retail @productPrice?.Currency.ToString() </BSListGroupItem>
+                                    }
+                                </BSListGroup>
+                            }
+                            else
+                            {
+                                <p style="font-size: medium">Prices is not available.</p>
+                            }
 
-            </BSCol>
-            <BSCol SM="3">
-                <h4 style="margin: 10px 0 10px 0">Prices</h4>
-                @if (_product?.Prices?.Any() ?? false)
-                {
-                    <BSListGroup>
-                        @foreach (var productPrice in _product.Prices)
-                        {
-                            <BSListGroupItem>@productPrice.Retail @productPrice.Currency.ToString()</BSListGroupItem>
-                        }
-                    </BSListGroup>
-                }
-                else
-                {
-                    <p style="font-size: medium">Prices is not available.</p>
-                }
-
-                <h4 style="margin: 10px 0 10px 0">Description</h4>
-                <p style="font-size: medium">@_product.Description</p>
-            </BSCol>
-        </BSRow>
-    </BSContainer>
-}
-
+                            <h4 style="margin: 10px 0 10px 0">Description</h4>
+                            <p style="font-size: medium">@_product?.Description</p>
+                        </BSCol>
+                    </BSRow>
+                </BSContainer>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="Image">
+            <Tab>Images</Tab>
+            <ChildContent>
+                <AntList DataSource="@(_images ?? new List<ImageDto>())" ItemLayout="@(ListItemLayout.Horizontal)">
+                    <ChildContent Context="item">
+                        <Skeleton Loading="@(!IsImagesLoaded)" Active Avatar AvatarShape="square">
+                            <ListItem>
+                                <ListItemMeta Description="@(item?.Link?.ToString())">
+                                    <AvatarTemplate>
+                                        @if (item?.Link != null)
+                                        {
+                                            @_avatarLink(item.Link)
+                                        }
+                                        else
+                                        {
+                                            @_avatarStandard
+                                        }
+                                    </AvatarTemplate>
+                                    <TitleTemplate>
+                                        @item.Id
+                                    </TitleTemplate>
+                                </ListItemMeta>
+                            </ListItem>
+                        </Skeleton>
+                    </ChildContent>
+                    <Footer>
+                        <FileUpload Style="height: 5px;" OnChange="@FilesReady" Label="Add new image"></FileUpload>
+                    </Footer>
+                </AntList>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="Price">
+            <Tab>Prices</Tab>
+            <ChildContent>
+                <AntList DataSource="@((_prices ?? new List<PriceDto>()).OrderByDescending(x => x.IsLast))" ItemLayout="@(ListItemLayout.Horizontal)">
+                    <ChildContent Context="item">
+                        <Skeleton Loading="@(!IsPricesLoaded)">
+                            <ListItem>
+                                <ListItemMeta Description="@(item.Id.ToString())">
+                                    <TitleTemplate>
+                                        @if (item.IsLast)
+                                        {
+                                            <Text>
+                                                @($"{item.Retail} {item.Currency.ToString()}")
+                                            </Text>
+                                        }
+                                        else
+                                        {
+                                            <TypographyBase style="color: rgba(0,0,0,.45);">
+                                                @($"{item.Retail} {item.Currency.ToString()}")
+                                            </TypographyBase>
+                                        }
+                                    </TitleTemplate>
+                                </ListItemMeta>
+                            </ListItem>
+                        </Skeleton>
+                    </ChildContent>
+                </AntList>
+            </ChildContent>
+        </TabPane>
+    </Tabs>
+</div>
 
 @code {
 
     [Parameter]
     public Guid Id { get; set; }
+    
+    public bool IsImagesLoaded => _images?.Any() ?? false;
+
+    public bool IsPricesLoaded => _prices?.Any() ?? false;
 
     private ProductDto _product;
 
-    private int _imageCount;
+    private ICollection<ImageDto> _images;
+
+    private ICollection<PriceDto> _prices;
+
+    private readonly RenderFragment<Uri> _avatarLink = context => @<Avatar Shape="square" Size="64" Src="@(context.ToString())"></Avatar>;
+
+    private readonly RenderFragment _avatarStandard = @<Avatar Shape="square" Size="64" Icon="loading"></Avatar>;
 
     protected override async Task OnInitializedAsync()
     {
         await UpdateData();
+    }
+
+    private async Task FilesReady(IMatFileUploadEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+
+        if (file != null)
+        {
+            var fileStream = new MemoryStream();
+            await file.WriteToStreamAsync(fileStream);
+            var inputFile = new StreamPart(new MemoryStream(fileStream.ToArray()), file.Name, file.Type);
+            var imageResponse = await ImageService.CreateImage(Id.ToString(), inputFile);
+
+            if (imageResponse?.Image != null)
+            {
+                _images.Add(imageResponse.Image);
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task UpdateData()
@@ -98,11 +179,14 @@ else
             var response = await ProductService.GetProduct(Id);
 
             _product = response.Product;
-            _imageCount = _product?.Images?.Count() ?? 0;
+            _images = _product?.Images?.ToList() ?? new List<ImageDto>();
+            _prices = _product?.Prices?.ToList() ?? new List<PriceDto>();
         }
         catch (Exception)
         {
             _product = null;
+            _images = null;
+            _prices = null;
         }
     }
 
