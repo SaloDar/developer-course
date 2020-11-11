@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,6 +90,11 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
                 {
                     entry.State = EntityState.Modified;
                     entry.Entity.Deleted();
+                }
+                
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.Changed();
                 }
             }
         }

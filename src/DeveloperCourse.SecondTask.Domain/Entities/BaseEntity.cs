@@ -23,6 +23,11 @@ namespace DeveloperCourse.SecondLesson.Domain.Entities
         public void Deleted()
         {
             IsDeleted = true;
+        } 
+        
+        public void Changed()
+        {
+            LastSavedDate = DateTime.UtcNow;
         }
     }
 }

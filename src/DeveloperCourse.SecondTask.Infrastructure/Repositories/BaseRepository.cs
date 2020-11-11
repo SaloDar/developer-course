@@ -65,6 +65,8 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 
         public virtual async Task<bool> Update(TEntity entity)
         {
+            entity.Changed();
+
             var entityProps = GetEntityProps()
                 .Where(x => !IgnoredFieldsWhenUpdate.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
 
@@ -79,14 +81,14 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 1 WHERE [id] = @id AND [IsDeleted] = 0", new {id}) != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 1, LastSavedDate = @date WHERE [id] = @id AND [IsDeleted] = 0", new {id,date = DateTime.UtcNow}) != 0;
         }
 
         public virtual async Task<bool> Restore(Guid id)
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 0 WHERE [id] = @id AND [IsDeleted] = 1", new {id}) != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 0, LastSavedDate = @date WHERE [id] = @id AND [IsDeleted] = 1", new {id,date = DateTime.UtcNow}) != 0;
         }
         
         public virtual async Task<IEnumerable<TEntity>> GetAll()
@@ -112,6 +114,11 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 
         public virtual async Task<bool> UpdateMany(IEnumerable<TEntity> entities)
         {
+            foreach (var entity in entities)
+            {
+                entity.Changed();
+            }
+            
             var entityProps = GetEntityProps()
                 .Where(x => !IgnoredFieldsWhenUpdate.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
 
@@ -126,14 +133,14 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '1' WHERE [Id] IN ('{string.Join("','", id)}')") != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '1', LastSavedDate = @date WHERE [Id] IN ('{string.Join("','", id)}')", new {date = DateTime.UtcNow}) != 0;
         }
 
         public virtual async Task<bool> RestoreMany(IEnumerable<Guid> id)
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '0' WHERE [Id] IN ('{string.Join("','", id)}')") != 0;
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '0', LastSavedDate = @date WHERE [Id] IN ('{string.Join("','", id)}')",new {date = DateTime.UtcNow}) != 0;
         }
 
         #endregion
