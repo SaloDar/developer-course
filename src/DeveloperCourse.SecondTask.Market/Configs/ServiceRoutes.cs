@@ -1,6 +1,6 @@
 using System;
 
-namespace DeveloperCourse.ThirdLesson.View.Configs
+namespace DeveloperCourse.SecondTask.Market.Configs
 {
     public class ServiceRoutes
     {

@@ -3,8 +3,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BlazorStrap;
 using BlazorStrap.Extensions;
-using DeveloperCourse.ThirdLesson.View.Configs;
-using DeveloperCourse.ThirdLesson.View.Services;
+using DeveloperCourse.SecondTask.Market.Configs;
+using DeveloperCourse.SecondTask.Market.Services.Image;
+using DeveloperCourse.SecondTask.Market.Services.Price;
+using DeveloperCourse.SecondTask.Market.Services.Product;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Refit;
 
-namespace DeveloperCourse.ThirdLesson.View
+namespace DeveloperCourse.SecondTask.Market
 {
     public class Program
     {
@@ -29,6 +31,8 @@ namespace DeveloperCourse.ThirdLesson.View
 
             builder.Services.AddBootstrapCss();
             builder.Services.AddSvgLoader();
+
+            builder.Services.AddAntDesign();
 
             var appConfiguration = builder.Configuration.Get<AppConfiguration>();
 
@@ -61,7 +65,7 @@ namespace DeveloperCourse.ThirdLesson.View
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Image;
                 });
-
+            
             builder.Services.AddScoped(sp => new HttpClient
             {
                 BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)

@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using DeveloperCourse.SecondLesson.Domain.Entities;
-using DeveloperCourse.SecondLesson.Image.Domain.Interfaces;
+using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
@@ -19,7 +19,7 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
     {
         #region Entities
 
-        public DbSet<SecondLesson.Image.Domain.Entities.Image> Images { get; set; }
+        public DbSet<Domain.Entities.Image> Images { get; set; }
 
         #endregion
 

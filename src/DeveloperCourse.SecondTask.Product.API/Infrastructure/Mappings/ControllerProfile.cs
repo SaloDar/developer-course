@@ -11,7 +11,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Infrastructure.Mappings
         {
             CreateMap<SecondTask.Product.Domain.Entities.Product, ProductDto>();
 
-            CreateMap<IEnumerable<ProductDto>, GetAllProductsResponse>()
+            CreateMap<IEnumerable<ProductDto>, GetProductsResponse>()
                 .ForMember(x => x.Products, x => x.MapFrom(t => t));
 
             CreateMap<ProductDto, GetProductResponse>()

@@ -7,10 +7,10 @@ namespace DeveloperCourse.SecondTask.Product.API.Clients
 {
     public interface IImageClient
     {
-        [Get("/image")]
-        Task<GetAllImagesDto> GetAllImages();
-
-        [Get("/image/product/{productId}")]
-        Task<GetProductImages> GetProductImages(Guid productId);
+        [Get("/images")]
+        Task<GetImagesDto> GetImages(Guid? productId = null);
+        
+        [Get("/images/{id}")]
+        Task<GetImageDto> GetPrice(Guid id);
     }
 }

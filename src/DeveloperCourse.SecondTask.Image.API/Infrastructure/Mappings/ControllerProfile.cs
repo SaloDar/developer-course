@@ -9,13 +9,19 @@ namespace DeveloperCourse.SecondTask.Image.API.Infrastructure.Mappings
     {
         public ControllerProfile()
         {
-            CreateMap<SecondLesson.Image.Domain.Entities.Image, ImageDto>();
+            CreateMap<Domain.Entities.Image, ImageDto>();
 
-            CreateMap<IEnumerable<ImageDto>, GetAllImagesResponse>()
+            CreateMap<IEnumerable<ImageDto>, GetImagesResponse>()
                 .ForMember(x => x.Images, x => x.MapFrom(t => t));
 
-            CreateMap<IEnumerable<ImageDto>, GetProductImagesResponse>()
-                .ForMember(x => x.Images, x => x.MapFrom(t => t));
+            CreateMap<ImageDto, CreateImageResponse>()
+                .ForMember(x => x.Image, x => x.MapFrom(t => t));
+            
+            CreateMap<ImageDto, GetImageResponse>()
+                .ForMember(x => x.Image, x => x.MapFrom(t => t)); 
+            
+            CreateMap<ImageDto, UpdateImageResponse>()
+                .ForMember(x => x.Image, x => x.MapFrom(t => t));
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using DeveloperCourse.SecondLesson.Domain.Entities;
 
-namespace DeveloperCourse.SecondLesson.Image.Domain.Entities
+namespace DeveloperCourse.SecondTask.Image.Domain.Entities
 {
     public class Image : BaseEntity
     {
@@ -16,6 +16,16 @@ namespace DeveloperCourse.SecondLesson.Image.Domain.Entities
         public Image(Guid productId, Uri link)
         {
             ProductId = productId;
+            Link = link.ToString();
+        }
+
+        public void ChangeProduct(Guid productId)
+        {
+            ProductId = productId;
+        }
+
+        public void ChangeLink(Uri link)
+        {
             Link = link.ToString();
         }
     }
