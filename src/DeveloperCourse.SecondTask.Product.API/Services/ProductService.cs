@@ -8,6 +8,7 @@ using DeveloperCourse.SecondTask.Product.API.Clients.DTOs;
 using DeveloperCourse.SecondTask.Product.API.DTOs;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DeveloperCourse.SecondTask.Product.API.Services
@@ -22,21 +23,21 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         private readonly IMapper _mapper;
 
-        private readonly IProductRepository _productRepository;
+        private readonly IProductContext _productContext;
 
         public ProductService(ILogger<ProductService> logger, IImageClient imageClient, IPriceClient priceClient,
-            IMapper mapper, IProductRepository productRepository)
+            IMapper mapper, IProductContext productContext)
         {
             _logger = logger;
             _imageClient = imageClient;
             _priceClient = priceClient;
             _mapper = mapper;
-            _productRepository = productRepository;
+            _productContext = productContext;
         }
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
-            var products = await _productRepository.GetAll();
+            var products = await _productContext.Products.ToListAsync();
 
             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products).ToList();
 
@@ -52,7 +53,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         public async Task<ProductDto> GetProduct(Guid productId)
         {
-            var product = await _productRepository.GetById(productId);
+            var product = await _productContext.Products.FirstOrDefaultAsync(x => x.Id == productId);
 
             if (product == null)
             {
