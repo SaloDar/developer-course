@@ -23,5 +23,25 @@ namespace DeveloperCourse.SecondTask.Product.Domain.Entities
             Sku = sku;
             Weight = weight;
         }
+
+        public void ChangeName(string name)
+        {
+            Name = name;
+        }
+
+        public void ChangeDescription(string description)
+        {
+            Description = description;
+        }
+
+        public void ChangeSKU(string sku)
+        {
+            Sku = sku;
+        }
+
+        public void ChangeWeight(string weight)
+        {
+            Weight = weight;
+        }
     }
 }

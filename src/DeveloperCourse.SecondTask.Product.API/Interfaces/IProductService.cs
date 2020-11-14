@@ -9,6 +9,12 @@ namespace DeveloperCourse.SecondTask.Product.API.Interfaces
     {
         Task<IEnumerable<ProductDto>> GetProducts();
 
+        Task<ProductDto> CreateProduct(string name, string description, string sku, string weight);
+
         Task<ProductDto> GetProduct(Guid productId);
+
+        Task DeleteProduct(Guid id);
+
+        Task<ProductDto> UpdateProduct(Guid id, string name, string description, string sku, string weight);
     }
 }
