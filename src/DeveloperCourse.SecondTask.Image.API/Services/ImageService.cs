@@ -27,22 +27,15 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         private readonly IImageContext _imageContext;
 
-        private readonly IYandexDiskClient _yandexDiskClient;
-
-        private readonly YandexDiskConfig _yandexDiskConfig;
-
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IDataStorageService _dataStorageService;
 
         public ImageService(ILogger<ImageService> logger, IMapper mapper, IImageContext imageContext,
-            IYandexDiskClient yandexDiskClient, IOptions<YandexDiskConfig> yandexDiskConfig,
-            IHttpClientFactory httpClientFactory)
+            IDataStorageService dataStorageService)
         {
             _logger = logger;
             _mapper = mapper;
             _imageContext = imageContext;
-            _yandexDiskClient = yandexDiskClient;
-            _yandexDiskConfig = yandexDiskConfig.Value;
-            _httpClientFactory = httpClientFactory;
+            _dataStorageService = dataStorageService;
         }
 
         public async Task<ImageDto> UpdateImage(Guid id, Guid? productId = null, IFormFile image = null)
@@ -133,52 +126,9 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
                 throw new InvalidOperationException("Unsupported type");
             }
 
-            var fileName = Path.GetFileNameWithoutExtension(image!.FileName);
-
-            var fileExtension = Path.GetExtension(image!.FileName);
-
-            var imageName = $"image_{fileName}_{DateTime.UtcNow:yyyy-MM-dd_HH-mm-ss-fff}";
-
-            using var md5 = MD5.Create();
-
-            var hashBytes = md5.ComputeHash(Encoding.ASCII.GetBytes(imageName));
-
-            var newImageName = BitConverter.ToString(hashBytes) + fileExtension;
-
-            var fileLink = await UploadFileToYandexDisk(newImageName, image.OpenReadStream());
+            var fileLink = await _dataStorageService.UploadFile(image);
 
             return fileLink;
-        }
-
-        private async Task<Uri> UploadFileToYandexDisk(string fileName, Stream fileStream)
-        {
-            var fileNameWithPath = Path.Combine(_yandexDiskConfig.BasePath, fileName);
-
-            try
-            {
-                var uploadLink = await _yandexDiskClient.GetResourceUpload(fileNameWithPath);
-
-                var client = _httpClientFactory.CreateClient();
-
-                client.DefaultRequestHeaders.Authorization = _yandexDiskConfig.AuthenticationHeader;
-
-                var uploadFileRequest = new HttpRequestMessage(new HttpMethod(uploadLink.Method), uploadLink.Href)
-                {
-                    Content = new StreamContent(fileStream)
-                };
-
-                await client.SendAsync(uploadFileRequest);
-
-                var fileLink = await _yandexDiskClient.GetResourceDownload(fileNameWithPath);
-
-                return fileLink.Href;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError("Yandex Disk API is unavailable", e);
-
-                throw new InvalidOperationException("Yandex Disk API is unavailable", e);
-            }
         }
     }
 }

@@ -11,5 +11,12 @@ namespace DeveloperCourse.SecondTask.Image.API.Clients
 
         [Get("/v1/disk/resources/download")]
         public Task<ResourceLinkDto> GetResourceDownload([AliasAs("path")] string filePath);
+
+        [Put("/v1/disk/resources/publish")]
+        public Task<ResourceLinkDto> PublishFile([AliasAs("path")] string filePath);
+
+        [Get("/v1/disk/resources/public")]
+        public Task<PublicResourcesDto> GetPublicResources([AliasAs("preview_crop")] bool previewCrop = false,
+            [AliasAs("preview_size")] string previewSize = "1024x1024");
     }
 }

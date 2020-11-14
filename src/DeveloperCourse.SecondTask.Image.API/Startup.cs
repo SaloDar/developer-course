@@ -41,11 +41,11 @@ namespace DeveloperCourse.SecondTask.Image.API
             #region Configs
 
             var webApiConfig = Configuration.GetSection("WebApi").Get<WebApiConfig>();
-            
+
             var yandexDiskConfig = Configuration.GetSection("YandexDisk").Get<YandexDiskConfig>();
 
             services.Configure<WebApiConfig>(Configuration.GetSection("WebApi"));
-            
+
             services.Configure<YandexDiskConfig>(Configuration.GetSection("YandexDisk"));
 
             #endregion
@@ -54,11 +54,11 @@ namespace DeveloperCourse.SecondTask.Image.API
 
             services.AddOptions();
             services.AddMemoryCache();
-            
+
             services.AddDbContext<ImageContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Image")));
-            
+
             services.AddScoped<IImageContext, ImageContext>();
-            
+
             var refitSettings = new RefitSettings
             {
                 ContentSerializer = new NewtonsoftJsonContentSerializer(
@@ -77,7 +77,8 @@ namespace DeveloperCourse.SecondTask.Image.API
                     c.BaseAddress = yandexDiskConfig.BaseUrl;
                     c.DefaultRequestHeaders.Authorization = yandexDiskConfig.AuthenticationHeader;
                 });
-            
+
+            services.AddTransient<IDataStorageService, YandexDiskService>();
             services.AddTransient<IImageService, ImageService>();
 
             services.AddTransient<ApiErrorHandlingMiddleware>();
