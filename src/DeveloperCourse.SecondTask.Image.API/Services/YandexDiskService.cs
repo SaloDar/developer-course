@@ -43,7 +43,9 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             await _yandexDiskClient.PublishFile(filePath);
 
-            var publicFiles = await _yandexDiskClient.GetPublicResources();
+            await Task.Delay(500);
+            
+            var publicFiles = await _yandexDiskClient.GetLastUpdatedResources(2,"image");
 
             var uploadedFile = publicFiles.Items.FirstOrDefault(x =>
                 x.FileName.Equals(fileName, StringComparison.OrdinalIgnoreCase));
