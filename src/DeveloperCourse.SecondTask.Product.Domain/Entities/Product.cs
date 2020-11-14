@@ -4,13 +4,31 @@ namespace DeveloperCourse.SecondTask.Product.Domain.Entities
 {
     public class Product : BaseEntity
     {
+        #region Props
+
+        /// <summary>
+        /// Product name.
+        /// </summary>
         public string Name { get; protected set; }
 
+        /// <summary>
+        /// Product description.
+        /// </summary>
         public string Description { get; protected set; }
 
+        /// <summary>
+        /// Product SKU.
+        /// </summary>
         public string Sku { get; protected set; }
 
+        /// <summary>
+        /// Product weight.
+        /// </summary>
         public string Weight { get; protected set; }
+
+        #endregion
+
+        #region Constructors
 
         protected Product()
         {
@@ -23,6 +41,10 @@ namespace DeveloperCourse.SecondTask.Product.Domain.Entities
             Sku = sku;
             Weight = weight;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public void ChangeName(string name)
         {
@@ -43,5 +65,7 @@ namespace DeveloperCourse.SecondTask.Product.Domain.Entities
         {
             Weight = weight;
         }
+
+        #endregion
     }
 }

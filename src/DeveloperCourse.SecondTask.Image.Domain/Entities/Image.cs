@@ -5,9 +5,21 @@ namespace DeveloperCourse.SecondTask.Image.Domain.Entities
 {
     public class Image : BaseEntity
     {
+        #region Props
+
+        /// <summary>
+        /// Product identifier.
+        /// </summary>
         public Guid ProductId { get; protected set; }
 
+        /// <summary>
+        /// Link to image.
+        /// </summary>
         public string Link { get; protected set; }
+
+        #endregion
+
+        #region Constructors
 
         protected Image()
         {
@@ -19,6 +31,10 @@ namespace DeveloperCourse.SecondTask.Image.Domain.Entities
             Link = link.ToString();
         }
 
+        #endregion
+
+        #region Public Methods
+
         public void ChangeProduct(Guid productId)
         {
             ProductId = productId;
@@ -28,5 +44,7 @@ namespace DeveloperCourse.SecondTask.Image.Domain.Entities
         {
             Link = link.ToString();
         }
+
+        #endregion
     }
 }
