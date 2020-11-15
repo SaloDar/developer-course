@@ -1,0 +1,148 @@
+@using DeveloperCourse.SecondTask.Market.Services.Price.DTOs
+@using DeveloperCourse.SecondTask.Market.Services.Price.DTOs.Requests
+@using Money
+@using AntDesign;
+@using DeveloperCourse.SecondTask.Market.Services.Price
+@using DeveloperCourse.SecondTask.Market.Pages
+@inject IPriceService PriceService
+
+<TabPane Key="Price">
+    <Tab>Prices</Tab>
+    <ChildContent>
+        <AntList Loading="@(!IsPricesLoaded)" DataSource="@((Prices ?? new List<PriceDto>()).OrderByDescending(x => x.IsLast))" ItemLayout="@(ListItemLayout.Horizontal)">
+            <Header>
+                @if (Prices != null)
+                {
+                    <Form Style="text-align-last: center;display: flex;justify-content: center;" Layout="@(FormLayout.Inline)" Model="@_createPriceModel" OnFinish="CreatePrice">
+
+                        <FormItem Label="Retail">
+                            <AntDesign.InputNumber Min="0" @bind-Value="@_createPriceModel.Retail"/>
+                        </FormItem>
+
+                        <FormItem Label="Cost">
+                            <AntDesign.InputNumber Min="0" @bind-Value="@_createPriceModel.Cost"/>
+                        </FormItem>
+
+                        <FormItem Label="Currency">
+                            <Select LabelInValue Style="max-width: 100px;width: 100px;" @bind-Value="@_createPriceModel.Currency" Options="@_currencyOptions"></Select>
+                        </FormItem>
+                        <FormItem>
+                            <Button HtmlType="submit">Add</Button>
+                        </FormItem>
+                    </Form>
+                }
+                else
+                {
+                    <Alert Type="@AlertType.Error" Message="Price service is unavailable" ShowIcon/>
+                }
+            </Header>
+            <ChildContent Context="item">
+                <Skeleton Loading="@(!IsPricesLoaded)">
+                    <ListItem>
+                        <ListItemMeta Description="@(item.Id.ToString())">
+                            <TitleTemplate>
+                                @if (item.IsLast)
+                                {
+                                    <Text>
+                                        @($"{item.Retail} {item.Currency.ToString()}")
+                                    </Text>
+                                }
+                                else
+                                {
+                                    <TypographyBase style="color: rgba(0,0,0,.45);">
+                                        @($"{item.Retail} {item.Currency.ToString()}")
+                                    </TypographyBase>
+                                }
+                            </TitleTemplate>
+                        </ListItemMeta>
+                    </ListItem>
+                </Skeleton>
+            </ChildContent>
+        </AntList>
+    </ChildContent>
+</TabPane>
+
+@code {
+
+    #region Props
+
+    [Parameter]
+    public Guid ProductId { get; set; }
+
+    [Parameter]
+    public Product ProductPage { get; set; }
+
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    public ICollection<PriceDto> Prices = new List<PriceDto>();
+
+    public bool IsPricesLoaded => Prices?.Any() ?? false;
+
+    #endregion
+
+    #region Fields
+
+    private static readonly CreatePriceModel _createPriceModel = new CreatePriceModel();
+
+    private static readonly List<Currency> _availableCurrency = new List<Currency>
+    {
+        Currency.RUB,
+        Currency.USD,
+        Currency.EUR
+    };
+
+    private static readonly List<LabeledValue> _currencyOptions = _availableCurrency
+        .Select(x => new LabeledValue(x.ToString(), x.ToString()))
+        .ToList();
+
+    #endregion
+
+    private async void CreatePrice(EditContext editContext)
+    {
+        if (Enum.TryParse(typeof(Currency), _createPriceModel.Currency, true, out var currency))
+        {
+            var request = new CreatePriceRequest
+            {
+                ProductId = ProductId, RetailPrice = _createPriceModel.Retail, CostPrice = _createPriceModel.Cost, Currency = (Currency) currency
+            };
+
+            var newPrice = await PriceService.CreatePrice(request);
+
+            if (newPrice?.Price != null)
+            {
+                await UpdateData();
+                await OnChanged.InvokeAsync(null);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        try
+        {
+            var response = await PriceService.GetPrices(ProductId);
+
+            Prices = response?.Prices?.ToList() ?? new List<PriceDto>();
+        }
+        catch (Exception)
+        {
+            Prices = null;
+        }
+    }
+
+    public class CreatePriceModel
+    {
+        public decimal Retail { get; set; }
+
+        public decimal Cost { get; set; }
+
+        public string Currency { get; set; }
+    }
+
+}

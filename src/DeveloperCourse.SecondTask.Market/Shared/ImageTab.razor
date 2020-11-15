@@ -1,0 +1,109 @@
+@using DeveloperCourse.SecondTask.Market.Services.Image.DTOs
+@using MatBlazor
+@using Refit
+@using AntDesign;
+@using DeveloperCourse.SecondTask.Market.Services.Image
+@using System.IO
+@using DeveloperCourse.SecondTask.Market.Pages
+@inject IImageService ImageService
+
+<TabPane Key="Image">
+    <Tab>Images</Tab>
+    <ChildContent>
+        <AntList Loading="@(!IsImagesLoaded)" DataSource="@(Images ?? new List<ImageDto>())" ItemLayout="@(ListItemLayout.Horizontal)">
+            <Header>
+                @if (Images != null)
+                {
+                    <FileUpload Style="height: 5px;" OnChange="@FilesReady" Label="Add new image"></FileUpload>
+                }
+                else
+                {
+                    <Alert Type="@AlertType.Error" Message="Image service is unavailable" ShowIcon />
+                }
+            </Header>
+            <ChildContent Context="item">
+                <Skeleton Loading="@(!IsImagesLoaded)" Active Avatar AvatarShape="square">
+                    <ListItem>
+                        <ListItemMeta Description="@(item?.Link?.ToString())">
+                            <AvatarTemplate>
+                                @if (item?.Link != null)
+                                {
+                                    @_avatarLink(item.Link)
+                                }
+                                else
+                                {
+                                    @_avatarStandard
+                                }
+                            </AvatarTemplate>
+                            <TitleTemplate>
+                                @item.Id
+                            </TitleTemplate>
+                        </ListItemMeta>
+                    </ListItem>
+                </Skeleton>
+            </ChildContent>
+        </AntList>
+    </ChildContent>
+</TabPane>
+
+@code {
+
+    #region Props
+
+    [Parameter]
+    public Guid ProductId { get; set; }
+
+    [Parameter]
+    public Product ProductPage { get; set; }
+
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    public ICollection<ImageDto> Images = new List<ImageDto>();
+
+    public bool IsImagesLoaded => Images?.Any() ?? false;
+
+    #endregion
+
+    private readonly RenderFragment<Uri> _avatarLink = context => @<Avatar Shape="square" Size="64" Src="@(context.ToString())"></Avatar>;
+
+    private readonly RenderFragment _avatarStandard = @<Avatar Shape="square" Size="64" Icon="loading"></Avatar>;
+
+    private async Task FilesReady(IMatFileUploadEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+
+        if (file != null)
+        {
+            var fileStream = new MemoryStream();
+            await file.WriteToStreamAsync(fileStream);
+            var inputFile = new StreamPart(new MemoryStream(fileStream.ToArray()), file.Name, file.Type);
+            var imageResponse = await ImageService.CreateImage(ProductId.ToString(), inputFile);
+
+            if (imageResponse?.Image != null)
+            {
+                Images.Add(imageResponse.Image);
+                await OnChanged.InvokeAsync(null);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    private async Task UpdateData()
+    {
+        try
+        {
+            var response = await ImageService.GetImages(ProductId);
+            Images = response?.Images?.ToList() ?? new List<ImageDto>();
+        }
+        catch (Exception)
+        {
+            Images = null;
+        }
+    }
+
+}
