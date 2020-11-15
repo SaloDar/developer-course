@@ -2,17 +2,20 @@
 @page "/product/{Id:guid}/{Tab}"
 @using AntDesign;
 @using AntDesign.JsInterop
+@using DeveloperCourse.SecondTask.Market.Clients.Image
+@using DeveloperCourse.SecondTask.Market.Clients.Image.DTOs
+@using DeveloperCourse.SecondTask.Market.Clients.Price
+@using DeveloperCourse.SecondTask.Market.Clients.Price.DTOs
+@using DeveloperCourse.SecondTask.Market.Clients.Product
+@using DeveloperCourse.SecondTask.Market.Clients.Product.DTOs
 @using Microsoft.JSInterop;
 @using DeveloperCourse.SecondTask.Market.Shared
 @using DeveloperCourse.SecondTask.Market.Services.Image
 @using DeveloperCourse.SecondTask.Market.Services.Price
 @using DeveloperCourse.SecondTask.Market.Services.Product
-@using DeveloperCourse.SecondTask.Market.Services.Image.DTOs
-@using DeveloperCourse.SecondTask.Market.Services.Price.DTOs
-@using DeveloperCourse.SecondTask.Market.Services.Product.DTOs
-@inject IProductService ProductService
-@inject IImageService ImageService
-@inject IPriceService PriceService
+@inject IProductClient ProductClient
+@inject IImageClient ImageClient
+@inject IPriceClient PriceClient
 @inject IJSRuntime JS
 @inject DomEventService DomEventService
 
@@ -169,7 +172,7 @@
     {
         try
         {
-            var response = await ProductService.GetProduct(Id);
+            var response = await ProductClient.GetProduct(Id);
 
             OverviewedProduct = response.Product;
             Images = OverviewedProduct?.Images?.ToList() ?? new List<ImageDto>();

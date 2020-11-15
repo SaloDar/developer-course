@@ -3,6 +3,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BlazorStrap;
 using BlazorStrap.Extensions;
+using DeveloperCourse.SecondTask.Market.Clients.Image;
+using DeveloperCourse.SecondTask.Market.Clients.Price;
+using DeveloperCourse.SecondTask.Market.Clients.Product;
 using DeveloperCourse.SecondTask.Market.Configs;
 using DeveloperCourse.SecondTask.Market.Services.Image;
 using DeveloperCourse.SecondTask.Market.Services.Price;
@@ -48,19 +51,19 @@ namespace DeveloperCourse.SecondTask.Market
                     })
             };
 
-            builder.Services.AddRefitClient<IProductService>(refitSettings)
+            builder.Services.AddRefitClient<IProductClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Product;
                 });
 
-            builder.Services.AddRefitClient<IPriceService>(refitSettings)
+            builder.Services.AddRefitClient<IPriceClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Price;
                 });
 
-            builder.Services.AddRefitClient<IImageService>(refitSettings)
+            builder.Services.AddRefitClient<IImageClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Image;

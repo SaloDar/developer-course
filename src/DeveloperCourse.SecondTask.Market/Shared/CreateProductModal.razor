@@ -1,7 +1,8 @@
 @using DeveloperCourse.SecondTask.Market.Pages
 @using DeveloperCourse.SecondTask.Market.Services.Product
-@using DeveloperCourse.SecondTask.Market.Services.Product.DTOs.Requests
-@inject IProductService ProductService
+@using DeveloperCourse.SecondTask.Market.Clients.Product
+@using DeveloperCourse.SecondTask.Market.Clients.Product.DTOs.Requests
+@inject IProductClient ProductClient
 
 <Modal Title="@("Create product")"
        Visible="@IsVisible"
@@ -72,7 +73,7 @@
 
         try
         {
-            var response = await ProductService.CreateProduct(request);
+            var response = await ProductClient.CreateProduct(request);
 
             if (response?.Product != null)
             {

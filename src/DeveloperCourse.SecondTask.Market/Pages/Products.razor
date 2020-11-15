@@ -1,8 +1,9 @@
 @page "/products"
-@inject IProductService ProductService
-@using DeveloperCourse.SecondTask.Market.Services.Product.DTOs
+@inject IProductClient ProductClient
 @using DeveloperCourse.SecondTask.Market.Services.Product
 @using DeveloperCourse.SecondTask.Market.Shared
+@using DeveloperCourse.SecondTask.Market.Clients.Product
+@using DeveloperCourse.SecondTask.Market.Clients.Product.DTOs
 
 <AntList style="min-height: 350px;" DataSource="@(ProductsCollection ?? new List<ProductDto>())" ItemLayout="@ListItemLayout.Vertical">
     <Header>
@@ -71,7 +72,7 @@
     {
         try
         {
-            var response = await ProductService.GetProducts();
+            var response = await ProductClient.GetProducts();
 
             ProductsCollection = response.Products.OrderBy(x => x.Name).ToList();
         }

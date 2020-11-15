@@ -1,10 +1,11 @@
-@using DeveloperCourse.SecondTask.Market.Services.Price.DTOs
-@using DeveloperCourse.SecondTask.Market.Services.Price.DTOs.Requests
 @using Money
 @using AntDesign;
+@using DeveloperCourse.SecondTask.Market.Clients.Price
+@using DeveloperCourse.SecondTask.Market.Clients.Price.DTOs
+@using DeveloperCourse.SecondTask.Market.Clients.Price.DTOs.Requests
 @using DeveloperCourse.SecondTask.Market.Services.Price
 @using DeveloperCourse.SecondTask.Market.Pages
-@inject IPriceService PriceService
+@inject IPriceClient PriceClient
 
 <TabPane Key="Price">
     <Tab>Prices</Tab>
@@ -107,7 +108,7 @@
                 ProductId = ProductId, RetailPrice = _createPriceModel.Retail, CostPrice = _createPriceModel.Cost, Currency = (Currency) currency
             };
 
-            var newPrice = await PriceService.CreatePrice(request);
+            var newPrice = await PriceClient.CreatePrice(request);
 
             if (newPrice?.Price != null)
             {
@@ -126,7 +127,7 @@
     {
         try
         {
-            var response = await PriceService.GetPrices(ProductId);
+            var response = await PriceClient.GetPrices(ProductId);
 
             Prices = response?.Prices?.ToList() ?? new List<PriceDto>();
         }

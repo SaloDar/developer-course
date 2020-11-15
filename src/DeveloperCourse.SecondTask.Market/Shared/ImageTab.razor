@@ -1,11 +1,12 @@
-@using DeveloperCourse.SecondTask.Market.Services.Image.DTOs
 @using MatBlazor
 @using Refit
 @using AntDesign;
 @using DeveloperCourse.SecondTask.Market.Services.Image
 @using System.IO
+@using DeveloperCourse.SecondTask.Market.Clients.Image
+@using DeveloperCourse.SecondTask.Market.Clients.Image.DTOs
 @using DeveloperCourse.SecondTask.Market.Pages
-@inject IImageService ImageService
+@inject IImageClient ImageClient
 
 <TabPane Key="Image">
     <Tab>Images</Tab>
@@ -78,7 +79,7 @@
             var fileStream = new MemoryStream();
             await file.WriteToStreamAsync(fileStream);
             var inputFile = new StreamPart(new MemoryStream(fileStream.ToArray()), file.Name, file.Type);
-            var imageResponse = await ImageService.CreateImage(ProductId.ToString(), inputFile);
+            var imageResponse = await ImageClient.CreateImage(ProductId.ToString(), inputFile);
 
             if (imageResponse?.Image != null)
             {
@@ -97,7 +98,7 @@
     {
         try
         {
-            var response = await ImageService.GetImages(ProductId);
+            var response = await ImageClient.GetImages(ProductId);
             Images = response?.Images?.ToList() ?? new List<ImageDto>();
         }
         catch (Exception)
