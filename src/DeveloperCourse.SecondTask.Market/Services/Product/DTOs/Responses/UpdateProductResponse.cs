@@ -4,6 +4,6 @@ namespace DeveloperCourse.SecondTask.Market.Services.Product.DTOs.Responses
 {
     public class UpdateProductResponse
     {
-        public PriceDto Price { get; set; }
+        public ProductDto Product { get; set; }
     }
 }

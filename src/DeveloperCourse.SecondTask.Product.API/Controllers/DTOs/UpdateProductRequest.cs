@@ -14,24 +14,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers.DTOs
         [FromRoute(Name = "id")]
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Product name.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Product description.
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Product SKU.
-        /// </summary>
-        public string Sku { get; set; }
-
-        /// <summary>
-        /// Product weight.
-        /// </summary>
-        public string Weight { get; set; }
+        [FromBody]
+        public UpdateProductData Data { get; set; }
     }
 }

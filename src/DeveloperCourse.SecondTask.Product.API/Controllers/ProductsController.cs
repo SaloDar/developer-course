@@ -52,7 +52,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [ProducesResponseType(typeof(CreateProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<CreateProductResponse> CreateProduct([FromMultiSource] CreateProductRequest request)
+        public async Task<CreateProductResponse> CreateProduct([FromBody] CreateProductRequest request)
         {
             var result = await _productService.CreateProduct(request.Name, request.Description, request.Sku, request.Weight);
 
@@ -86,7 +86,8 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<UpdateProductResponse> UpdateProduct([FromMultiSource] UpdateProductRequest request)
         {
-            var result = await _productService.UpdateProduct(request.Id, request.Name, request.Description, request.Sku, request.Weight);
+            var result = await _productService.UpdateProduct(request.Id, request.Data.Name, request.Data.Description, 
+                request.Data.Sku, request.Data.Weight);
 
             return _mapper.Map<UpdateProductResponse>(result);
         }

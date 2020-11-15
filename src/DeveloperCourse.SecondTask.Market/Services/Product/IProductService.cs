@@ -8,7 +8,7 @@ namespace DeveloperCourse.SecondTask.Market.Services.Product
 {
     public interface IProductService
     {
-        [Get("/products")]
+        [Post("/products")]
         Task<CreateProductResponse> CreateProduct([Body] CreateProductRequest request);
 
         [Get("/products")]
