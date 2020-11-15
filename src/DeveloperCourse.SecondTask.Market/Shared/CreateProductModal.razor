@@ -1,0 +1,127 @@
+@using DeveloperCourse.SecondTask.Market.Pages
+@using DeveloperCourse.SecondTask.Market.Services.Product
+@using DeveloperCourse.SecondTask.Market.Services.Product.DTOs.Requests
+@inject IProductService ProductService
+
+<Modal Title="@("Create product")"
+       Visible="@IsVisible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+
+    <Form LabelCol="new ColLayoutParam { Span = 5 }" WrapperCol="new ColLayoutParam { Span = 16 }" Model="@_model">
+
+        <FormItem Label="Name">
+            <Input @bind-Value="@_model.Name"/>
+        </FormItem>
+
+        <FormItem Label="Description">
+            <TextArea @bind-Value="@_model.Description"/>
+        </FormItem>
+
+        <FormItem Label="SKU">
+            <Input @bind-Value="@_model.Sku"/>
+        </FormItem>
+
+        <FormItem Label="Weight">
+            <AntDesign.InputNumber Formatter="FormatWeight" Parser="ParseWeight" @bind-Value="@_model.Weight" Min="0"/>
+        </FormItem>
+    </Form>
+</Modal>
+
+@code {
+
+    #region Props
+
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    [Parameter]
+    public Products ProductsPage { get; set; }
+
+    public bool IsVisible { get; set; }
+
+    #endregion
+
+    #region Fields
+
+    private ProductModel _model = new ProductModel();
+
+    #endregion
+
+    #region Private Methods
+
+    private async void HandleOk(MouseEventArgs e)
+    {
+        IsVisible = false;
+        await CreateProduct(_model);
+        _model = new ProductModel();
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        _model = new ProductModel();
+        IsVisible = false;
+    }
+
+    private async Task CreateProduct(ProductModel model)
+    {
+        var request = new CreateProductRequest
+        {
+            Name = model?.Name, Description = model?.Description, Sku = model?.Sku, Weight = model?.Weight.ToString() + " g."
+        };
+
+        try
+        {
+            var response = await ProductService.CreateProduct(request);
+
+            if (response?.Product != null)
+            {
+                ProductsPage.ProductsCollection.Add(response.Product);
+
+                await OnChanged.InvokeAsync(null);
+            }
+        }
+        catch (Exception)
+        {
+    // ignored
+        }
+    }
+
+    private string FormatWeight(double value)
+    {
+        return value.ToString() + " g.";
+    }
+
+    private string ParseWeight(string value)
+    {
+        return value.Replace(" g.", string.Empty);
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public void Open()
+    {
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Models
+
+    public class ProductModel
+    {
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public string Sku { get; set; }
+
+        public double Weight { get; set; }
+    }
+
+    #endregion
+
+}
