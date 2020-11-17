@@ -24,6 +24,7 @@ namespace DeveloperCourse.SecondTask.Image.API
                     config.SetBasePath(Directory.GetCurrentDirectory());
                     config.AddJsonFile($"appsettings.json", false);
                     config.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true);
+                    config.AddEnvironmentVariables("DC_Image_");
                     config.AddCommandLine(args);
                 })
                 .ConfigureLogging((hostingContext, logging) =>

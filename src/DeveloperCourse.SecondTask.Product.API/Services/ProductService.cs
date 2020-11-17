@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondTask.Product.API.Clients;
-using DeveloperCourse.SecondTask.Product.API.Clients.DTOs;
 using DeveloperCourse.SecondTask.Product.API.DTOs;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DeveloperCourse.SecondTask.Product.API.Services
@@ -22,21 +22,21 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         private readonly IMapper _mapper;
 
-        private readonly IProductRepository _productRepository;
+        private readonly IProductContext _productContext;
 
         public ProductService(ILogger<ProductService> logger, IImageClient imageClient, IPriceClient priceClient,
-            IMapper mapper, IProductRepository productRepository)
+            IMapper mapper, IProductContext productContext)
         {
             _logger = logger;
             _imageClient = imageClient;
             _priceClient = priceClient;
             _mapper = mapper;
-            _productRepository = productRepository;
+            _productContext = productContext;
         }
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
         {
-            var products = await _productRepository.GetAll();
+            var products = await _productContext.Products.ToListAsync();
 
             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products).ToList();
 
@@ -44,15 +44,26 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             {
                 product.Images = await GetProductImages(product.Id);
 
-                product.Prices  = await GetProductPrices(product.Id);
+                product.Prices = await GetProductPrices(product.Id);
             }
 
             return productDtos;
         }
 
+        public async Task<ProductDto> CreateProduct(string name, string description, string sku, string weight)
+        {
+            var product = new Domain.Entities.Product(name, description, sku, weight);
+
+            await _productContext.Products.AddAsync(product);
+            
+            await _productContext.SaveChangesAsync();
+
+            return _mapper.Map<ProductDto>(product);
+        }
+
         public async Task<ProductDto> GetProduct(Guid productId)
         {
-            var product = await _productRepository.GetById(productId);
+            var product = await _productContext.Products.FirstOrDefaultAsync(x => x.Id == productId);
 
             if (product == null)
             {
@@ -63,9 +74,62 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
             productDto.Images = await GetProductImages(product.Id);
 
-            productDto.Prices  = await GetProductPrices(product.Id);
+            productDto.Prices = await GetProductPrices(product.Id);
 
             return productDto;
+        }
+
+        public async Task DeleteProduct(Guid id)
+        {
+            var product = await _productContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (product == null)
+            {
+                throw new Exception($"Product with id {id} was not found.");
+            }
+
+            _productContext.Products.Remove(product);
+
+            await _productContext.SaveChangesAsync();
+        }
+
+        public async Task<ProductDto> UpdateProduct(Guid id, string name, string description, string sku, string weight)
+        {
+            if (id == Guid.Empty)
+            {
+                throw new InvalidOperationException("Product id can't be empty");
+            }
+            
+            var product = await _productContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (product == null)
+            {
+                throw new Exception($"Product with id {id} was not found.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                product.ChangeName(name);
+            } 
+            
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                product.ChangeDescription(description);
+            } 
+            
+            if (!string.IsNullOrWhiteSpace(sku))
+            {
+                product.ChangeSKU(sku);
+            }
+            
+            if (!string.IsNullOrWhiteSpace(weight))
+            {
+                product.ChangeWeight(weight);
+            }
+
+            await _productContext.SaveChangesAsync();
+
+            return _mapper.Map<ProductDto>(product);
         }
 
         private async Task<List<PriceDto>> GetProductPrices(Guid productId)

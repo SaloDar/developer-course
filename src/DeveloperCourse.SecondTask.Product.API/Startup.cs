@@ -9,12 +9,12 @@ using DeveloperCourse.SecondTask.Product.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.API.Services;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
-using DeveloperCourse.SecondTask.Product.API.Infrastructure.Extensions;
-using DeveloperCourse.SecondTask.Product.DataAccess.Repositories;
+using DeveloperCourse.SecondTask.Product.DataAccess.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -50,9 +50,9 @@ namespace DeveloperCourse.SecondTask.Product.API
             services.AddOptions();
             services.AddMemoryCache();
             
-            services.AddProductDbOptions(Configuration);
-
-            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddDbContext<ProductContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Product")));
+            
+            services.AddScoped<IProductContext, ProductContext>();
 
             var refitSettings = new RefitSettings
             {

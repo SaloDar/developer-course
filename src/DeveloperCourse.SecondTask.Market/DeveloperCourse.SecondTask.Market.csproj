@@ -7,9 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AntDesign" Version="0.4.0-nightly-2011101445" />
+        <PackageReference Include="AntDesign" Version="0.4.1" />
         <PackageReference Include="BlazorStrap" Version="1.5.0-preview-01" />
-        <PackageReference Include="BlazorStrap.Extensions.BSDataTable" Version="1.5.0-preview-01" />
         <PackageReference Include="BlazorStrap.Extensions.SVGLoader" Version="1.5.0-preview-01" />
         <PackageReference Include="MatBlazor" Version="2.7.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.1" />

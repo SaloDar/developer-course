@@ -19,7 +19,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         private readonly IMapper _mapper;
 
         private readonly IProductService _productService;
-        
+
         public ProductsController(ILogger<ProductsController> logger, IMapper mapper, IProductService productService)
         {
             _logger = logger;
@@ -44,6 +44,22 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         }
 
         /// <summary>
+        /// Creates a product.
+        /// </summary>
+        /// <returns>A newly created product</returns>
+        /// <response code="200">Returns the newly created product</response>
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<CreateProductResponse> CreateProduct([FromBody] CreateProductRequest request)
+        {
+            var result = await _productService.CreateProduct(request.Name, request.Description, request.Sku, request.Weight);
+
+            return _mapper.Map<CreateProductResponse>(result);
+        }
+
+        /// <summary>
         /// Retrieves a specific product by unique id.
         /// </summary>
         /// <returns>Returns the product</returns>
@@ -57,6 +73,35 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
             var result = await _productService.GetProduct(request.Id);
 
             return _mapper.Map<GetProductResponse>(result);
+        }
+        
+        /// <summary>
+        /// Updated a specific product by unique id.
+        /// </summary>
+        /// <returns>Returns the updated product</returns>
+        /// <response code="200">Returns the updated product</response>
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(UpdateProductResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<UpdateProductResponse> UpdateProduct([FromMultiSource] UpdateProductRequest request)
+        {
+            var result = await _productService.UpdateProduct(request.Id, request.Data.Name, request.Data.Description, 
+                request.Data.Sku, request.Data.Weight);
+
+            return _mapper.Map<UpdateProductResponse>(result);
+        }
+        
+        /// <summary>
+        /// Deletes a specific product by unique id.
+        /// </summary>
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task DeleteProduct([FromMultiSource] DeleteProductRequest request)
+        {
+            await _productService.DeleteProduct(request.Id);
         }
     }
 }

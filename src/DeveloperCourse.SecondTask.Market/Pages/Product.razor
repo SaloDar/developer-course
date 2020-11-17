@@ -1,54 +1,69 @@
 @page "/product/{Id:guid}"
-@using Refit
-@using MatBlazor
-@using System.IO
-@using BlazorStrap.Extensions.BSDataTable
+@page "/product/{Id:guid}/{Tab}"
+@using AntDesign;
+@using AntDesign.JsInterop
+@using DeveloperCourse.SecondTask.Market.Clients.Image
+@using DeveloperCourse.SecondTask.Market.Clients.Image.DTOs
+@using DeveloperCourse.SecondTask.Market.Clients.Price
+@using DeveloperCourse.SecondTask.Market.Clients.Price.DTOs
+@using DeveloperCourse.SecondTask.Market.Clients.Product
+@using DeveloperCourse.SecondTask.Market.Clients.Product.DTOs
+@using Microsoft.JSInterop;
 @using DeveloperCourse.SecondTask.Market.Shared
-@using DeveloperCourse.SecondTask.Market.Services.Image
-@using DeveloperCourse.SecondTask.Market.Services.Product
-@using DeveloperCourse.SecondTask.Market.Services.Image.DTOs
-@using DeveloperCourse.SecondTask.Market.Services.Price.DTOs
-@using DeveloperCourse.SecondTask.Market.Services.Product.DTOs
-@inject IProductService ProductService
-@inject IImageService ImageService
+@inject IProductClient ProductClient
+@inject IImageClient ImageClient
+@inject IPriceClient PriceClient
+@inject IJSRuntime JS
+@inject DomEventService DomEventService
 
 <div>
-    <Tabs DefaultActiveKey="Product">
-        <TabPane Key="Product">
+    <Tabs DefaultActiveKey="@(Tab)">
+        <TabPane Key="Overview">
             <Tab>Overview</Tab>
             <ChildContent>
                 <BSContainer>
                     <BSRow>
                         <BSCol>
-                            <h2>@_product?.Name</h2>
+                            <h2>@OverviewedProduct?.Name</h2>
                         </BSCol>
                     </BSRow>
                     <BSRow>
                         <BSCol>
-                            <p style="font-size: small">SKU : @_product?.Sku</p>
+                            <p style="font-size: small">SKU : @OverviewedProduct?.Sku</p>
                         </BSCol>
                     </BSRow>
                     <BSRow>
                         <BSCol>
                             @if (IsImagesLoaded)
                             {
-                                <BSDataCarousel Items="@(_images ?? new List<ImageDto>())" HasControls="true" HasIndicators="true" Context="item">
-                                    <ItemTemplate>
-                                        <BSCarouselItem src="@item?.Link?.ToString()" style="height:386px; background-size:cover; background-position: center center;"/>
-                                    </ItemTemplate>
-                                </BSDataCarousel>
+                                <Spin Delay=500 size="large" Spinning="@(!CarouselIsLoaded)">
+                                    <Carousel>
+                                        @foreach (var image in Images ?? new List<ImageDto>())
+                                        {
+                                            <CarouselSlick>
+                                                <div style="background-image: url(@image?.Link?.ToString());height:386px; background-size:cover; background-position: center center;"></div>
+                                            </CarouselSlick>
+                                        }
+                                    </Carousel>
+                                </Spin>
                             }
                             else
                             {
                                 <img src="/icons/cloud.svg" style="height:386px; background-size:cover; background-position: center center; display: flex;margin: auto;"/>
                             }
                         </BSCol>
+                    </BSRow>
+                    <BSRow>
+                        <BSCol>
+                            <h4 style="margin: 10px 0 10px 0">Description</h4>
+                            <p style="font-size: medium">@OverviewedProduct?.Description</p>
+                        </BSCol>
                         <BSCol SM="3">
                             <h4 style="margin: 10px 0 10px 0">Prices</h4>
                             @if (IsPricesLoaded)
                             {
                                 <BSListGroup>
-                                    @foreach (var productPrice in (_prices ?? new List<PriceDto>()).Where(x=>x.IsLast))
+                                    @foreach (var productPrice in (Prices ?? new List<PriceDto>()).Where(x => x.IsLast))
                                     {
                                         <BSListGroupItem>@productPrice?.Retail @productPrice?.Currency.ToString() </BSListGroupItem>
                                     }
@@ -58,117 +73,95 @@
                             {
                                 <p style="font-size: medium">Prices is not available.</p>
                             }
-
-                            <h4 style="margin: 10px 0 10px 0">Description</h4>
-                            <p style="font-size: medium">@_product?.Description</p>
                         </BSCol>
                     </BSRow>
                 </BSContainer>
             </ChildContent>
         </TabPane>
-        <TabPane Key="Image">
-            <Tab>Images</Tab>
-            <ChildContent>
-                <AntList DataSource="@(_images ?? new List<ImageDto>())" ItemLayout="@(ListItemLayout.Horizontal)">
-                    <ChildContent Context="item">
-                        <Skeleton Loading="@(!IsImagesLoaded)" Active Avatar AvatarShape="square">
-                            <ListItem>
-                                <ListItemMeta Description="@(item?.Link?.ToString())">
-                                    <AvatarTemplate>
-                                        @if (item?.Link != null)
-                                        {
-                                            @_avatarLink(item.Link)
-                                        }
-                                        else
-                                        {
-                                            @_avatarStandard
-                                        }
-                                    </AvatarTemplate>
-                                    <TitleTemplate>
-                                        @item.Id
-                                    </TitleTemplate>
-                                </ListItemMeta>
-                            </ListItem>
-                        </Skeleton>
-                    </ChildContent>
-                    <Footer>
-                        <FileUpload Style="height: 5px;" OnChange="@FilesReady" Label="Add new image"></FileUpload>
-                    </Footer>
-                </AntList>
-            </ChildContent>
-        </TabPane>
-        <TabPane Key="Price">
-            <Tab>Prices</Tab>
-            <ChildContent>
-                <AntList DataSource="@((_prices ?? new List<PriceDto>()).OrderByDescending(x => x.IsLast))" ItemLayout="@(ListItemLayout.Horizontal)">
-                    <ChildContent Context="item">
-                        <Skeleton Loading="@(!IsPricesLoaded)">
-                            <ListItem>
-                                <ListItemMeta Description="@(item.Id.ToString())">
-                                    <TitleTemplate>
-                                        @if (item.IsLast)
-                                        {
-                                            <Text>
-                                                @($"{item.Retail} {item.Currency.ToString()}")
-                                            </Text>
-                                        }
-                                        else
-                                        {
-                                            <TypographyBase style="color: rgba(0,0,0,.45);">
-                                                @($"{item.Retail} {item.Currency.ToString()}")
-                                            </TypographyBase>
-                                        }
-                                    </TitleTemplate>
-                                </ListItemMeta>
-                            </ListItem>
-                        </Skeleton>
-                    </ChildContent>
-                </AntList>
-            </ChildContent>
-        </TabPane>
+        <ImageTab ProductId="@(Id)" ProductPage="@(this)" OnChanged="@(StateHasChanged)"/>
+        <PriceTab ProductId="@(Id)" ProductPage="@(this)" OnChanged="@(StateHasChanged)"/>
     </Tabs>
 </div>
 
+<style>
+    
+    .ant-spin-blur {
+        opacity: .01 !important;
+    }
+    
+    .ant-carousel .slick-slide {
+        background: #dcdde1;
+    }
+
+</style>
+
 @code {
+
+    #region Props
 
     [Parameter]
     public Guid Id { get; set; }
-    
-    public bool IsImagesLoaded => _images?.Any() ?? false;
 
-    public bool IsPricesLoaded => _prices?.Any() ?? false;
+    [Parameter]
+    public string Tab
+    {
+        get => _tab;
+        set
+        {
+            _tab = (value ?? string.Empty).ToLowerInvariant() switch
+            {
+                "price" => "Price",
+                "prices" => "Price",
+                "image" => "Image",
+                "images" => "Image",
+                _ => "Overview"
+                };
+        }
+    }
 
-    private ProductDto _product;
+    public bool IsImagesLoaded => Images?.Any() ?? false;
 
-    private ICollection<ImageDto> _images;
+    public bool IsPricesLoaded => Prices?.Any() ?? false;
 
-    private ICollection<PriceDto> _prices;
+    public ProductDto OverviewedProduct;
 
-    private readonly RenderFragment<Uri> _avatarLink = context => @<Avatar Shape="square" Size="64" Src="@(context.ToString())"></Avatar>;
+    public ICollection<ImageDto> Images = new List<ImageDto>();
 
-    private readonly RenderFragment _avatarStandard = @<Avatar Shape="square" Size="64" Icon="loading"></Avatar>;
+    public ICollection<PriceDto> Prices = new List<PriceDto>();
+
+    public bool CarouselIsLoaded { get; set; }
+
+    #endregion
+
+    #region Fields
+
+    private string _tab;
+
+    #endregion
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender)
+        {
+            DomEventService.AddEventListener("window", "resize", s => OnCarouselLoaded(), false);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await UpdateData();
+
+        await JS.InvokeVoidAsync("fakeResize");
     }
 
-    private async Task FilesReady(IMatFileUploadEntry[] files)
+    private void OnCarouselLoaded()
     {
-        var file = files.FirstOrDefault();
-
-        if (file != null)
+        if (!CarouselIsLoaded)
         {
-            var fileStream = new MemoryStream();
-            await file.WriteToStreamAsync(fileStream);
-            var inputFile = new StreamPart(new MemoryStream(fileStream.ToArray()), file.Name, file.Type);
-            var imageResponse = await ImageService.CreateImage(Id.ToString(), inputFile);
-
-            if (imageResponse?.Image != null)
-            {
-                _images.Add(imageResponse.Image);
-                StateHasChanged();
-            }
+            CarouselIsLoaded = true;
+            StateHasChanged();
         }
     }
 
@@ -176,17 +169,17 @@
     {
         try
         {
-            var response = await ProductService.GetProduct(Id);
+            var response = await ProductClient.GetProduct(Id);
 
-            _product = response.Product;
-            _images = _product?.Images?.ToList() ?? new List<ImageDto>();
-            _prices = _product?.Prices?.ToList() ?? new List<PriceDto>();
+            OverviewedProduct = response.Product;
+            Images = OverviewedProduct?.Images?.ToList() ?? new List<ImageDto>();
+            Prices = OverviewedProduct?.Prices?.ToList() ?? new List<PriceDto>();
         }
         catch (Exception)
         {
-            _product = null;
-            _images = null;
-            _prices = null;
+            OverviewedProduct = null;
+            Images = new List<ImageDto>();
+            Prices = new List<PriceDto>();
         }
     }
 

@@ -15,6 +15,12 @@ namespace DeveloperCourse.SecondTask.Product.API.Infrastructure.Mappings
                 .ForMember(x => x.Products, x => x.MapFrom(t => t));
 
             CreateMap<ProductDto, GetProductResponse>()
+                .ForMember(x => x.Product, x => x.MapFrom(t => t));  
+            
+            CreateMap<ProductDto, CreateProductResponse>()
+                .ForMember(x => x.Product, x => x.MapFrom(t => t)); 
+            
+            CreateMap<ProductDto, UpdateProductResponse>()
                 .ForMember(x => x.Product, x => x.MapFrom(t => t));
         }
     }

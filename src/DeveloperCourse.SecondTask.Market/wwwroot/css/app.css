@@ -181,3 +181,7 @@ app {
         display: block;
     }
 }
+
+button:focus {
+    outline: 0 !important;
+}

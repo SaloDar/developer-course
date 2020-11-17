@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,11 +10,11 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
 {
     /// <example>
     /// Create Migration :
-    /// dotnet ef migrations add 'MIGRATION_NAME' -p DeveloperCourse.SecondTask.Image.API -v
+    /// dotnet ef migrations add 'MIGRATION_NAME' -p DeveloperCourse.SecondTask.Image.DataAccess -s DeveloperCourse.SecondTask.Image.API -v
     /// Remove migration, and revert the migration if it has been applied to the database :
-    /// dotnet ef migrations remove -p DeveloperCourse.SecondTask.Image.API -v -f
+    /// dotnet ef migrations remove -p DeveloperCourse.SecondTask.Image.DataAccess -s DeveloperCourse.SecondTask.Image.API -v -f
     /// Update Database :
-    /// dotnet ef database update -p  DeveloperCourse.SecondTask.Image.API -v
+    /// dotnet ef database update -p DeveloperCourse.SecondTask.Image.DataAccess -s DeveloperCourse.SecondTask.Image.API -v
     /// </example>
     public class ImageContext : DbContext, IImageContext
     {
@@ -89,6 +90,11 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
                 {
                     entry.State = EntityState.Modified;
                     entry.Entity.Deleted();
+                }
+                
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.Changed();
                 }
             }
         }
