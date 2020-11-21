@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -60,6 +61,9 @@ namespace DeveloperCourse.SecondTask.Identity.API
                 opt.UseSqlServer(Configuration.GetConnectionString("Identity")));
 
             services.AddIdentity<User, Role>()
+                .AddUserStore<UserStore<User, Role, IdentityContext, Guid, IdentityUserClaim<Guid>, RoleUser,
+                    IdentityUserLogin<Guid>, IdentityUserToken<Guid>, IdentityRoleClaim<Guid>>>()
+                .AddRoleStore<RoleStore<Role, IdentityContext, Guid, RoleUser, IdentityRoleClaim<Guid>>>()
                 .AddEntityFrameworkStores<IdentityContext>()
                 .AddDefaultTokenProviders();
 

@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using DeveloperCourse.SecondTask.Identity.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,8 @@ namespace DeveloperCourse.SecondTask.Identity.DataAccess.Context
     /// Update Database :
     /// dotnet ef database update -p DeveloperCourse.SecondTask.Identity.DataAccess -s DeveloperCourse.SecondTask.Identity.API -v
     /// </example>
-    public class IdentityContext : IdentityDbContext<User, Role, Guid>
+    public class IdentityContext : IdentityDbContext<User, Role, Guid, IdentityUserClaim<Guid>, RoleUser,
+        IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
     {
         #region Constructors
 

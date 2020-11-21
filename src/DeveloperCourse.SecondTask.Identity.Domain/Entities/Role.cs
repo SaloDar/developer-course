@@ -6,6 +6,17 @@ namespace DeveloperCourse.SecondTask.Identity.Domain.Entities
 {
     public class Role : IdentityRole<Guid>
     {
+        #region Props
+
+        /// <summary>
+        /// Role value.
+        /// </summary>
+        public UserRole Value { get; protected set; }
+
+        #endregion
+
+        #region Constructors
+
         protected Role()
         {
         }
@@ -14,6 +25,9 @@ namespace DeveloperCourse.SecondTask.Identity.Domain.Entities
         {
             Id = Guid.NewGuid();
             Name = role.ToString();
+            Value = role;
         }
+
+        #endregion
     }
 }
