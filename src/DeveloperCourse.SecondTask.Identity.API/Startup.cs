@@ -86,7 +86,7 @@ namespace DeveloperCourse.SecondTask.Identity.API
                         ValidateLifetime = true,
                         ClockSkew = TimeSpan.Zero,
                         RequireExpirationTime = true,
-                        TokenDecryptionKey = new SymmetricSecurityKey(securityConfig.EncryptionKeyBytes),
+                        TokenDecryptionKey = new SymmetricSecurityKey(securityConfig.EncryptionKeyBytes)
                     };
                 });
 

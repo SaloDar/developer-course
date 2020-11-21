@@ -1,15 +1,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Infrastructure.Attributes;
 using DeveloperCourse.SecondTask.Price.API.Controllers.DTOs;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace DeveloperCourse.SecondTask.Price.API.Controllers
 {
+    [Authorize(Roles = nameof(UserRole.Administrator))]
     [ApiController]
     [Route("api/[controller]")]
     public class PricesController : ControllerBase
@@ -32,6 +35,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
         /// </summary>
         /// <returns>Returns prices</returns>
         /// <response code="200">Returns prices</response>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(typeof(GetPricesResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
@@ -48,6 +52,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
         /// </summary>
         /// <returns>Returns the price</returns>
         /// <response code="200">Returns the price</response>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetPriceResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
@@ -67,6 +72,8 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CreatePriceResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<CreatePriceResponse> CreatePrice(CreatePriceRequest request)
         {
@@ -83,6 +90,8 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(UpdatePriceResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<UpdatePriceResponse> UpdatePrice([FromMultiSource] UpdatePriceRequest request)
         {
@@ -98,6 +107,8 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task DeletePrice([FromMultiSource] DeletePriceRequest request)
         {

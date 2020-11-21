@@ -10,6 +10,7 @@ using DeveloperCourse.SecondTask.Price.API.Services;
 using DeveloperCourse.SecondTask.Price.DataAccess.Repositories;
 using DeveloperCourse.SecondTask.Price.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Price.API.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -41,6 +43,8 @@ namespace DeveloperCourse.SecondTask.Price.API
 
             services.Configure<WebApiConfig>(Configuration.GetSection("WebApi"));
 
+            var securityConfig = Configuration.GetSection("Security").Get<SecurityConfig>();
+
             #endregion
 
             services.AddAutoMapper(typeof(Startup));
@@ -49,6 +53,33 @@ namespace DeveloperCourse.SecondTask.Price.API
             services.AddMemoryCache();
             
             services.AddPriceDbOptions(Configuration);
+            
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.RefreshOnIssuerKeyNotFound = true;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidateAudience = true,
+                        ValidIssuer = securityConfig.Issuer,
+                        ValidAudiences = securityConfig.Audiences,
+                        IssuerSigningKey = new SymmetricSecurityKey(securityConfig.SigningKeyBytes),
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                        RequireExpirationTime = true,
+                        TokenDecryptionKey = new SymmetricSecurityKey(securityConfig.EncryptionKeyBytes)
+                    };
+                });
             
             services.AddScoped<IPriceRepository, PriceRepository>();
 
@@ -111,6 +142,29 @@ namespace DeveloperCourse.SecondTask.Price.API
                     Title = webApiConfig.ServiceName, Version = "v1"
                 });
 
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert only JWT",
+                    Name = "JWT Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme, Type = ReferenceType.SecurityScheme
+                    }
+                };
+
+                swagger.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        securityScheme, Array.Empty<string>()
+                    }
+                });
+                
                 swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
                     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 
@@ -145,6 +199,7 @@ namespace DeveloperCourse.SecondTask.Price.API
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<ApiErrorHandlingMiddleware>();

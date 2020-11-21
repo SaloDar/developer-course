@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Image.API.Controllers.DTOs;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
 using DeveloperCourse.SecondTask.Infrastructure.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace DeveloperCourse.SecondTask.Image.API.Controllers
 {
+    [Authorize(Roles = nameof(UserRole.Administrator))]
     [ApiController]
     [Route("api/[controller]")]
     public class ImagesController : ControllerBase
@@ -32,6 +35,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         /// </summary>
         /// <returns>Returns images</returns>
         /// <response code="200">Returns images</response>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(typeof(GetImagesResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
@@ -42,7 +46,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
 
             return _mapper.Map<GetImagesResponse>(result);
         }
-        
+
         /// <summary>
         /// Creates a image.
         /// </summary>
@@ -51,6 +55,8 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CreateImageResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<CreateImageResponse> CreateImage([FromMultiSource] CreateImageRequest request)
         {
@@ -64,6 +70,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         /// </summary>
         /// <returns>Returns the image</returns>
         /// <response code="200">Returns the image</response>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetImageResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
@@ -83,6 +90,8 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(UpdateImageResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<UpdateImageResponse> UpdateImage([FromMultiSource] UpdateImageRequest request)
         {
@@ -90,13 +99,15 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
 
             return _mapper.Map<UpdateImageResponse>(result);
         }
-        
+
         /// <summary>
         /// Deletes a specific image by unique id.
         /// </summary>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task DeleteImage([FromMultiSource] DeleteImageRequest request)
         {

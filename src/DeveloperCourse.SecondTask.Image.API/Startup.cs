@@ -11,6 +11,7 @@ using DeveloperCourse.SecondTask.Image.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
 using DeveloperCourse.SecondTask.Image.API.Services;
 using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -43,6 +45,8 @@ namespace DeveloperCourse.SecondTask.Image.API
             var webApiConfig = Configuration.GetSection("WebApi").Get<WebApiConfig>();
 
             var yandexDiskConfig = Configuration.GetSection("YandexDisk").Get<YandexDiskConfig>();
+            
+            var securityConfig = Configuration.GetSection("Security").Get<SecurityConfig>();
 
             services.Configure<WebApiConfig>(Configuration.GetSection("WebApi"));
 
@@ -58,6 +62,33 @@ namespace DeveloperCourse.SecondTask.Image.API
             services.AddDbContext<ImageContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Image")));
 
             services.AddScoped<IImageContext, ImageContext>();
+            
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.RefreshOnIssuerKeyNotFound = true;
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidateAudience = true,
+                        ValidIssuer = securityConfig.Issuer,
+                        ValidAudiences = securityConfig.Audiences,
+                        IssuerSigningKey = new SymmetricSecurityKey(securityConfig.SigningKeyBytes),
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                        RequireExpirationTime = true,
+                        TokenDecryptionKey = new SymmetricSecurityKey(securityConfig.EncryptionKeyBytes)
+                    };
+                });
 
             var refitSettings = new RefitSettings
             {
@@ -137,6 +168,29 @@ namespace DeveloperCourse.SecondTask.Image.API
                 {
                     Title = webApiConfig.ServiceName, Version = "v1"
                 });
+                
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert only JWT",
+                    Name = "JWT Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme, Type = ReferenceType.SecurityScheme
+                    }
+                };
+
+                swagger.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        securityScheme, Array.Empty<string>()
+                    }
+                });
 
                 swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
                     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
@@ -172,6 +226,7 @@ namespace DeveloperCourse.SecondTask.Image.API
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<ApiErrorHandlingMiddleware>();
