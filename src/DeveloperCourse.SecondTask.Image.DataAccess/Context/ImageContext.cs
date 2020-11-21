@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DeveloperCourse.SecondLesson.Domain.Entities;
 using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
+using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
@@ -18,6 +19,12 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
     /// </example>
     public class ImageContext : DbContext, IImageContext
     {
+        #region Fields
+
+        private readonly IUserContext _userContext;
+
+        #endregion
+
         #region Entities
 
         public DbSet<Domain.Entities.Image> Images { get; set; }
@@ -26,8 +33,9 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
 
         #region Constructors
 
-        public ImageContext(DbContextOptions<ImageContext> options) : base(options)
+        public ImageContext(DbContextOptions<ImageContext> options, IUserContext userContext) : base(options)
         {
+            _userContext = userContext;
         }
 
         #endregion
@@ -94,7 +102,7 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Context
                 
                 if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.Changed();
+                    entry.Entity.Changed(_userContext?.Identity?.UserId ?? Guid.Empty);
                 }
             }
         }

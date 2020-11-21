@@ -12,6 +12,7 @@ namespace DeveloperCourse.SecondTask.Image.DataAccess.Configurations
             builder.Property(c => c.Id).HasColumnName("id").HasColumnType("uniqueidentifier");
             builder.Property(c => c.CreatedDate).HasColumnName("created_date");
             builder.Property(c => c.CreatedBy).HasColumnName("created_by").HasColumnType("uniqueidentifier");
+            builder.Property(c => c.LastSavedBy).HasColumnName("last_saved_by").HasColumnType("uniqueidentifier");
             builder.Property(c => c.LastSavedDate).HasColumnName("last_saved_date");
             builder.Property(c => c.IsDeleted).HasColumnName("is_deleted");
             builder.Property(c => c.ProductId).HasColumnName("product_id").HasColumnType("uniqueidentifier");

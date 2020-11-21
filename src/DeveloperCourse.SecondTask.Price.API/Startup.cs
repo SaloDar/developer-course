@@ -82,8 +82,8 @@ namespace DeveloperCourse.SecondTask.Price.API
                     };
                 });
 
-            services.AddScoped<IPriceRepository, PriceRepository>();
             services.AddScoped<IUserContext, UserContext>();
+            services.AddScoped<IPriceRepository, PriceRepository>();
             services.AddTransient<IPriceService, PriceService>();
 
             services.AddTransient<ApiErrorHandlingMiddleware>();
