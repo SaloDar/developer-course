@@ -19,7 +19,7 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 
         protected List<string> IgnoredFieldsWhenUpdate => new List<string>
         {
-            "Id", "CreatedDate", "IsDeleted"
+            "Id", "CreatedDate", "CreatedBy", "IsDeleted"
         };
         
         private readonly DbOptions _dbOptions;

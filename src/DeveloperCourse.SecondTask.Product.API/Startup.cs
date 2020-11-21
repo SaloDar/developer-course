@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using AutoMapper;
+using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Product.API.Clients;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Middlewares;
@@ -109,10 +110,11 @@ namespace DeveloperCourse.SecondTask.Product.API
                     c.BaseAddress = webApiConfig.Routes.ImageApi;
                 });
 
-            services.AddTransient<ApiErrorHandlingMiddleware>();
-
+            services.AddScoped<IUserContext, UserContext>();
             services.AddTransient<IProductService, ProductService>();
             
+            services.AddTransient<ApiErrorHandlingMiddleware>();
+
             services.AddCors(options =>
                 options.AddDefaultPolicy(x =>
                     x.SetIsOriginAllowed(url => true)

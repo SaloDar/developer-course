@@ -11,6 +11,7 @@ using DeveloperCourse.SecondTask.Image.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
 using DeveloperCourse.SecondTask.Image.API.Services;
 using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
+using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -108,7 +109,8 @@ namespace DeveloperCourse.SecondTask.Image.API
                     c.BaseAddress = yandexDiskConfig.BaseUrl;
                     c.DefaultRequestHeaders.Authorization = yandexDiskConfig.AuthenticationHeader;
                 });
-
+            
+            services.AddScoped<IUserContext, UserContext>();
             services.AddTransient<IDataStorageService, YandexDiskService>();
             services.AddTransient<IImageService, ImageService>();
 

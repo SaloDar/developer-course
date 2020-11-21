@@ -41,7 +41,7 @@ namespace DeveloperCourse.SecondTask.Price.Domain.Entities
         {
         }
 
-        public Price(Guid productId, decimal retail, decimal cost, Currency currency)
+        public Price(Guid productId, decimal retail, decimal cost, Currency currency, Guid userId) : base(userId)
         {
             Id = Guid.NewGuid();
             ProductId = productId;

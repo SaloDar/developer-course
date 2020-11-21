@@ -22,6 +22,11 @@ namespace DeveloperCourse.SecondLesson.Domain.Entities
         public DateTime LastSavedDate { get; protected set; }
 
         /// <summary>
+        /// Created by user identifier.
+        /// </summary>
+        public Guid CreatedBy { get; protected set; }
+
+        /// <summary>
         /// Is the entity removed.
         /// </summary>
         public bool IsDeleted { get; protected set; }
@@ -30,11 +35,16 @@ namespace DeveloperCourse.SecondLesson.Domain.Entities
 
         #region Constructors
 
-        public BaseEntity()
+        protected BaseEntity()
+        {
+        }
+
+        public BaseEntity(Guid createdBy)
         {
             Id = Guid.NewGuid();
             CreatedDate = DateTime.UtcNow;
             LastSavedDate = DateTime.UtcNow;
+            CreatedBy = createdBy;
             IsDeleted = false;
         }
 

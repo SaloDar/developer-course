@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Price.API.DTOs;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
 using DeveloperCourse.SecondTask.Price.Domain.Interfaces;
@@ -16,10 +17,13 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
         private readonly IPriceRepository _priceRepository;
 
-        public PriceService(IMapper mapper, IPriceRepository priceRepository)
+        private readonly IUserContext _userContext;
+
+        public PriceService(IMapper mapper, IPriceRepository priceRepository, IUserContext userContext)
         {
             _mapper = mapper;
             _priceRepository = priceRepository;
+            _userContext = userContext;
         }
 
         public async Task<PriceDto> GetPrice(Guid id)
@@ -110,12 +114,19 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
             return _mapper.Map<IEnumerable<PriceDto>>(prices).ToList();
         }
 
-        public async Task<PriceDto> CreatePrice(Guid productId, decimal retailPrice, decimal costPrice, Currency currency)
+        public async Task<PriceDto> CreatePrice(Guid productId, decimal retailPrice, decimal costPrice,
+            Currency currency)
         {
+            if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
+                _userContext.Identity.UserId == Guid.Empty)
+            {
+                throw new Exception("Is not authenticated.");
+            }
+
             await _priceRepository.UpdateIsLastByProduct(productId, currency);
 
-            var newPrice =
-                await _priceRepository.Create(new Domain.Entities.Price(productId, retailPrice, costPrice, currency));
+            var newPrice = await _priceRepository.Create(new Domain.Entities.Price(productId, retailPrice, costPrice,
+                currency, _userContext.Identity.UserId));
 
             return _mapper.Map<PriceDto>(newPrice);
         }

@@ -25,7 +25,7 @@ namespace DeveloperCourse.SecondTask.Image.Domain.Entities
         {
         }
 
-        public Image(Guid productId, Uri link)
+        public Image(Guid productId, Uri link, Guid userId) : base(userId)
         {
             ProductId = productId;
             Link = link.ToString();

@@ -12,6 +12,7 @@ using DeveloperCourse.SecondTask.Image.API.DTOs;
 using DeveloperCourse.SecondTask.Image.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
 using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
+using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -29,13 +30,16 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         private readonly IDataStorageService _dataStorageService;
 
+        private readonly IUserContext _userContext;
+
         public ImageService(ILogger<ImageService> logger, IMapper mapper, IImageContext imageContext,
-            IDataStorageService dataStorageService)
+            IDataStorageService dataStorageService, IUserContext userContext)
         {
             _logger = logger;
             _mapper = mapper;
             _imageContext = imageContext;
             _dataStorageService = dataStorageService;
+            _userContext = userContext;
         }
 
         public async Task<ImageDto> UpdateImage(Guid id, Guid? productId = null, IFormFile image = null)
@@ -87,6 +91,12 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         public async Task<ImageDto> CreateImage(Guid productId, IFormFile image)
         {
+            if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
+                _userContext.Identity.UserId == Guid.Empty)
+            {
+                throw new Exception("Is not authenticated.");
+            }
+
             if (productId == Guid.Empty)
             {
                 throw new InvalidOperationException("Product id can't be empty");
@@ -94,7 +104,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             var uploadedLink = await UploadImage(image);
 
-            var productImage = new Domain.Entities.Image(productId, uploadedLink);
+            var productImage = new Domain.Entities.Image(productId, uploadedLink, _userContext.Identity.UserId);
 
             await _imageContext.Images.AddAsync(productImage);
 

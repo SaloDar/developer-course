@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using AutoMapper;
+using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Price.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Price.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
@@ -51,9 +52,9 @@ namespace DeveloperCourse.SecondTask.Price.API
 
             services.AddOptions();
             services.AddMemoryCache();
-            
+
             services.AddPriceDbOptions(Configuration);
-            
+
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -80,9 +81,9 @@ namespace DeveloperCourse.SecondTask.Price.API
                         TokenDecryptionKey = new SymmetricSecurityKey(securityConfig.EncryptionKeyBytes)
                     };
                 });
-            
-            services.AddScoped<IPriceRepository, PriceRepository>();
 
+            services.AddScoped<IPriceRepository, PriceRepository>();
+            services.AddScoped<IUserContext, UserContext>();
             services.AddTransient<IPriceService, PriceService>();
 
             services.AddTransient<ApiErrorHandlingMiddleware>();
@@ -164,7 +165,7 @@ namespace DeveloperCourse.SecondTask.Price.API
                         securityScheme, Array.Empty<string>()
                     }
                 });
-                
+
                 swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
                     $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 

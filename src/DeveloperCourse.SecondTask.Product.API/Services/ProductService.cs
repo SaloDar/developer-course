@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Product.API.Clients;
 using DeveloperCourse.SecondTask.Product.API.DTOs;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
@@ -24,14 +25,17 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         private readonly IProductContext _productContext;
 
+        private readonly IUserContext _userContext;
+
         public ProductService(ILogger<ProductService> logger, IImageClient imageClient, IPriceClient priceClient,
-            IMapper mapper, IProductContext productContext)
+            IMapper mapper, IProductContext productContext, IUserContext userContext)
         {
             _logger = logger;
             _imageClient = imageClient;
             _priceClient = priceClient;
             _mapper = mapper;
             _productContext = productContext;
+            _userContext = userContext;
         }
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
@@ -52,10 +56,16 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         public async Task<ProductDto> CreateProduct(string name, string description, string sku, string weight)
         {
-            var product = new Domain.Entities.Product(name, description, sku, weight);
+            if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
+                _userContext.Identity.UserId == Guid.Empty)
+            {
+                throw new Exception("Is not authenticated.");
+            }
+
+            var product = new Domain.Entities.Product(name, description, sku, weight, _userContext.Identity.UserId);
 
             await _productContext.Products.AddAsync(product);
-            
+
             await _productContext.SaveChangesAsync();
 
             return _mapper.Map<ProductDto>(product);
@@ -99,7 +109,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             {
                 throw new InvalidOperationException("Product id can't be empty");
             }
-            
+
             var product = await _productContext.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if (product == null)
@@ -110,18 +120,18 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             if (!string.IsNullOrWhiteSpace(name))
             {
                 product.ChangeName(name);
-            } 
-            
+            }
+
             if (!string.IsNullOrWhiteSpace(description))
             {
                 product.ChangeDescription(description);
-            } 
-            
+            }
+
             if (!string.IsNullOrWhiteSpace(sku))
             {
                 product.ChangeSKU(sku);
             }
-            
+
             if (!string.IsNullOrWhiteSpace(weight))
             {
                 product.ChangeWeight(weight);

@@ -1,3 +1,4 @@
+using System;
 using DeveloperCourse.SecondLesson.Domain.Entities;
 
 namespace DeveloperCourse.SecondTask.Product.Domain.Entities
@@ -34,7 +35,7 @@ namespace DeveloperCourse.SecondTask.Product.Domain.Entities
         {
         }
 
-        public Product(string name, string description, string sku, string weight)
+        public Product(string name, string description, string sku, string weight, Guid userId) : base(userId)
         {
             Name = name;
             Description = description;
