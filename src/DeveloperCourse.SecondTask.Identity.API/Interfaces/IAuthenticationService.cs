@@ -14,7 +14,7 @@ namespace DeveloperCourse.SecondTask.Identity.API.Interfaces
         Task<UserDto> Register(string username, string password);
 
         /// <summary>
-        /// Returns access token when <param name="username"></param> and <param name="password"></param> is valid.
+        /// Returns access token when <paramref name="username"></paramref> and <paramref name="password"></paramref> is valid.
         /// </summary>
         /// <param name="username">User username.</param>
         /// <param name="password">User password.</param>
