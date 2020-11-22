@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Infrastructure.Repositories;
 using DeveloperCourse.SecondTask.Price.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Price.DataAccess.Configs;
 using Microsoft.Extensions.Options;
-using Money;
 
 namespace DeveloperCourse.SecondTask.Price.DataAccess.Repositories
 {

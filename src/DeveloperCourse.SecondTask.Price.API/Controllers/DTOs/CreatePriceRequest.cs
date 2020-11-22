@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Money;
+using DeveloperCourse.SecondLesson.Domain.Types;
 
 namespace DeveloperCourse.SecondTask.Price.API.Controllers.DTOs
 {

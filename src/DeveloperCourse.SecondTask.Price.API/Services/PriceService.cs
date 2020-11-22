@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Price.API.DTOs;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
 using DeveloperCourse.SecondTask.Price.Domain.Interfaces;
-using Money;
 
 namespace DeveloperCourse.SecondTask.Price.API.Services
 {

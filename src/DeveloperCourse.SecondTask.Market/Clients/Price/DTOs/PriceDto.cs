@@ -1,5 +1,5 @@
 using System;
-using Money;
+using DeveloperCourse.SecondLesson.Domain.Types;
 
 namespace DeveloperCourse.SecondTask.Market.Clients.Price.DTOs
 {

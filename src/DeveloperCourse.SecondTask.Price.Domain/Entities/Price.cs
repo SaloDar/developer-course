@@ -1,6 +1,6 @@
 using System;
 using DeveloperCourse.SecondLesson.Domain.Entities;
-using Money;
+using DeveloperCourse.SecondLesson.Domain.Types;
 
 namespace DeveloperCourse.SecondTask.Price.Domain.Entities
 {
