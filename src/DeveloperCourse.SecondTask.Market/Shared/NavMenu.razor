@@ -28,6 +28,8 @@
 
 @code {
 
+    #region Fields
+
     private bool _collapseNavMenu = true;
 
     private bool _userLoaded = false;
@@ -36,16 +38,20 @@
 
     private string NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
 
+    #endregion
+
+    #region Private Methods
+
     private void ToggleNavMenu()
     {
         _collapseNavMenu = !_collapseNavMenu;
     }
 
-    protected override async Task OnInitializedAsync()
+    private async void Logout(MouseEventArgs e)
     {
-        await base.OnInitializedAsync();
-
+        await AuthService.Logout();
         await ShowUser();
+        StateHasChanged();
     }
 
     private async Task ShowUser()
@@ -54,13 +60,22 @@
 
         if (user != null)
         {
-            _authFragment = @<span class="navbar-brand" style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
-                                <Icon Type="user" Theme="outline"/>
-                                <div style="flex-basis: 100%; height: 0;"></div>
-                                @user.Username
-                                <div style="flex-basis: 100%; height: 0;"></div>
-                                <Text Keyboard>@user.Roles.FirstOrDefault().ToString()</Text>
-                            </span>;
+            _authFragment = @<div style="display: flex;">
+                                <div style="display: inline-flex; justify-content: center; align-content: center; align-items: center; align-self: center;">
+                                    <span class="navbar-brand" style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
+                                        <Icon Type="user" Theme="outline"/>
+                                        <div style="flex-basis: 100%; height: 0;"></div>
+                                        @user.Username
+                                        <div style="flex-basis: 100%; height: 0;"></div>
+                                        <Text Keyboard>@user.Roles.FirstOrDefault().ToString()</Text>
+                                    </span>
+                                </div>
+                                <div style="display: inline-flex;">
+                                    <div style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
+                                        <span @onclick="Logout" style="color: white;" class="oi oi-account-logout"></span>
+                                    </div>
+                                </div>
+                            </div>;
         }
         else
         {
@@ -73,5 +88,18 @@
 
         StateHasChanged();
     }
+
+    #endregion
+
+    #region Ovveriden Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await ShowUser();
+    }
+
+    #endregion
 
 }
