@@ -8,7 +8,7 @@ namespace DeveloperCourse.SecondLesson.Common.Web.Extensions
 {
     public static class ResponseExtensions
     {
-        public static IServiceCollection AddCompression(this IServiceCollection services, ICollection<string> mimeTypes)
+        public static IServiceCollection AddCompression(this IServiceCollection services, params string[] mimeTypes)
         {
             services.Configure<BrotliCompressionProviderOptions>(options =>
             {

@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Common.Web.Extensions;
 using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Product.API.Clients;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Configs;
@@ -121,32 +122,8 @@ namespace DeveloperCourse.SecondTask.Product.API
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials()));
-
-            #region Compression
-
-            services.Configure<BrotliCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Optimal;
-            });
-
-            services.Configure<GzipCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Optimal;
-            });
-
-            services.AddResponseCompression(options =>
-            {
-                options.Providers.Add<BrotliCompressionProvider>();
-                options.Providers.Add<GzipCompressionProvider>();
-                options.EnableForHttps = true;
-
-                options.MimeTypes = new[]
-                {
-                    "text/plain", "text/json", "application/json"
-                };
-            });
-
-            #endregion
+            
+            services.AddCompression();
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
@@ -232,12 +209,12 @@ namespace DeveloperCourse.SecondTask.Product.API
 
             app.UseMiddleware<ApiErrorHandlingMiddleware>();
 
+            app.UseResponseCompression();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            app.UseResponseCompression();
         }
     }
 }
