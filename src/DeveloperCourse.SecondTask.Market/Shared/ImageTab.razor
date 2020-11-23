@@ -4,21 +4,24 @@
 @using System.IO
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image.DTOs
+@using DeveloperCourse.SecondLesson.Domain.Types
+@using DeveloperCourse.SecondTask.Market.Interfaces
 @using DeveloperCourse.SecondTask.Market.Pages
 @inject IImageClient ImageClient
+@inject IAuthService AuthService
 
 <TabPane Key="Image">
     <Tab>Images</Tab>
     <ChildContent>
         <AntList Loading="@(!IsImagesLoaded)" DataSource="@(Images ?? new List<ImageDto>())" ItemLayout="@(ListItemLayout.Horizontal)">
             <Header>
-                @if (Images != null)
-                {
-                    <FileUpload Style="height: 5px;" OnChange="@FilesReady" Label="Add new image"></FileUpload>
-                }
-                else
+                @if (Images == null)
                 {
                     <Alert Type="@AlertType.Error" Message="Image service is unavailable" ShowIcon />
+                }
+                else if(Images != null && _isAuth)
+                {
+                    <FileUpload Style="height: 5px;" OnChange="@FilesReady" Label="Add new image"></FileUpload>
                 }
             </Header>
             <ChildContent Context="item">
@@ -65,9 +68,15 @@
 
     #endregion
 
+    #region Fields
+    
     private readonly RenderFragment<Uri> _avatarLink = context => @<Avatar Shape="square" Size="64" Src="@(context.ToString())"></Avatar>;
 
     private readonly RenderFragment _avatarStandard = @<Avatar Shape="square" Size="64" Icon="loading"></Avatar>;
+
+    private bool _isAuth = false;
+    
+    #endregion
 
     private async Task FilesReady(IMatFileUploadEntry[] files)
     {
@@ -98,7 +107,12 @@
         try
         {
             var response = await ImageClient.GetImages(ProductId);
+            
             Images = response?.Images?.ToList() ?? new List<ImageDto>();
+            
+            var currentUser = await AuthService.GetCurrentUser();
+
+            _isAuth = currentUser != null && currentUser.Roles.Contains(UserRole.Administrator);
         }
         catch (Exception)
         {

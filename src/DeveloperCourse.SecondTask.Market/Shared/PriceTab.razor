@@ -3,15 +3,21 @@
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price.DTOs
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price.DTOs.Requests
+@using DeveloperCourse.SecondTask.Market.Interfaces
 @using DeveloperCourse.SecondTask.Market.Pages
 @inject IPriceClient PriceClient
+@inject IAuthService AuthService
 
 <TabPane Key="Price">
     <Tab>Prices</Tab>
     <ChildContent>
         <AntList Loading="@(!IsPricesLoaded)" DataSource="@((Prices ?? new List<PriceDto>()).OrderByDescending(x => x.IsLast))" ItemLayout="@(ListItemLayout.Horizontal)">
             <Header>
-                @if (Prices != null)
+                @if (Prices == null)
+                {
+                    <Alert Type="@AlertType.Error" Message="Price service is unavailable" ShowIcon/>
+                }
+                else if (Prices != null && _isAuth)
                 {
                     <Form Style="text-align-last: center;display: flex;justify-content: center;" Layout="@(FormLayout.Inline)" Model="@_createPriceModel" OnFinish="CreatePrice">
 
@@ -26,14 +32,13 @@
                         <FormItem Label="Currency">
                             <Select LabelInValue Style="max-width: 100px;width: 100px;" @bind-Value="@_createPriceModel.Currency" Options="@_currencyOptions"></Select>
                         </FormItem>
-                        <FormItem>
-                            <Button HtmlType="submit">Add</Button>
-                        </FormItem>
+                        @if (_isAuth)
+                        {
+                            <FormItem>
+                                <Button HtmlType="submit">Add</Button>
+                            </FormItem>
+                        }
                     </Form>
-                }
-                else
-                {
-                    <Alert Type="@AlertType.Error" Message="Price service is unavailable" ShowIcon/>
                 }
             </Header>
             <ChildContent Context="item">
@@ -95,6 +100,8 @@
     private static readonly List<LabeledValue> _currencyOptions = _availableCurrency
         .Select(x => new LabeledValue(x.ToString(), x.ToString()))
         .ToList();
+    
+    private bool _isAuth = false;
 
     #endregion
 
@@ -129,6 +136,10 @@
             var response = await PriceClient.GetPrices(ProductId);
 
             Prices = response?.Prices?.ToList() ?? new List<PriceDto>();
+            
+            var currentUser = await AuthService.GetCurrentUser();
+
+            _isAuth = currentUser != null && currentUser.Roles.Contains(UserRole.Administrator);
         }
         catch (Exception)
         {

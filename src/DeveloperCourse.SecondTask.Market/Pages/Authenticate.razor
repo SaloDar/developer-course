@@ -1,0 +1,148 @@
+@page "/auth"
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@using System.ComponentModel.DataAnnotations
+@using DeveloperCourse.SecondTask.Market.Interfaces
+
+<Tabs>
+    <ChildContent>
+        <TabPane Key="1">
+            <Tab>Login</Tab>
+            <ChildContent>
+                @if (_loginFailed)
+                {
+                    <div style="margin: 1%;">
+                        <Alert Type="@AlertType.Error" Closable Message="Error" ShowIcon AfterClose="@(() => {_loginFailed = false;})"/>
+                    </div>
+                }
+                <div style="display: flex; justify-content: center;">
+                    <div style="width: 300px;">
+                        <Form Model="@_modelLogin"
+                              LabelCol="new ColLayoutParam { Span = 8 }"
+                              WrapperCol="new ColLayoutParam { Span = 16 }"
+                              OnFinish="OnFinishLogin">
+                            <FormItem Label="Username">
+                                <Input @bind-Value="@_modelLogin.Username"/>
+                            </FormItem>
+                            <FormItem Label="Password">
+                                <InputPassword @bind-Value="@_modelLogin.Password"/>
+                            </FormItem>
+                            <FormItem WrapperCol="new ColLayoutParam{ Offset = 8, Span = 16 }">
+                                <Button HtmlType="submit">Submit</Button>
+                            </FormItem>
+                        </Form>
+
+                    </div>
+                </div>
+            </ChildContent>
+        </TabPane>
+        <TabPane Key="2">
+            <Tab>Register</Tab>
+            <ChildContent>
+                @if (_registerFailed)
+                {
+                    <div style="margin: 1%;">
+                        <Alert Type="@AlertType.Error" Closable Message="Error" ShowIcon AfterClose="@(() => {_registerFailed = false;})"/>
+                    </div>
+                }
+                <div style="display: flex; justify-content: center;">
+                    <div style="width: 300px;">
+
+                        <Form Model="@_modelRegister"
+                              LabelCol="new ColLayoutParam { Span = 8 }"
+                              WrapperCol="new ColLayoutParam { Span = 16 }"
+                              OnFinish="OnFinishRegister">
+                            <FormItem Label="Username">
+                                <Input @bind-Value="@_modelRegister.Username"/>
+                            </FormItem>
+                            <FormItem Label="Password">
+                                <InputPassword @bind-Value="@_modelRegister.Password"/>
+                            </FormItem>
+                            <FormItem WrapperCol="new ColLayoutParam{ Offset = 8, Span = 16 }">
+                                <Button HtmlType="submit">Submit</Button>
+                            </FormItem>
+                        </Form>
+                    </div>
+                </div>
+            </ChildContent>
+        </TabPane>
+    </ChildContent>
+</Tabs>
+
+@code {
+
+    #region Fields
+
+    private LoginModel _modelLogin = new LoginModel();
+
+    private RegisterModel _modelRegister = new RegisterModel();
+
+    private bool _loginFailed = false;
+
+    private bool _registerFailed = false;
+
+    #endregion
+
+    #region Private Methods
+
+    private async void OnFinishRegister(EditContext editContext)
+    {
+        var response = await AuthService.Register(_modelRegister.Username, _modelRegister.Password);
+
+        if (response)
+        {
+            _modelRegister = new RegisterModel();
+
+            NavigationManager.NavigateTo("/");
+        }
+
+        _registerFailed = true;
+
+        StateHasChanged();
+    }
+
+    private async void OnFinishLogin(EditContext editContext)
+    {
+        var response = await AuthService.Login(_modelLogin.Username, _modelLogin.Password);
+
+        if (response)
+        {
+            _modelLogin = new LoginModel();
+
+            NavigationManager.NavigateTo("/");
+        }
+
+        _loginFailed = true;
+
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Models
+
+    public class LoginModel
+    {
+        [Required]
+        [RegularExpression("^[a-zA-Z0-9._@+-]{6,}$")]
+        public string Username { get; set; }
+
+        [Required]
+        [RegularExpression("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.\\/;':\"-]).{8,}$")]
+        public string Password { get; set; }
+    }
+
+    public class RegisterModel
+    {
+        [Required]
+        [RegularExpression("^[a-zA-Z0-9._@+-]{6,}$")]
+        public string Username { get; set; }
+
+        [Required]
+        [RegularExpression("^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%^&*()_+,.\\/;':\"-]).{8,}$")]
+        public string Password { get; set; }
+    }
+
+    #endregion
+
+}

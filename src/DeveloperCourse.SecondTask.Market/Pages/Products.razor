@@ -1,15 +1,21 @@
 @page "/products"
 @inject IProductClient ProductClient
+@inject IAuthService AuthService
 @using DeveloperCourse.SecondTask.Market.Shared
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product.DTOs
+@using DeveloperCourse.SecondLesson.Domain.Types
+@using DeveloperCourse.SecondTask.Market.Interfaces
 
 <AntList style="min-height: 350px;" DataSource="@(ProductsCollection ?? new List<ProductDto>())" ItemLayout="@ListItemLayout.Vertical">
     <Header>
         <Title style="text-align: center;" Level="4">Products</Title>
-        <Button Type="default" style="display: block;margin-left: auto;margin-right: 0;" OnClick="@(() => _createProductModal.Open())">
-            Add product
-        </Button>
+        @if (_isAuth)
+        {
+            <Button Type="default" style="display: block;margin-left: auto;margin-right: 0;" OnClick="@(() => _createProductModal.Open())">
+                Add product
+            </Button>
+        }
     </Header>
     <ChildContent Context="item">
         <Skeleton Loading="@(!IsLoaded)" Active Avatar AvatarShape="square">
@@ -41,6 +47,8 @@
     #region Fields
 
     private CreateProductModal _createProductModal;
+
+    private bool _isAuth = false;
 
     private readonly RenderFragment<Guid> _productLink = context => @<a href="@($"product/{context}")">
                                                                         <Button Shape="round" Size="large">View</Button>
@@ -74,6 +82,12 @@
             var response = await ProductClient.GetProducts();
 
             ProductsCollection = response.Products.OrderBy(x => x.Name).ToList();
+
+            var currentUser = await AuthService.GetCurrentUser();
+
+            _isAuth = currentUser != null && currentUser.Roles.Contains(UserRole.Administrator);
+            
+            StateHasChanged();
         }
         catch (Exception)
         {

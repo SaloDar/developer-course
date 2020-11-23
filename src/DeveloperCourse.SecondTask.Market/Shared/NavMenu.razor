@@ -1,4 +1,9 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject IAuthService AuthService
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Identity
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Identity.DTOs
+@using DeveloperCourse.SecondTask.Market.Interfaces
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="/products">Market</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -14,10 +19,20 @@
         </li>
     </ul>
 </div>
+@if (_userLoaded)
+{
+    <div class="top-row pl-4 navbar navbar-dark" style="position: sticky; top: 100%; height: 10%; justify-content: center;">
+        @_authFragment
+    </div>
+}
 
 @code {
 
     private bool _collapseNavMenu = true;
+
+    private bool _userLoaded = false;
+
+    private RenderFragment _authFragment = @<div></div>;
 
     private string NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
 
@@ -25,5 +40,38 @@
     {
         _collapseNavMenu = !_collapseNavMenu;
     }
-    
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await ShowUser();
+    }
+
+    private async Task ShowUser()
+    {
+        var user = await AuthService.GetCurrentUser();
+
+        if (user != null)
+        {
+            _authFragment = @<span class="navbar-brand" style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
+                                <Icon Type="user" Theme="outline"/>
+                                <div style="flex-basis: 100%; height: 0;"></div>
+                                @user.Username
+                                <div style="flex-basis: 100%; height: 0;"></div>
+                                <Text Keyboard>@user.Roles.FirstOrDefault().ToString()</Text>
+                            </span>;
+        }
+        else
+        {
+            _authFragment = @<span class="navbar-brand" style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
+                                <a class="navbar-brand" href="/auth">Login/Register</a>
+                            </span>;
+        }
+
+        _userLoaded = true;
+
+        StateHasChanged();
+    }
+
 }
