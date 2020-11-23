@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using DeveloperCourse.SecondLesson.Common.Identity.DTOs;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
 using DeveloperCourse.SecondLesson.Domain.Types;
 using Microsoft.AspNetCore.Http;
 
-namespace DeveloperCourse.SecondTask.Infrastructure.Identity
+namespace DeveloperCourse.SecondLesson.Common.Identity.Services
 {
     public class UserContext : IUserContext
     {

@@ -33,10 +33,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Identity\DeveloperCourse.SecondLesson.Common.Identity.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Web\DeveloperCourse.SecondLesson.Common.Web.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Identity.DataAccess\DeveloperCourse.SecondTask.Identity.DataAccess.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Identity.Domain\DeveloperCourse.SecondTask.Identity.Domain.csproj" />
-      <ProjectReference Include="..\DeveloperCourse.SecondTask.Infrastructure\DeveloperCourse.SecondTask.Infrastructure.csproj" />
     </ItemGroup>
 
 

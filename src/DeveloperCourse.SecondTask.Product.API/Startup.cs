@@ -1,10 +1,9 @@
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Reflection;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Common.Identity.Configs;
+using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Identity.Services;
 using DeveloperCourse.SecondLesson.Common.Web.Extensions;
-using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using DeveloperCourse.SecondTask.Product.API.Clients;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Middlewares;
@@ -12,18 +11,14 @@ using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.API.Services;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Product.DataAccess.Context;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Refit;
@@ -60,33 +55,8 @@ namespace DeveloperCourse.SecondTask.Product.API
             services.AddDbContext<ProductContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Product")));
             
             services.AddScoped<IProductContext, ProductContext>();
-            
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.SaveToken = true;
-                    options.RequireHttpsMetadata = false;
-                    options.RefreshOnIssuerKeyNotFound = true;
 
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidateAudience = true,
-                        ValidIssuer = securityConfig.Issuer,
-                        ValidAudiences = securityConfig.Audiences,
-                        IssuerSigningKey = new SymmetricSecurityKey(securityConfig.SigningKeyBytes),
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero,
-                        RequireExpirationTime = true,
-                        TokenDecryptionKey = new SymmetricSecurityKey(securityConfig.EncryptionKeyBytes)
-                    };
-                });
+            services.AddJwtAuthentication(securityConfig);
 
             var refitSettings = new RefitSettings
             {

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
 using DeveloperCourse.SecondLesson.Domain.Types;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json;
 
-namespace DeveloperCourse.SecondTask.Infrastructure.Identity
+namespace DeveloperCourse.SecondLesson.Common.Identity.DTOs
 {
     public class IdentityDto : IIdentityDto
     {
@@ -20,7 +21,7 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Identity
 
         [JsonIgnore]
         [BindNever]
-        public List<UserRole> UserRoles { get; private set; }
+        public ICollection<UserRole> UserRoles { get; private set; }
 
         public void SetIdentity(Guid userId, string username, List<UserRole> userRoles)
         {

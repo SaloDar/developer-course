@@ -5,10 +5,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Dapper;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
 using DeveloperCourse.SecondLesson.Domain.Entities;
 using DeveloperCourse.SecondLesson.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Infrastructure.Configs;
-using DeveloperCourse.SecondTask.Infrastructure.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using DeveloperCourse.SecondLesson.Domain.Types;
 
-namespace DeveloperCourse.SecondTask.Infrastructure.Identity
+namespace DeveloperCourse.SecondLesson.Common.Identity.Interfaces
 {
     public interface IIdentityDto
     {
@@ -19,7 +19,7 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Identity
         /// <summary>
         /// User roles.
         /// </summary>
-        List<UserRole> UserRoles { get; }
+        ICollection<UserRole> UserRoles { get; }
 
         public void SetIdentity(Guid userId, string username, List<UserRole> userRoles);
 

@@ -1,4 +1,4 @@
-namespace DeveloperCourse.SecondTask.Infrastructure.Identity
+namespace DeveloperCourse.SecondLesson.Common.Identity.Interfaces
 {
     public interface IUserContext
     {
