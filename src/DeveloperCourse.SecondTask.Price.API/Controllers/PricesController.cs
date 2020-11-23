@@ -56,6 +56,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetPriceResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<GetPriceResponse> GetPrice([FromMultiSource] GetPriceRequest request)
         {
@@ -92,6 +93,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Controllers
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<UpdatePriceResponse> UpdatePrice([FromMultiSource] UpdatePriceRequest request)
         {

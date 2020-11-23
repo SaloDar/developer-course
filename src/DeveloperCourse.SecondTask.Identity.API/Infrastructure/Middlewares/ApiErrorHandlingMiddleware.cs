@@ -1,6 +1,8 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
+using DeveloperCourse.SecondLesson.Common.Web.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -40,11 +42,22 @@ namespace DeveloperCourse.SecondTask.Identity.API.Infrastructure.Middlewares
             var statusCode = HttpStatusCode.InternalServerError;
 
             string exceptionMessage = null;
+            
             var message = "Что-то пошло не так...\nПопробуйте еще раз.";
 
             if (!_environment.IsProduction())
             {
                 exceptionMessage = ex.Message;
+            }
+
+            if (ex is IHasUserMessage userMessage)
+            {
+                message = userMessage.UserMessage;
+            }
+
+            if (ex is ApiException apiException)
+            {
+                statusCode = apiException.StatusCode;
             }
 
             context.Response.StatusCode = (int) statusCode;

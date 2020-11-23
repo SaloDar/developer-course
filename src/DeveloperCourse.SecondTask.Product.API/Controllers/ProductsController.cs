@@ -58,7 +58,6 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
         public async Task<CreateProductResponse> CreateProduct([FromBody] CreateProductRequest request)
         {
             var result = await _productService.CreateProduct(request.Name, request.Description, request.Sku, request.Weight);
@@ -75,6 +74,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<GetProductResponse> GetProduct([FromMultiSource] GetProductRequest request)
         {
@@ -93,6 +93,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<UpdateProductResponse> UpdateProduct([FromMultiSource] UpdateProductRequest request)
         {
@@ -110,6 +111,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task DeleteProduct([FromMultiSource] DeleteProductRequest request)
         {

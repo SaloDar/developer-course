@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
 using DeveloperCourse.SecondTask.Image.API.Clients;
 using DeveloperCourse.SecondTask.Image.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
@@ -52,12 +53,12 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (uploadedFile == null)
             {
-                throw new Exception($"File with name {fileName} not found on yandex disk.");
+                throw new BadRequestException($"File with name {fileName} not found on yandex disk.");
             }
 
             if (uploadedFile.PreviewLink == null)
             {
-                throw new Exception($"Preview link for file with name {fileName} is empty.");
+                throw new BadRequestException($"Preview link for file with name {fileName} is empty.");
             }
 
             return uploadedFile.PreviewLink;
@@ -99,7 +100,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
             {
                 _logger.LogError("Yandex Disk API is unavailable", e);
 
-                throw new InvalidOperationException("Yandex Disk API is unavailable", e);
+                throw new ServiceUnavailableException("Yandex Disk API is unavailable", e);
             }
         }
     }

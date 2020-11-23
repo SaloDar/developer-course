@@ -57,7 +57,9 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<CreateImageResponse> CreateImage([FromMultiSource] CreateImageRequest request)
         {
             var result = await _imageService.CreateImage(request.ProductId, request.File);
@@ -74,6 +76,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetImageResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<GetImageResponse> GetImage([FromMultiSource] GetImageRequest request)
         {
@@ -92,7 +95,10 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public async Task<UpdateImageResponse> UpdateImage([FromMultiSource] UpdateImageRequest request)
         {
             var result = await _imageService.UpdateImage(request.Id, request.ProductId, request.File);
@@ -108,6 +114,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Controllers
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task DeleteImage([FromMultiSource] DeleteImageRequest request)
         {

@@ -1,6 +1,8 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
+using DeveloperCourse.SecondLesson.Common.Web.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,6 +47,16 @@ namespace DeveloperCourse.SecondTask.Product.API.Infrastructure.Middlewares
             if (!_environment.IsProduction())
             {
                 exceptionMessage = ex.Message;
+            }
+
+            if (ex is IHasUserMessage userMessage)
+            {
+                message = userMessage.UserMessage;
+            }
+
+            if (ex is ApiException apiException)
+            {
+                statusCode = apiException.StatusCode;
             }
 
             context.Response.StatusCode = (int) statusCode;

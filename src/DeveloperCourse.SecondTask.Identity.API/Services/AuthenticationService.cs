@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Common.Identity.Configs;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
 using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Identity.API.DTOs;
 using DeveloperCourse.SecondTask.Identity.API.Interfaces;
@@ -58,7 +59,7 @@ namespace DeveloperCourse.SecondTask.Identity.API.Services
 
             if (userExist != null)
             {
-                throw new InvalidOperationException("User with same username exist");
+                throw new BadRequestException("User with same username exist");
             }
 
             var user = new User(username);
@@ -67,7 +68,7 @@ namespace DeveloperCourse.SecondTask.Identity.API.Services
 
             if (!result)
             {
-                throw new Exception("An error occurred while creating the user");
+                throw new BadRequestException("An error occurred while creating the user");
             }
 
             if (!await _roleManager.RoleExistsAsync(UserRole.User))
@@ -86,7 +87,7 @@ namespace DeveloperCourse.SecondTask.Identity.API.Services
 
             if (user == null || !await _userManagerService.CheckPasswordAsync(user, password))
             {
-                throw new InvalidOperationException("User not found or not correct password");
+                throw new BadRequestException("User not found or not correct password");
             }
 
             var userRoles = await _userManagerService.GetRolesAsync(user);
@@ -141,19 +142,19 @@ namespace DeveloperCourse.SecondTask.Identity.API.Services
         {
             if (!_userContext.IsAuthenticated)
             {
-                throw new Exception("Is not authenticated.");
+                throw new UnauthorizedException("Is not authenticated.");
             }
 
             if (_userContext.Identity.UserId == Guid.Empty)
             {
-                throw new Exception("Is not authenticated.");
+                throw new UnauthorizedException("Is not authenticated.");
             }
 
             var user = await _userManagerService.FindByIdAsync(_userContext.Identity.UserId);
 
             if (user == null)
             {
-                throw new Exception($"Cannot find user with id {_userContext.Identity.UserId}");
+                throw new BadRequestException($"Cannot find user with id {_userContext.Identity.UserId}");
             }
 
             return _mapper.Map<UserDto>(user);

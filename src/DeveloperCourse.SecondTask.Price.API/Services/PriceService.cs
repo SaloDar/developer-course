@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
 using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Price.API.DTOs;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
@@ -32,7 +33,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (price == null)
             {
-                throw new Exception($"Price with id {id} was not found.");
+                throw new NotFoundException($"Price with id {id} was not found.");
             }
 
             return _mapper.Map<PriceDto>(price);
@@ -45,7 +46,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (price == null)
             {
-                throw new Exception($"Price with id {id} was not found.");
+                throw new NotFoundException($"Price with id {id} was not found.");
             }
 
             if (productId != null && productId.Value != Guid.Empty)
@@ -72,7 +73,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (!updateResult)
             {
-                throw new Exception($"Couldn't update price with id {id}.");
+                throw new BadRequestException($"Couldn't update price with id {id}.");
             }
 
             price = await _priceRepository.GetById(price.Id);
@@ -86,7 +87,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (!result)
             {
-                throw new Exception($"Couldn't delete price with id {id}.");
+                throw new BadRequestException($"Couldn't delete price with id {id}.");
             }
         }
 
@@ -120,7 +121,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
             if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
                 _userContext.Identity.UserId == Guid.Empty)
             {
-                throw new Exception("Is not authenticated.");
+                throw new UnauthorizedException("Is not authenticated.");
             }
 
             await _priceRepository.UpdateIsLastByProduct(productId, currency);

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
 using DeveloperCourse.SecondTask.Image.API.Clients;
 using DeveloperCourse.SecondTask.Image.API.DTOs;
 using DeveloperCourse.SecondTask.Image.API.Infrastructure.Configs;
@@ -48,7 +49,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (productImage == null)
             {
-                throw new Exception($"Image with id {id} was not found.");
+                throw new NotFoundException($"Image with id {id} was not found.");
             }
 
             if (productId != null && productId.Value != Guid.Empty)
@@ -83,7 +84,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (image == null)
             {
-                throw new Exception($"Image with id {id} was not found.");
+                throw new NotFoundException($"Image with id {id} was not found.");
             }
 
             return _mapper.Map<ImageDto>(image);
@@ -94,12 +95,12 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
             if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
                 _userContext.Identity.UserId == Guid.Empty)
             {
-                throw new Exception("Is not authenticated.");
+                throw new UnauthorizedException("Is not authenticated.");
             }
 
             if (productId == Guid.Empty)
             {
-                throw new InvalidOperationException("Product id can't be empty");
+                throw new BadRequestException("Product id can't be empty");
             }
 
             var uploadedLink = await UploadImage(image);
@@ -119,7 +120,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (image == null)
             {
-                throw new Exception($"Image with id {id} was not found.");
+                throw new NotFoundException($"Image with id {id} was not found.");
             }
 
             _imageContext.Images.Remove(image);
@@ -133,7 +134,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (!contentType?.FirstOrDefault()?.Equals("image", StringComparison.InvariantCultureIgnoreCase) ?? false)
             {
-                throw new InvalidOperationException("Unsupported type");
+                throw new UnsupportedMediaTypeException("Unsupported type");
             }
 
             var fileLink = await _dataStorageService.UploadFile(image);

@@ -6,6 +6,7 @@ using AutoMapper;
 using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image;
 using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
 using DeveloperCourse.SecondTask.Product.API.DTOs;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
@@ -60,7 +61,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
                 _userContext.Identity.UserId == Guid.Empty)
             {
-                throw new Exception("Is not authenticated.");
+                throw new UnauthorizedException("Is not authenticated.");
             }
 
             var product = new Domain.Entities.Product(name, description, sku, weight, _userContext.Identity.UserId);
@@ -78,7 +79,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
             if (product == null)
             {
-                throw new Exception($"Product with id {productId} not found.");
+                throw new NotFoundException($"Product with id {productId} not found.");
             }
 
             var productDto = _mapper.Map<ProductDto>(product);
@@ -96,7 +97,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
             if (product == null)
             {
-                throw new Exception($"Product with id {id} was not found.");
+                throw new NotFoundException($"Product with id {id} was not found.");
             }
 
             _productContext.Products.Remove(product);
@@ -108,14 +109,14 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
         {
             if (id == Guid.Empty)
             {
-                throw new InvalidOperationException("Product id can't be empty");
+                throw new BadRequestException("Product id can't be empty");
             }
 
             var product = await _productContext.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if (product == null)
             {
-                throw new Exception($"Product with id {id} was not found.");
+                throw new NotFoundException($"Product with id {id} was not found.");
             }
 
             if (!string.IsNullOrWhiteSpace(name))
