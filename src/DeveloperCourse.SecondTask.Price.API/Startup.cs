@@ -111,49 +111,7 @@ namespace DeveloperCourse.SecondTask.Price.API
 
             services.AddHttpContextAccessor();
 
-            #region Swagger
-
-            services.AddSwaggerGen(swagger =>
-            {
-                swagger.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = webApiConfig.ServiceName, Version = "v1"
-                });
-
-                var securityScheme = new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please insert only JWT",
-                    Name = "JWT Authorization",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    Reference = new OpenApiReference
-                    {
-                        Id = JwtBearerDefaults.AuthenticationScheme, Type = ReferenceType.SecurityScheme
-                    }
-                };
-
-                swagger.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-
-                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        securityScheme, Array.Empty<string>()
-                    }
-                });
-
-                swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
-                    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
-
-                swagger.EnableAnnotations();
-                swagger.UseInlineDefinitionsForEnums();
-                swagger.CustomSchemaIds(i => i.FullName);
-            });
-
-            services.AddSwaggerGenNewtonsoftSupport();
-
-            #endregion
+            services.AddSwagger(webApiConfig.ServiceName);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<WebApiConfig> webApiConfig)

@@ -41,7 +41,7 @@ namespace DeveloperCourse.SecondLesson.Common.Web.Extensions
                     }
                 });
 
-                swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+                swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml"));
 
                 swagger.EnableAnnotations();
                 swagger.UseInlineDefinitionsForEnums();
