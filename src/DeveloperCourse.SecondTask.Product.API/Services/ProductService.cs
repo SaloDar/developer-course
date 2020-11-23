@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
-using DeveloperCourse.SecondTask.Product.API.Clients;
 using DeveloperCourse.SecondTask.Product.API.DTOs;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
@@ -150,7 +151,16 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             {
                 var response = await _priceClient.GetPrices(productId);
 
-                result = response.Prices?.ToList() ?? new List<PriceDto>();
+                result = response.Prices?.ToList()
+                    .Select(x => new PriceDto
+                    {
+                        Id = x.Id,
+                        ProductId = x.ProductId,
+                        Retail = x.Retail,
+                        Currency = x.Currency,
+                        IsLast = x.IsLast
+                    })
+                    .ToList() ?? new List<PriceDto>();
             }
             catch (Exception)
             {
@@ -168,7 +178,12 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             {
                 var response = await _imageClient.GetImages(productId);
 
-                result = response.Images?.ToList() ?? new List<ImageDto>();
+                result = response.Images?.Select(x=> new ImageDto
+                {
+                    Id = x.Id,
+                    ProductId = x.ProductId,
+                    Link = x.Link
+                }).ToList() ?? new List<ImageDto>();
             }
             catch (Exception)
             {

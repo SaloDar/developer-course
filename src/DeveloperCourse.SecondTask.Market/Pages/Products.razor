@@ -1,8 +1,8 @@
 @page "/products"
 @inject IProductClient ProductClient
 @using DeveloperCourse.SecondTask.Market.Shared
-@using DeveloperCourse.SecondTask.Market.Clients.Product
-@using DeveloperCourse.SecondTask.Market.Clients.Product.DTOs
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product.DTOs
 
 <AntList style="min-height: 350px;" DataSource="@(ProductsCollection ?? new List<ProductDto>())" ItemLayout="@ListItemLayout.Vertical">
     <Header>

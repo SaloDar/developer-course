@@ -1,10 +1,12 @@
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price;
+using DeveloperCourse.SecondLesson.Common.Clients.MessageHandlers;
 using DeveloperCourse.SecondLesson.Common.Identity.Configs;
 using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
 using DeveloperCourse.SecondLesson.Common.Identity.Services;
 using DeveloperCourse.SecondLesson.Common.Web.Extensions;
-using DeveloperCourse.SecondTask.Product.API.Clients;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
@@ -50,8 +52,12 @@ namespace DeveloperCourse.SecondTask.Product.API
 
             services.AddOptions();
             
-            services.AddMemoryCache();
+            services.AddHttpContextAccessor();
             
+            services.AddTransient<ForwardAuthenticateTokenMessageHandler>();
+            
+            services.AddScoped<IUserContext, UserContext>();
+
             services.AddDbContext<ProductContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Product")));
             
             services.AddScoped<IProductContext, ProductContext>();
@@ -74,15 +80,16 @@ namespace DeveloperCourse.SecondTask.Product.API
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = webApiConfig.Routes.PriceApi;
-                });
+                })
+                .AddHttpMessageHandler<ForwardAuthenticateTokenMessageHandler>();
 
             services.AddRefitClient<IImageClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = webApiConfig.Routes.ImageApi;
-                });
+                })
+                .AddHttpMessageHandler<ForwardAuthenticateTokenMessageHandler>();
 
-            services.AddScoped<IUserContext, UserContext>();
             services.AddTransient<IProductService, ProductService>();
             
             services.AddTransient<ApiErrorHandlingMiddleware>();
@@ -106,9 +113,7 @@ namespace DeveloperCourse.SecondTask.Product.API
                     options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
-
-            services.AddHttpContextAccessor();
-
+            
             services.AddSwagger(webApiConfig.ServiceName);
             
             services.Configure<ForwardedHeadersOptions>(options =>

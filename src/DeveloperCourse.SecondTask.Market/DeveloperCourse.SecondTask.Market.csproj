@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Clients\DeveloperCourse.SecondLesson.Common.Clients.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Domain\DeveloperCourse.SecondTask.Domain.csproj" />
     </ItemGroup>
     
