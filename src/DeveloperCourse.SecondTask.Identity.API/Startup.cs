@@ -52,7 +52,8 @@ namespace DeveloperCourse.SecondTask.Identity.API
             services.AddAutoMapper(typeof(Startup));
 
             services.AddOptions();
-            services.AddMemoryCache();
+            
+            services.AddHttpContextAccessor();
 
             services.AddDbContext<IdentityContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("Identity")));
@@ -93,8 +94,6 @@ namespace DeveloperCourse.SecondTask.Identity.API
                     options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
-
-            services.AddHttpContextAccessor();
             
             services.AddSwagger(webApiConfig.ServiceName);
             

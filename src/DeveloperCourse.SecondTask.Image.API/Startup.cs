@@ -53,7 +53,8 @@ namespace DeveloperCourse.SecondTask.Image.API
             services.AddAutoMapper(typeof(Startup));
 
             services.AddOptions();
-            services.AddMemoryCache();
+            
+            services.AddHttpContextAccessor();
 
             services.AddDbContext<ImageContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("Image")));
 
@@ -105,9 +106,7 @@ namespace DeveloperCourse.SecondTask.Image.API
                     options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
-
-            services.AddHttpContextAccessor();
-
+            
             services.AddSwagger(webApiConfig.ServiceName);
             
             services.Configure<ForwardedHeadersOptions>(options =>

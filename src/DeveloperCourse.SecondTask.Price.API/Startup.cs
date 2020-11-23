@@ -47,7 +47,8 @@ namespace DeveloperCourse.SecondTask.Price.API
             services.AddAutoMapper(typeof(Startup));
 
             services.AddOptions();
-            services.AddMemoryCache();
+            
+            services.AddHttpContextAccessor();
 
             services.AddPriceDbOptions(Configuration);
 
@@ -78,9 +79,7 @@ namespace DeveloperCourse.SecondTask.Price.API
                     options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
-
-            services.AddHttpContextAccessor();
-
+            
             services.AddSwagger(webApiConfig.ServiceName);
             
             services.Configure<ForwardedHeadersOptions>(options =>
