@@ -54,6 +54,7 @@ namespace DeveloperCourse.SecondTask.Product.API
             services.AddAutoMapper(typeof(Startup));
 
             services.AddOptions();
+            
             services.AddMemoryCache();
             
             services.AddDbContext<ProductContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Product")));
@@ -139,6 +140,11 @@ namespace DeveloperCourse.SecondTask.Product.API
             services.AddHttpContextAccessor();
 
             services.AddSwagger(webApiConfig.ServiceName);
+            
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<WebApiConfig> webApiConfig)
@@ -152,17 +158,15 @@ namespace DeveloperCourse.SecondTask.Product.API
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", webApiConfig.Value.ServiceName);
                 });
             }
+            
+            app.UseForwardedHeaders();
 
             app.UseCors();
 
             app.UseRouting();
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
-
             app.UseAuthentication();
+            
             app.UseAuthorization();
 
             app.UseMiddleware<ApiErrorHandlingMiddleware>();

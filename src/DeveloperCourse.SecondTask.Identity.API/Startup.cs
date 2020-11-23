@@ -127,6 +127,11 @@ namespace DeveloperCourse.SecondTask.Identity.API
             services.AddHttpContextAccessor();
             
             services.AddSwagger(webApiConfig.ServiceName);
+            
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<WebApiConfig> webApiConfig)
@@ -141,16 +146,14 @@ namespace DeveloperCourse.SecondTask.Identity.API
                 });
             }
 
+            app.UseForwardedHeaders();
+            
             app.UseCors();
 
             app.UseRouting();
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
-
             app.UseAuthentication();
+            
             app.UseAuthorization();
 
             app.UseMiddleware<ApiErrorHandlingMiddleware>();
