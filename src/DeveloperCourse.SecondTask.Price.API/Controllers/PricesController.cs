@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Common.Web.Attributes;
 using DeveloperCourse.SecondLesson.Domain.Types;
-using DeveloperCourse.SecondTask.Infrastructure.Attributes;
 using DeveloperCourse.SecondTask.Price.API.Controllers.DTOs;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
 using Microsoft.AspNetCore.Authorization;

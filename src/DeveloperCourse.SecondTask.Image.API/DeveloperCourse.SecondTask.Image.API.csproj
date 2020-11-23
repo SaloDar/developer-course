@@ -42,6 +42,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Web\DeveloperCourse.SecondLesson.Common.Web.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Image.DataAccess\DeveloperCourse.SecondTask.Image.DataAccess.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Image.Domain\DeveloperCourse.SecondTask.Image.Domain.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Infrastructure\DeveloperCourse.SecondTask.Infrastructure.csproj" />

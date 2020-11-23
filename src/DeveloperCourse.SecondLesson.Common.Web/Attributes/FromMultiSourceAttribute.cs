@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace DeveloperCourse.SecondTask.Infrastructure.Attributes
+namespace DeveloperCourse.SecondLesson.Common.Web.Attributes
 {
     public sealed class FromMultiSourceAttribute : Attribute, IBindingSourceMetadata
     {

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Common.Web.Attributes;
 using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Image.API.Controllers.DTOs;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
-using DeveloperCourse.SecondTask.Infrastructure.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
