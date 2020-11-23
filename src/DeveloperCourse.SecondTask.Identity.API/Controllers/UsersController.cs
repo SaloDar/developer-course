@@ -11,7 +11,7 @@ namespace DeveloperCourse.SecondTask.Identity.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly IAuthenticationService _authenticationService;
