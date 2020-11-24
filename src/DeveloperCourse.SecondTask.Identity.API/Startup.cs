@@ -1,5 +1,7 @@
 using System;
 using AutoMapper;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
 using DeveloperCourse.SecondLesson.Common.Identity.Configs;
 using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
@@ -66,6 +68,15 @@ namespace DeveloperCourse.SecondTask.Identity.API
                 .AddDefaultTokenProviders();
 
             services.AddJwtAuthentication(securityConfig);
+            
+            services.AddDefaultCorrelationId(options =>
+            { 
+                options.AddToLoggingScope = true;
+                options.EnforceHeader = false;
+                options.IgnoreRequestHeader = false;
+                options.IncludeInResponse = true;
+                options.UpdateTraceIdentifier = false;
+            });
 
             services.AddScoped<IUserContext, UserContext>();
             services.AddScoped<IUserManagerService, UserManagerService>();
@@ -118,6 +129,8 @@ namespace DeveloperCourse.SecondTask.Identity.API
             app.UseForwardedHeaders();
             
             app.UseCors();
+            
+            app.UseCorrelationId();
 
             app.UseRouting();
 

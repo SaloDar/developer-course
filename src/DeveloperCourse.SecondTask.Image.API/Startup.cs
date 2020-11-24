@@ -1,4 +1,6 @@
 using AutoMapper;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
 using DeveloperCourse.SecondLesson.Common.Identity.Configs;
 using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
@@ -61,6 +63,15 @@ namespace DeveloperCourse.SecondTask.Image.API
             services.AddScoped<IImageContext, ImageContext>();
             
             services.AddJwtAuthentication(securityConfig);
+            
+            services.AddDefaultCorrelationId(options =>
+            { 
+                options.AddToLoggingScope = true;
+                options.EnforceHeader = false;
+                options.IgnoreRequestHeader = false;
+                options.IncludeInResponse = true;
+                options.UpdateTraceIdentifier = false;
+            });
 
             var refitSettings = new RefitSettings
             {
@@ -130,6 +141,8 @@ namespace DeveloperCourse.SecondTask.Image.API
             app.UseForwardedHeaders();
 
             app.UseCors();
+            
+            app.UseCorrelationId();
 
             app.UseRouting();
             

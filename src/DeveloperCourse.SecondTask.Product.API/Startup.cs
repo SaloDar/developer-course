@@ -1,4 +1,7 @@
 using AutoMapper;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
+using CorrelationId.HttpClient;
 using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image;
 using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price;
 using DeveloperCourse.SecondLesson.Common.Clients.MessageHandlers;
@@ -64,6 +67,15 @@ namespace DeveloperCourse.SecondTask.Product.API
 
             services.AddJwtAuthentication(securityConfig);
 
+            services.AddDefaultCorrelationId(options =>
+            { 
+                options.AddToLoggingScope = true;
+                options.EnforceHeader = false;
+                options.IgnoreRequestHeader = false;
+                options.IncludeInResponse = true;
+                options.UpdateTraceIdentifier = false;
+            });
+            
             var refitSettings = new RefitSettings
             {
                 ContentSerializer = new NewtonsoftJsonContentSerializer(
@@ -81,6 +93,7 @@ namespace DeveloperCourse.SecondTask.Product.API
                 {
                     c.BaseAddress = webApiConfig.Routes.PriceApi;
                 })
+                .AddCorrelationIdForwarding()
                 .AddHttpMessageHandler<ForwardAuthenticateTokenMessageHandler>();
 
             services.AddRefitClient<IImageClient>(refitSettings)
@@ -88,6 +101,7 @@ namespace DeveloperCourse.SecondTask.Product.API
                 {
                     c.BaseAddress = webApiConfig.Routes.ImageApi;
                 })
+                .AddCorrelationIdForwarding()
                 .AddHttpMessageHandler<ForwardAuthenticateTokenMessageHandler>();
 
             services.AddTransient<IProductService, ProductService>();
@@ -137,6 +151,8 @@ namespace DeveloperCourse.SecondTask.Product.API
             app.UseForwardedHeaders();
 
             app.UseCors();
+            
+            app.UseCorrelationId();
 
             app.UseRouting();
 
