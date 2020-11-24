@@ -4,8 +4,10 @@ using CorrelationId.DependencyInjection;
 using DeveloperCourse.SecondLesson.Common.Identity.Configs;
 using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Identity.Middlewares;
 using DeveloperCourse.SecondLesson.Common.Identity.Services;
 using DeveloperCourse.SecondLesson.Common.Web.Extensions;
+using DeveloperCourse.SecondLesson.Common.Web.Middlewares;
 using DeveloperCourse.SecondTask.Image.API.Clients;
 using DeveloperCourse.SecondTask.Image.DataAccess.Context;
 using DeveloperCourse.SecondTask.Image.API.Infrastructure.Configs;
@@ -96,8 +98,10 @@ namespace DeveloperCourse.SecondTask.Image.API
             services.AddTransient<IDataStorageService, YandexDiskService>();
             services.AddTransient<IImageService, ImageService>();
 
+            services.AddTransient<VersionHeaderMiddleware>();
+            services.AddTransient<AuthorizeHeaderMiddleware>();
             services.AddTransient<ApiErrorHandlingMiddleware>();
-
+            
             services.AddCors(options =>
                 options.AddDefaultPolicy(x =>
                     x.SetIsOriginAllowed(url => true)
@@ -147,6 +151,10 @@ namespace DeveloperCourse.SecondTask.Image.API
             app.UseRouting();
             
             app.UseAuthentication();
+            
+            app.UseMiddleware<VersionHeaderMiddleware>();
+            
+            app.UseMiddleware<AuthorizeHeaderMiddleware>();
             
             app.UseAuthorization();
 

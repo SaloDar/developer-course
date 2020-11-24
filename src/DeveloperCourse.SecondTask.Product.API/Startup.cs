@@ -8,8 +8,10 @@ using DeveloperCourse.SecondLesson.Common.Clients.MessageHandlers;
 using DeveloperCourse.SecondLesson.Common.Identity.Configs;
 using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Identity.Middlewares;
 using DeveloperCourse.SecondLesson.Common.Identity.Services;
 using DeveloperCourse.SecondLesson.Common.Web.Extensions;
+using DeveloperCourse.SecondLesson.Common.Web.Middlewares;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
@@ -46,7 +48,7 @@ namespace DeveloperCourse.SecondTask.Product.API
             var webApiConfig = Configuration.GetSection("WebApi").Get<WebApiConfig>();
 
             services.Configure<WebApiConfig>(Configuration.GetSection("WebApi"));
-            
+
             var securityConfig = Configuration.GetSection("Security").Get<SecurityConfig>();
 
             #endregion
@@ -54,28 +56,28 @@ namespace DeveloperCourse.SecondTask.Product.API
             services.AddAutoMapper(typeof(Startup));
 
             services.AddOptions();
-            
+
             services.AddHttpContextAccessor();
-            
+
             services.AddTransient<ForwardAuthenticateTokenMessageHandler>();
-            
+
             services.AddScoped<IUserContext, UserContext>();
 
             services.AddDbContext<ProductContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Product")));
-            
+
             services.AddScoped<IProductContext, ProductContext>();
 
             services.AddJwtAuthentication(securityConfig);
 
             services.AddDefaultCorrelationId(options =>
-            { 
+            {
                 options.AddToLoggingScope = true;
                 options.EnforceHeader = false;
                 options.IgnoreRequestHeader = false;
                 options.IncludeInResponse = true;
                 options.UpdateTraceIdentifier = false;
             });
-            
+
             var refitSettings = new RefitSettings
             {
                 ContentSerializer = new NewtonsoftJsonContentSerializer(
@@ -105,16 +107,18 @@ namespace DeveloperCourse.SecondTask.Product.API
                 .AddHttpMessageHandler<ForwardAuthenticateTokenMessageHandler>();
 
             services.AddTransient<IProductService, ProductService>();
-            
-            services.AddTransient<ApiErrorHandlingMiddleware>();
 
+            services.AddTransient<VersionHeaderMiddleware>();
+            services.AddTransient<AuthorizeHeaderMiddleware>();
+            services.AddTransient<ApiErrorHandlingMiddleware>();
+            
             services.AddCors(options =>
                 options.AddDefaultPolicy(x =>
                     x.SetIsOriginAllowed(url => true)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials()));
-            
+
             services.AddCompression();
 
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -127,9 +131,9 @@ namespace DeveloperCourse.SecondTask.Product.API
                     options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
-            
+
             services.AddSwagger(webApiConfig.ServiceName);
-            
+
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -147,17 +151,21 @@ namespace DeveloperCourse.SecondTask.Product.API
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", webApiConfig.Value.ServiceName);
                 });
             }
-            
+
             app.UseForwardedHeaders();
 
             app.UseCors();
-            
+
             app.UseCorrelationId();
 
             app.UseRouting();
 
             app.UseAuthentication();
             
+            app.UseMiddleware<VersionHeaderMiddleware>();
+            
+            app.UseMiddleware<AuthorizeHeaderMiddleware>();
+
             app.UseAuthorization();
 
             app.UseMiddleware<ApiErrorHandlingMiddleware>();

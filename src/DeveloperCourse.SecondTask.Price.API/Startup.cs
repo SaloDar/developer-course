@@ -4,8 +4,10 @@ using CorrelationId.DependencyInjection;
 using DeveloperCourse.SecondLesson.Common.Identity.Configs;
 using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Identity.Middlewares;
 using DeveloperCourse.SecondLesson.Common.Identity.Services;
 using DeveloperCourse.SecondLesson.Common.Web.Extensions;
+using DeveloperCourse.SecondLesson.Common.Web.Middlewares;
 using DeveloperCourse.SecondTask.Price.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Price.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
@@ -69,6 +71,8 @@ namespace DeveloperCourse.SecondTask.Price.API
             services.AddScoped<IPriceRepository, PriceRepository>();
             services.AddTransient<IPriceService, PriceService>();
 
+            services.AddTransient<VersionHeaderMiddleware>();
+            services.AddTransient<AuthorizeHeaderMiddleware>();
             services.AddTransient<ApiErrorHandlingMiddleware>();
 
             services.AddCors(options =>
@@ -120,6 +124,10 @@ namespace DeveloperCourse.SecondTask.Price.API
             app.UseRouting();
 
             app.UseAuthentication();
+            
+            app.UseMiddleware<VersionHeaderMiddleware>();
+            
+            app.UseMiddleware<AuthorizeHeaderMiddleware>();
             
             app.UseAuthorization();
 
