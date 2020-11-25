@@ -4,7 +4,22 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <RazorLangVersion>3.0</RazorLangVersion>
         <RootNamespace>DeveloperCourse.SecondTask.Market</RootNamespace>
+        <BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>none</DebugType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="wwwroot\appsettings.Development.json" Condition="$(ASPNETCORE_ENVIRONMENT) == 'Development'">
+            <LogicalName>appsettings.json</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Include="wwwroot\appsettings.Production.json" Condition="$(ASPNETCORE_ENVIRONMENT) == 'Production'">
+            <LogicalName>appsettings.json</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="AntDesign" Version="0.4.1" />
