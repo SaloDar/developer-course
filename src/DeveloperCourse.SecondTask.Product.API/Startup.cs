@@ -34,11 +34,18 @@ namespace DeveloperCourse.SecondTask.Product.API
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        #region Props
 
-        public Startup(IConfiguration configuration)
+        public IConfiguration Configuration { get; }
+        
+        public IWebHostEnvironment Environment { get; }
+
+        #endregion
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -111,13 +118,33 @@ namespace DeveloperCourse.SecondTask.Product.API
             services.AddTransient<VersionHeaderMiddleware>();
             services.AddTransient<AuthorizeHeaderMiddleware>();
             services.AddTransient<ApiErrorHandlingMiddleware>();
-            
-            services.AddCors(options =>
-                options.AddDefaultPolicy(x =>
-                    x.SetIsOriginAllowed(url => true)
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials()));
+
+            services.AddCors(x =>
+                {
+                    if (Environment.IsProduction())
+                    {
+                        x.AddDefaultPolicy(builder =>
+                        {
+                            builder.WithOrigins(webApiConfig.Domain)
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowCredentials()
+                                .WithExposedHeaders("X-Authorized", "X-Correlation-ID", "X-Version");
+                        });
+                    }
+                    else
+                    {
+                        x.AddDefaultPolicy(builder =>
+                        {
+                            builder.SetIsOriginAllowed(url => true)
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowCredentials()
+                                .WithExposedHeaders("X-Authorized", "X-Correlation-ID", "X-Version");
+                        });
+                    }
+                }
+            );
 
             services.AddCompression();
 
@@ -161,9 +188,9 @@ namespace DeveloperCourse.SecondTask.Product.API
             app.UseRouting();
 
             app.UseAuthentication();
-            
+
             app.UseMiddleware<VersionHeaderMiddleware>();
-            
+
             app.UseMiddleware<AuthorizeHeaderMiddleware>();
 
             app.UseAuthorization();
