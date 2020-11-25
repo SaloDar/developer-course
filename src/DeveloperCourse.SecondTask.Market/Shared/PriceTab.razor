@@ -21,7 +21,7 @@
                 else
                 {
                     <AuthorizeView Roles="@nameof(UserRole.Administrator)">
-                        <Authorized Context="Auth">
+                        <Authorized Context="auth">
                             <Form Style="text-align-last: center;display: flex;justify-content: center;" Layout="@(FormLayout.Inline)" Model="@_createPriceModel" OnFinish="CreatePrice">
                                 <FormItem Label="Retail">
                                     <AntDesign.InputNumber Min="0" @bind-Value="@_createPriceModel.Retail"/>

@@ -1,6 +1,7 @@
 @using DeveloperCourse.SecondTask.Market.Pages
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product.DTOs.Requests
+@using System.Globalization
 @inject IProductClient ProductClient
 
 <Modal Title="@("Create product")"
@@ -15,7 +16,7 @@
         </FormItem>
 
         <FormItem Label="Description">
-            <TextArea @bind-Value="@_model.Description"/>
+            <TextArea @bind-Value="@_model.Description"></TextArea>
         </FormItem>
 
         <FormItem Label="SKU">
@@ -67,7 +68,10 @@
     {
         var request = new CreateProductRequest
         {
-            Name = model?.Name, Description = model?.Description, Sku = model?.Sku, Weight = model?.Weight.ToString() + " g."
+            Name = model?.Name,
+            Description = model?.Description, 
+            Sku = model?.Sku,
+            Weight = model?.Weight.ToString(CultureInfo.InvariantCulture) + " g."
         };
 
         try
@@ -89,7 +93,7 @@
 
     private string FormatWeight(double value)
     {
-        return value.ToString() + " g.";
+        return value.ToString(CultureInfo.InvariantCulture) + " g.";
     }
 
     private string ParseWeight(string value)

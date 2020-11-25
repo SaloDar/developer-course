@@ -47,7 +47,7 @@ namespace DeveloperCourse.SecondTask.Market.Services
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -85,7 +85,7 @@ namespace DeveloperCourse.SecondTask.Market.Services
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

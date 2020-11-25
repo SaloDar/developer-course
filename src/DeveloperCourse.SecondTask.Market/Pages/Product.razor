@@ -67,7 +67,7 @@
                                 <BSListGroup>
                                     @foreach (var productPrice in (Prices ?? new List<PriceDto>()).Where(x => x.IsLast))
                                     {
-                                        <BSListGroupItem>@productPrice?.Retail @productPrice?.Currency.ToString() </BSListGroupItem>
+                                        <BSListGroupItem>@productPrice.Retail @productPrice?.Currency.ToString() </BSListGroupItem>
                                     }
                                 </BSListGroup>
                             }

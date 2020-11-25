@@ -3,7 +3,7 @@
 @inherits MatBlazor.BaseMatFileUpload
 
 <div @ref="@Ref" @attributes="@Attributes" class="@ClassMapper.AsString()" style="@StyleMapper.AsString()" id="@Id">
-    @if (AllowMultiple == true){
+    @if (AllowMultiple){
         <input accept="image/*" type="file" @ref="@InputRef" multiple />
     }
     else {
