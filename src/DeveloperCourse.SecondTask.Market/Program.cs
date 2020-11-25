@@ -12,6 +12,7 @@ using DeveloperCourse.SecondLesson.Common.Clients.MessageHandlers;
 using DeveloperCourse.SecondTask.Market.Configs;
 using DeveloperCourse.SecondTask.Market.Interfaces;
 using DeveloperCourse.SecondTask.Market.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +39,11 @@ namespace DeveloperCourse.SecondTask.Market
             builder.Services.AddSvgLoader();
             builder.Services.AddAntDesign();
             builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddOptions();
             builder.Services.AddTransient<IAuthService, AuthService>();
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<AuthStateProvider>());
 
             var appConfiguration = builder.Configuration.Get<AppConfiguration>();
 

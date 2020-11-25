@@ -1,8 +1,10 @@
 @page "/auth"
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
+@inject AuthStateProvider AuthStateProvider
 @using System.ComponentModel.DataAnnotations
 @using DeveloperCourse.SecondTask.Market.Interfaces
+@using DeveloperCourse.SecondTask.Market.Services
 
 <Tabs>
     <ChildContent>
@@ -82,7 +84,7 @@
     private bool _registerFailed = false;
 
     #endregion
-
+    
     #region Private Methods
 
     private async void OnFinishRegister(EditContext editContext)
@@ -92,6 +94,8 @@
         if (response)
         {
             _modelRegister = new RegisterModel();
+
+            AuthStateProvider.StateChanged();
 
             NavigationManager.NavigateTo("/");
         }
@@ -108,6 +112,8 @@
         if (response)
         {
             _modelLogin = new LoginModel();
+
+            AuthStateProvider.StateChanged();
 
             NavigationManager.NavigateTo("/");
         }

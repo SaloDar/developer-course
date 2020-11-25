@@ -1,5 +1,6 @@
 @using DeveloperCourse.SecondTask.Market.Shared
 
+<CascadingAuthenticationState>
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
@@ -10,5 +11,6 @@
         </LayoutView>
     </NotFound>
 </Router>
+</CascadingAuthenticationState>
 
 <AntContainer/>

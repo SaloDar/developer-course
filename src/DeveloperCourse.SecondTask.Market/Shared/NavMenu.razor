@@ -2,6 +2,9 @@
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Identity
 @using DeveloperCourse.SecondLesson.Common.Clients.Clients.Identity.DTOs
 @using DeveloperCourse.SecondTask.Market.Interfaces
+@using DeveloperCourse.SecondTask.Market.Services
+@using System.Security.Claims
+@inject AuthStateProvider AuthStateProvider
 
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="/products">Market</a>
@@ -40,6 +43,27 @@
 
     #endregion
 
+    #region Ovveriden Methods
+
+    protected override void OnParametersSet()
+    {
+        AuthStateProvider.AuthenticationStateChanged += (state) =>
+        {
+            StateHasChanged();
+        };
+        
+        base.OnParametersSet();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await ShowUser();
+    }
+
+    #endregion
+    
     #region Private Methods
 
     private void ToggleNavMenu()
@@ -50,8 +74,10 @@
     private async void Logout(MouseEventArgs e)
     {
         await AuthService.Logout();
+        
         await ShowUser();
-        StateHasChanged();
+        
+        AuthStateProvider.StateChanged();
     }
 
     private async Task ShowUser()
@@ -87,17 +113,6 @@
         _userLoaded = true;
 
         StateHasChanged();
-    }
-
-    #endregion
-
-    #region Ovveriden Methods
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        await ShowUser();
     }
 
     #endregion
