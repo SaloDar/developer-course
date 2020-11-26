@@ -13,15 +13,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="wwwroot\appsettings.Development.json" Condition="$(ASPNETCORE_ENVIRONMENT) == 'Development'">
-            <LogicalName>appsettings.json</LogicalName>
-        </EmbeddedResource>
-        <EmbeddedResource Include="wwwroot\appsettings.Production.json" Condition="$(ASPNETCORE_ENVIRONMENT) == 'Production'">
-            <LogicalName>appsettings.json</LogicalName>
-        </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="AntDesign" Version="0.4.1" />
         <PackageReference Include="Blazored.LocalStorage" Version="3.0.0" />
         <PackageReference Include="BlazorStrap" Version="1.5.0-preview-01" />
@@ -42,5 +33,4 @@
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Domain\DeveloperCourse.SecondTask.Domain.csproj" />
     </ItemGroup>
     
-
 </Project>
