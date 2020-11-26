@@ -12,4 +12,3 @@ FROM nginx:alpine
 WORKDIR /var/www/web
 COPY --from=build /app/wwwroot .
 COPY ["DeveloperCourse.SecondTask.Market/nginx.conf", "/etc/nginx/nginx.conf"]
-EXPOSE 80
