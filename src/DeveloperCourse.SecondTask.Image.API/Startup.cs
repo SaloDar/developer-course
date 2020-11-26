@@ -1,3 +1,4 @@
+using AspNetCore.Yandex.ObjectStorage;
 using AutoMapper;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
@@ -8,7 +9,6 @@ using DeveloperCourse.SecondLesson.Common.Identity.Middlewares;
 using DeveloperCourse.SecondLesson.Common.Identity.Services;
 using DeveloperCourse.SecondLesson.Common.Web.Extensions;
 using DeveloperCourse.SecondLesson.Common.Web.Middlewares;
-using DeveloperCourse.SecondTask.Image.API.Clients;
 using DeveloperCourse.SecondTask.Image.DataAccess.Context;
 using DeveloperCourse.SecondTask.Image.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Image.API.Infrastructure.Middlewares;
@@ -50,15 +50,11 @@ namespace DeveloperCourse.SecondTask.Image.API
             #region Configs
 
             var webApiConfig = Configuration.GetSection("WebApi").Get<WebApiConfig>();
-
-            var yandexDiskConfig = Configuration.GetSection("YandexDisk").Get<YandexDiskConfig>();
             
             var securityConfig = Configuration.GetSection("Security").Get<SecurityConfig>();
 
             services.Configure<WebApiConfig>(Configuration.GetSection("WebApi"));
-
-            services.Configure<YandexDiskConfig>(Configuration.GetSection("YandexDisk"));
-
+            
             #endregion
 
             services.AddAutoMapper(typeof(Startup));
@@ -81,30 +77,12 @@ namespace DeveloperCourse.SecondTask.Image.API
                 options.IncludeInResponse = true;
                 options.UpdateTraceIdentifier = false;
             });
-
-            var refitSettings = new RefitSettings
-            {
-                ContentSerializer = new NewtonsoftJsonContentSerializer(
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore,
-                        Formatting = Formatting.Indented,
-                        DefaultValueHandling = DefaultValueHandling.Ignore,
-                        ContractResolver = new DefaultContractResolver()
-                    })
-            };
-
-            services.AddRefitClient<IYandexDiskClient>(refitSettings)
-                .ConfigureHttpClient(c =>
-                {
-                    c.BaseAddress = yandexDiskConfig.BaseUrl;
-                    c.DefaultRequestHeaders.Authorization = yandexDiskConfig.AuthenticationHeader;
-                });
             
-            services.AddScoped<IUserContext, UserContext>();
-            services.AddTransient<IDataStorageService, YandexDiskService>();
-            services.AddTransient<IImageService, ImageService>();
+            services.AddYandexObjectStorage(Configuration, "Storage");
 
+            services.AddScoped<IUserContext, UserContext>();
+            services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<IDataStorageService, YandexObjectService>();
             services.AddTransient<VersionHeaderMiddleware>();
             services.AddTransient<AuthorizeHeaderMiddleware>();
             services.AddTransient<ApiErrorHandlingMiddleware>();

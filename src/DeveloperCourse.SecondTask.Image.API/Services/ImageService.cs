@@ -9,15 +9,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
 using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
-using DeveloperCourse.SecondTask.Image.API.Clients;
 using DeveloperCourse.SecondTask.Image.API.DTOs;
-using DeveloperCourse.SecondTask.Image.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
 using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DeveloperCourse.SecondTask.Image.API.Services
 {
@@ -32,7 +29,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
         private readonly IDataStorageService _dataStorageService;
 
         private readonly IUserContext _userContext;
-
+        
         public ImageService(ILogger<ImageService> logger, IMapper mapper, IImageContext imageContext,
             IDataStorageService dataStorageService, IUserContext userContext)
         {
