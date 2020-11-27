@@ -1,0 +1,68 @@
+version: '3.4'
+
+services:
+  dc.web:
+    ports:
+      - 4080:4080
+      
+  dc.identity.service:
+    ports:
+      - 4000:4000
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:4000
+      - DC_Identity_WebApi__Domain=dev.salodar.ru
+      - DC_Identity_ConnectionStrings__Identity=Server=dc.mssql,1433;Database=dc_identity;User Id=sa;Password=<mssql_prod_password>
+      - DC_Identity_Security__SigningKey=<jwt_prod_signing_key>
+      - DC_Identity_Security__EncryptionKey=<jwt_prod_encryptio_key>
+
+  dc.image.service:
+    ports:
+      - 4100:4100
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:4100
+      - DC_Image_WebApi__Domain=dev.salodar.ru
+      - DC_Image_ConnectionStrings__Image=Server=dc.mssql,1433;Database=dc_image;User Id=sa;Password=<mssql_prod_password>
+      - DC_Image_Storage__Bucket=<yandex_object_prod_bucket>
+      - DC_Image_Storage__AccessKey=<yandex_object_prod_access_key>
+      - DC_Image_Storage__SecretKey=<yandex_object_prod_secret_key>
+      - DC_Image_Security__SigningKey=<jwt_prod_signing_key>
+      - DC_Image_Security__EncryptionKey=<jwt_prod_encryptio_key>
+
+  dc.price.service:
+    ports:
+      - 4200:4200
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:4200
+      - DC_Price_WebApi__Domain=dev.salodar.ru
+      - DC_Price_ConnectionStrings__Price=Server=dc.mssql,1433;Database=dc_price;User Id=sa;Password=<mssql_prod_password>
+      - DC_Price_Security__SigningKey=<jwt_prod_signing_key>
+      - DC_Price_Security__EncryptionKey=<jwt_prod_encryptio_key>
+
+  dc.product.service:
+    ports:
+      - 4300:4300
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:4300
+      - DC_Product_WebApi__Domain=dev.salodar.ru
+      - DC_Product_WebApi__Routes__PriceApi=http://dc.price.service:4200/api
+      - DC_Product_WebApi__Routes__ImageApi=http://dc.image.service:4100/api
+      - DC_Product_ConnectionStrings__Product=Host=dc.postgres;Port=5432;Database=dc_product;Username=<postgre_prod_user>;Password=<postgre_prod_password>;encoding=UTF8
+      - DC_Product_Security__SigningKey=<jwt_prod_signing_key>
+      - DC_Product_Security__EncryptionKey=<jwt_prod_encryptio_key>
+
+  dc.mssql:
+    ports:
+      - 4010:1433
+    environment:
+      - SA_PASSWORD=<mssql_prod_password>
+
+  dc.postgres:
+    ports:
+      - 4020:5432
+    environment:
+      - POSTGRES_USER=<postgre_prod_user>
+      - POSTGRES_PASSWORD=<postgre_prod_password>

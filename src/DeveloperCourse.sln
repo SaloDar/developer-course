@@ -13,6 +13,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FirstTask", "FirstTask", "{CEAF1BBA-849D-414E-8DA8-E4F99F45A288}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SecondTask", "SecondTask", "{CEA8FCF5-100B-4DEE-A1AE-386FC672275D}"
+ProjectSection(SolutionItems) = preProject
+	docker-compose.yml = docker-compose.yml
+	docker-compose.Production.yml = docker-compose.Production.yml
+	docker-compose.Development.yml = docker-compose.Development.yml
+EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{783FAC88-151F-43C2-8D5D-01A307F5FDE0}"
 EndProject

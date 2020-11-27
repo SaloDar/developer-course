@@ -1,0 +1,61 @@
+version: '3.4'
+
+services:
+  dc.web:
+    container_name: dc_web_service
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: DeveloperCourse.SecondTask.Market/Dockerfile
+    
+  dc.identity.service:
+    container_name: dc_identity_service
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: DeveloperCourse.SecondTask.Identity.API/Dockerfile
+    depends_on:
+      - dc.mssql
+
+  dc.image.service:
+    container_name: dc_image_service
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: DeveloperCourse.SecondTask.Image.API/Dockerfile
+    depends_on:
+      - dc.mssql  
+
+  dc.price.service:
+    container_name: dc_price_service
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: DeveloperCourse.SecondTask.Price.API/Dockerfile
+    depends_on:
+      - dc.mssql
+
+  dc.product.service:
+    container_name: dc_product_service
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: DeveloperCourse.SecondTask.Product.API/Dockerfile
+    depends_on:
+      - dc.postgres
+  
+  dc.mssql:
+    container_name: dc_mssql
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    restart: on-failure
+    environment:
+      - MSSQL_TCP_PORT=1433
+      - ACCEPT_EULA=Y
+    volumes:
+      - "./data/mssql-server:/var/opt/mssql"
+  
+  dc.postgres:
+    container_name: dc_postgre
+    image: "postgres:12.5"
+    volumes:
+      - "./data/postgre:/var/lib/postgresql/data"

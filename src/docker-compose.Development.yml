@@ -1,0 +1,56 @@
+version: '3.4'
+
+services:
+  dc.web:
+    ports:
+      - 4080:4080
+
+  dc.identity.service:
+    ports:
+      - 4000:4000
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4000
+      - DC_Identity_ConnectionStrings__Identity=Server=dc.mssql,1433;Database=dc_identity;User Id=sa;Password=KpAzIR2WF4nReJf4KLk0LDleyu3rOOoi
+
+  dc.image.service:
+    ports:
+      - 4100:4100
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4100
+      - DC_Image_ConnectionStrings__Image=Server=dc.mssql,1433;Database=dc_image;User Id=sa;Password=KpAzIR2WF4nReJf4KLk0LDleyu3rOOoi
+      - DC_Image_Storage__Bucket=
+      - DC_Image_Storage__AccessKey=
+      - DC_Image_Storage__SecretKey=
+
+  dc.price.service:
+    ports:
+      - 4200:4200
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4200
+      - DC_Price_ConnectionStrings__Price=Server=dc.mssql,1433;Database=dc_price;User Id=sa;Password=KpAzIR2WF4nReJf4KLk0LDleyu3rOOoi
+
+  dc.product.service:
+    ports:
+      - 4300:4300
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:4300
+      - DC_Product_WebApi__Routes__PriceApi=http://dc.price.service:4200/api
+      - DC_Product_WebApi__Routes__ImageApi=http://dc.image.service:4100/api
+      - DC_Product_ConnectionStrings__Product=Host=dc.postgres;Port=5432;Database=dc_product;Username=dev;Password=Hs53swMGvX7tLGj4ZIEh0ruVw3QpIfsb;encoding=UTF8
+
+  dc.mssql:
+    ports:
+      - 4010:1433
+    environment:
+      - SA_PASSWORD=KpAzIR2WF4nReJf4KLk0LDleyu3rOOoi
+
+  dc.postgres:
+    ports:
+      - 4020:5432
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=Hs53swMGvX7tLGj4ZIEh0ruVw3QpIfsb
