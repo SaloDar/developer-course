@@ -1,9 +1,17 @@
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Reflection;
 using AutoMapper;
-using DeveloperCourse.SecondTask.Product.API.Clients;
+using CorrelationId;
+using CorrelationId.DependencyInjection;
+using CorrelationId.HttpClient;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price;
+using DeveloperCourse.SecondLesson.Common.Clients.MessageHandlers;
+using DeveloperCourse.SecondLesson.Common.Identity.Configs;
+using DeveloperCourse.SecondLesson.Common.Identity.Extensions;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Identity.Middlewares;
+using DeveloperCourse.SecondLesson.Common.Identity.Services;
+using DeveloperCourse.SecondLesson.Common.Web.Extensions;
+using DeveloperCourse.SecondLesson.Common.Web.Middlewares;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Product.API.Infrastructure.Middlewares;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
@@ -13,13 +21,11 @@ using DeveloperCourse.SecondTask.Product.DataAccess.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Refit;
@@ -28,11 +34,18 @@ namespace DeveloperCourse.SecondTask.Product.API
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        #region Props
 
-        public Startup(IConfiguration configuration)
+        public IConfiguration Configuration { get; }
+        
+        public IWebHostEnvironment Environment { get; }
+
+        #endregion
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -43,16 +56,34 @@ namespace DeveloperCourse.SecondTask.Product.API
 
             services.Configure<WebApiConfig>(Configuration.GetSection("WebApi"));
 
+            var securityConfig = Configuration.GetSection("Security").Get<SecurityConfig>();
+
             #endregion
 
             services.AddAutoMapper(typeof(Startup));
 
             services.AddOptions();
-            services.AddMemoryCache();
-            
+
+            services.AddHttpContextAccessor();
+
+            services.AddTransient<ForwardAuthenticateTokenMessageHandler>();
+
+            services.AddScoped<IUserContext, UserContext>();
+
             services.AddDbContext<ProductContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Product")));
-            
+
             services.AddScoped<IProductContext, ProductContext>();
+
+            services.AddJwtAuthentication(securityConfig);
+
+            services.AddDefaultCorrelationId(options =>
+            {
+                options.AddToLoggingScope = true;
+                options.EnforceHeader = false;
+                options.IgnoreRequestHeader = false;
+                options.IncludeInResponse = true;
+                options.UpdateTraceIdentifier = false;
+            });
 
             var refitSettings = new RefitSettings
             {
@@ -70,50 +101,52 @@ namespace DeveloperCourse.SecondTask.Product.API
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = webApiConfig.Routes.PriceApi;
-                });
+                })
+                .AddCorrelationIdForwarding()
+                .AddHttpMessageHandler<ForwardAuthenticateTokenMessageHandler>();
 
             services.AddRefitClient<IImageClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = webApiConfig.Routes.ImageApi;
-                });
-
-            services.AddTransient<ApiErrorHandlingMiddleware>();
+                })
+                .AddCorrelationIdForwarding()
+                .AddHttpMessageHandler<ForwardAuthenticateTokenMessageHandler>();
 
             services.AddTransient<IProductService, ProductService>();
-            
-            services.AddCors(options =>
-                options.AddDefaultPolicy(x =>
-                    x.SetIsOriginAllowed(url => true)
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials()));
 
-            #region Compression
+            services.AddTransient<VersionHeaderMiddleware>();
+            services.AddTransient<AuthorizeHeaderMiddleware>();
+            services.AddTransient<ApiErrorHandlingMiddleware>();
 
-            services.Configure<BrotliCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Optimal;
-            });
-
-            services.Configure<GzipCompressionProviderOptions>(options =>
-            {
-                options.Level = CompressionLevel.Optimal;
-            });
-
-            services.AddResponseCompression(options =>
-            {
-                options.Providers.Add<BrotliCompressionProvider>();
-                options.Providers.Add<GzipCompressionProvider>();
-                options.EnableForHttps = true;
-
-                options.MimeTypes = new[]
+            services.AddCors(x =>
                 {
-                    "text/plain", "text/json", "application/json"
-                };
-            });
+                    if (Environment.IsProduction())
+                    {
+                        x.AddDefaultPolicy(builder =>
+                        {
+                            builder.WithOrigins(webApiConfig.Domain)
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowCredentials()
+                                .WithExposedHeaders("X-Authorized", "X-Correlation-ID", "X-Version");
+                        });
+                    }
+                    else
+                    {
+                        x.AddDefaultPolicy(builder =>
+                        {
+                            builder.SetIsOriginAllowed(url => true)
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                                .AllowCredentials()
+                                .WithExposedHeaders("X-Authorized", "X-Correlation-ID", "X-Version");
+                        });
+                    }
+                }
+            );
 
-            #endregion
+            services.AddCompression();
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
@@ -126,28 +159,12 @@ namespace DeveloperCourse.SecondTask.Product.API
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
 
-            services.AddHttpContextAccessor();
+            services.AddSwagger(webApiConfig.ServiceName);
 
-            #region Swagger
-
-            services.AddSwaggerGen(swagger =>
+            services.Configure<ForwardedHeadersOptions>(options =>
             {
-                swagger.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = webApiConfig.ServiceName, Version = "v1"
-                });
-
-                swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
-                    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
-
-                swagger.EnableAnnotations();
-                swagger.UseInlineDefinitionsForEnums();
-                swagger.CustomSchemaIds(i => i.FullName);
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
-
-            services.AddSwaggerGenNewtonsoftSupport();
-
-            #endregion
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<WebApiConfig> webApiConfig)
@@ -162,25 +179,30 @@ namespace DeveloperCourse.SecondTask.Product.API
                 });
             }
 
+            app.UseForwardedHeaders();
+
             app.UseCors();
+
+            app.UseCorrelationId();
 
             app.UseRouting();
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+            app.UseAuthentication();
+
+            app.UseMiddleware<VersionHeaderMiddleware>();
+
+            app.UseMiddleware<AuthorizeHeaderMiddleware>();
 
             app.UseAuthorization();
 
             app.UseMiddleware<ApiErrorHandlingMiddleware>();
 
+            app.UseResponseCompression();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            app.UseResponseCompression();
         }
     }
 }

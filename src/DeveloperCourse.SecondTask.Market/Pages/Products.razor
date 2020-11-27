@@ -1,15 +1,27 @@
 @page "/products"
 @inject IProductClient ProductClient
+@inject AuthStateProvider AuthStateProvider
 @using DeveloperCourse.SecondTask.Market.Shared
-@using DeveloperCourse.SecondTask.Market.Clients.Product
-@using DeveloperCourse.SecondTask.Market.Clients.Product.DTOs
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product.DTOs
+@using DeveloperCourse.SecondLesson.Domain.Types
+@using DeveloperCourse.SecondTask.Market.Services
 
 <AntList style="min-height: 350px;" DataSource="@(ProductsCollection ?? new List<ProductDto>())" ItemLayout="@ListItemLayout.Vertical">
     <Header>
         <Title style="text-align: center;" Level="4">Products</Title>
-        <Button Type="default" style="display: block;margin-left: auto;margin-right: 0;" OnClick="@(() => _createProductModal.Open())">
-            Add product
-        </Button>
+        @if (ProductsCollection == null)
+        {
+            <Alert Type="@AlertType.Error" Message="Product service is unavailable" ShowIcon/>
+        }
+        else
+        {
+            <AuthorizeView Roles="@nameof(UserRole.Administrator)">
+                <Button Type="default" style="display: block;margin-left: auto;margin-right: 0;" OnClick="@(() => _createProductModal.Open())">
+                    Add product
+                </Button>
+            </AuthorizeView>
+        }
     </Header>
     <ChildContent Context="item">
         <Skeleton Loading="@(!IsLoaded)" Active Avatar AvatarShape="square">
@@ -41,7 +53,7 @@
     #region Fields
 
     private CreateProductModal _createProductModal;
-
+    
     private readonly RenderFragment<Guid> _productLink = context => @<a href="@($"product/{context}")">
                                                                         <Button Shape="round" Size="large">View</Button>
                                                                     </a>;
@@ -54,19 +66,35 @@
 
     #region Props
 
-    public ICollection<ProductDto> ProductsCollection { get; set; }
+    public ICollection<ProductDto> ProductsCollection { get; set; } = new List<ProductDto>();
 
     public bool IsLoaded => ProductsCollection?.Any() ?? false;
 
     #endregion
+    
+    #region Ovveriden Methods
 
-    #region Private Methods
+    protected override void OnParametersSet()
+    {
+        AuthStateProvider.AuthenticationStateChanged += (state) =>
+        {
+            StateHasChanged();
+        };
+        
+        base.OnParametersSet();
+    }
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+        
         await UpdateData();
     }
 
+    #endregion
+    
+    #region Private Methods
+    
     private async Task UpdateData()
     {
         try
@@ -74,6 +102,8 @@
             var response = await ProductClient.GetProducts();
 
             ProductsCollection = response.Products.OrderBy(x => x.Name).ToList();
+
+            StateHasChanged();
         }
         catch (Exception)
         {

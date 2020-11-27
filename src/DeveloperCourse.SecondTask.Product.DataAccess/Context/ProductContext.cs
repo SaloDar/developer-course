@@ -1,6 +1,8 @@
+using System;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
 using DeveloperCourse.SecondLesson.Domain.Entities;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +19,12 @@ namespace DeveloperCourse.SecondTask.Product.DataAccess.Context
     /// </example>
     public class ProductContext : DbContext, IProductContext
     {
+        #region Fields
+
+        private readonly IUserContext _userContext;
+
+        #endregion
+
         #region Entities
 
         public DbSet<Domain.Entities.Product> Products { get; set; }
@@ -25,8 +33,9 @@ namespace DeveloperCourse.SecondTask.Product.DataAccess.Context
 
         #region Constructors
 
-        public ProductContext(DbContextOptions<ProductContext> options) : base(options)
+        public ProductContext(DbContextOptions<ProductContext> options, IUserContext userContext) : base(options)
         {
+            _userContext = userContext;
         }
 
         #endregion
@@ -93,7 +102,7 @@ namespace DeveloperCourse.SecondTask.Product.DataAccess.Context
 
                 if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.Changed();
+                    entry.Entity.Changed(_userContext?.Identity?.UserId ?? Guid.Empty);
                 }
             }
         }

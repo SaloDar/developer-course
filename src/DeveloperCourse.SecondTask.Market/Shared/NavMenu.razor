@@ -1,4 +1,12 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@inject IAuthService AuthService
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Identity
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Identity.DTOs
+@using DeveloperCourse.SecondTask.Market.Interfaces
+@using DeveloperCourse.SecondTask.Market.Services
+@using System.Security.Claims
+@inject AuthStateProvider AuthStateProvider
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="/products">Market</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -14,16 +22,99 @@
         </li>
     </ul>
 </div>
+@if (_userLoaded)
+{
+    <div class="top-row pl-4 navbar navbar-dark" style="position: sticky; top: 100%; height: 10%; justify-content: center;">
+        @_authFragment
+    </div>
+}
 
 @code {
 
+    #region Fields
+
     private bool _collapseNavMenu = true;
 
+    private bool _userLoaded = false;
+
+    private RenderFragment _authFragment = @<div></div>;
+
     private string NavMenuCssClass => _collapseNavMenu ? "collapse" : null;
+
+    #endregion
+
+    #region Ovveriden Methods
+
+    protected override void OnParametersSet()
+    {
+        AuthStateProvider.AuthenticationStateChanged += (state) =>
+        {
+            StateHasChanged();
+        };
+        
+        base.OnParametersSet();
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await ShowUser();
+    }
+
+    #endregion
+    
+    #region Private Methods
 
     private void ToggleNavMenu()
     {
         _collapseNavMenu = !_collapseNavMenu;
     }
-    
+
+    private async void Logout(MouseEventArgs e)
+    {
+        await AuthService.Logout();
+        
+        await ShowUser();
+        
+        AuthStateProvider.StateChanged();
+    }
+
+    private async Task ShowUser()
+    {
+        var user = await AuthService.GetCurrentUser();
+
+        if (user != null)
+        {
+            _authFragment = @<div style="display: flex;">
+                                <div style="display: inline-flex; justify-content: center; align-content: center; align-items: center; align-self: center;">
+                                    <span class="navbar-brand" style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
+                                        <Icon Type="user" Theme="outline"/>
+                                        <div style="flex-basis: 100%; height: 0;"></div>
+                                        @user.Username
+                                        <div style="flex-basis: 100%; height: 0;"></div>
+                                        <Text Keyboard>@user.Roles.FirstOrDefault().ToString()</Text>
+                                    </span>
+                                </div>
+                                <div style="display: inline-flex;">
+                                    <div style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
+                                        <span @onclick="Logout" style="color: white;" class="oi oi-account-logout"></span>
+                                    </div>
+                                </div>
+                            </div>;
+        }
+        else
+        {
+            _authFragment = @<span class="navbar-brand" style="display: flex; align-items: center; flex-wrap: wrap; justify-content: center;">
+                                <a class="navbar-brand" href="/auth">Login/Register</a>
+                            </span>;
+        }
+
+        _userLoaded = true;
+
+        StateHasChanged();
+    }
+
+    #endregion
+
 }

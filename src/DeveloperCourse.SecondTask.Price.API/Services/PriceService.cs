@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Price.API.DTOs;
 using DeveloperCourse.SecondTask.Price.API.Interfaces;
 using DeveloperCourse.SecondTask.Price.Domain.Interfaces;
-using Money;
 
 namespace DeveloperCourse.SecondTask.Price.API.Services
 {
@@ -16,10 +18,13 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
         private readonly IPriceRepository _priceRepository;
 
-        public PriceService(IMapper mapper, IPriceRepository priceRepository)
+        private readonly IUserContext _userContext;
+
+        public PriceService(IMapper mapper, IPriceRepository priceRepository, IUserContext userContext)
         {
             _mapper = mapper;
             _priceRepository = priceRepository;
+            _userContext = userContext;
         }
 
         public async Task<PriceDto> GetPrice(Guid id)
@@ -28,7 +33,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (price == null)
             {
-                throw new Exception($"Price with id {id} was not found.");
+                throw new NotFoundException($"Price with id {id} was not found.");
             }
 
             return _mapper.Map<PriceDto>(price);
@@ -41,7 +46,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (price == null)
             {
-                throw new Exception($"Price with id {id} was not found.");
+                throw new NotFoundException($"Price with id {id} was not found.");
             }
 
             if (productId != null && productId.Value != Guid.Empty)
@@ -68,7 +73,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (!updateResult)
             {
-                throw new Exception($"Couldn't update price with id {id}.");
+                throw new BadRequestException($"Couldn't update price with id {id}.");
             }
 
             price = await _priceRepository.GetById(price.Id);
@@ -82,7 +87,7 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
 
             if (!result)
             {
-                throw new Exception($"Couldn't delete price with id {id}.");
+                throw new BadRequestException($"Couldn't delete price with id {id}.");
             }
         }
 
@@ -110,12 +115,19 @@ namespace DeveloperCourse.SecondTask.Price.API.Services
             return _mapper.Map<IEnumerable<PriceDto>>(prices).ToList();
         }
 
-        public async Task<PriceDto> CreatePrice(Guid productId, decimal retailPrice, decimal costPrice, Currency currency)
+        public async Task<PriceDto> CreatePrice(Guid productId, decimal retailPrice, decimal costPrice,
+            Currency currency)
         {
+            if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
+                _userContext.Identity.UserId == Guid.Empty)
+            {
+                throw new UnauthorizedException("Is not authenticated.");
+            }
+
             await _priceRepository.UpdateIsLastByProduct(productId, currency);
 
-            var newPrice =
-                await _priceRepository.Create(new Domain.Entities.Price(productId, retailPrice, costPrice, currency));
+            var newPrice = await _priceRepository.Create(new Domain.Entities.Price(productId, retailPrice, costPrice,
+                currency, _userContext.Identity.UserId));
 
             return _mapper.Map<PriceDto>(newPrice);
         }

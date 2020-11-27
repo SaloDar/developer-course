@@ -26,6 +26,10 @@ namespace DeveloperCourse.SecondTask.Product.DataAccess.Migrations
                         .HasColumnName("id")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnName("created_by")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnName("created_date")
                         .HasColumnType("timestamp without time zone");
@@ -38,6 +42,10 @@ namespace DeveloperCourse.SecondTask.Product.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnName("is_deleted")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid>("LastSavedBy")
+                        .HasColumnName("last_saved_by")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("LastSavedDate")
                         .HasColumnName("last_saved_date")

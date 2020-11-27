@@ -17,8 +17,9 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="10.1.1" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
+        <PackageReference Include="CorrelationId" Version="3.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.10" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.9" />
-        <PackageReference Include="Multi-Currency-Money" Version="1.1.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Refit" Version="5.2.1" />
         <PackageReference Include="Refit.HttpClientFactory" Version="5.2.1" />
@@ -36,6 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Clients\DeveloperCourse.SecondLesson.Common.Clients.csproj" />
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Identity\DeveloperCourse.SecondLesson.Common.Identity.csproj" />
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Web\DeveloperCourse.SecondLesson.Common.Web.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Product.DataAccess\DeveloperCourse.SecondTask.Product.DataAccess.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Product.Domain\DeveloperCourse.SecondTask.Product.Domain.csproj" />
     </ItemGroup>

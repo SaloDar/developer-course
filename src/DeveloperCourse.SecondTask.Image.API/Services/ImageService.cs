@@ -7,15 +7,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using DeveloperCourse.SecondTask.Image.API.Clients;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
 using DeveloperCourse.SecondTask.Image.API.DTOs;
-using DeveloperCourse.SecondTask.Image.API.Infrastructure.Configs;
 using DeveloperCourse.SecondTask.Image.API.Interfaces;
 using DeveloperCourse.SecondTask.Image.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace DeveloperCourse.SecondTask.Image.API.Services
 {
@@ -29,13 +28,16 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         private readonly IDataStorageService _dataStorageService;
 
+        private readonly IUserContext _userContext;
+        
         public ImageService(ILogger<ImageService> logger, IMapper mapper, IImageContext imageContext,
-            IDataStorageService dataStorageService)
+            IDataStorageService dataStorageService, IUserContext userContext)
         {
             _logger = logger;
             _mapper = mapper;
             _imageContext = imageContext;
             _dataStorageService = dataStorageService;
+            _userContext = userContext;
         }
 
         public async Task<ImageDto> UpdateImage(Guid id, Guid? productId = null, IFormFile image = null)
@@ -44,7 +46,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (productImage == null)
             {
-                throw new Exception($"Image with id {id} was not found.");
+                throw new NotFoundException($"Image with id {id} was not found.");
             }
 
             if (productId != null && productId.Value != Guid.Empty)
@@ -79,7 +81,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (image == null)
             {
-                throw new Exception($"Image with id {id} was not found.");
+                throw new NotFoundException($"Image with id {id} was not found.");
             }
 
             return _mapper.Map<ImageDto>(image);
@@ -87,14 +89,20 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
         public async Task<ImageDto> CreateImage(Guid productId, IFormFile image)
         {
+            if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
+                _userContext.Identity.UserId == Guid.Empty)
+            {
+                throw new UnauthorizedException("Is not authenticated.");
+            }
+
             if (productId == Guid.Empty)
             {
-                throw new InvalidOperationException("Product id can't be empty");
+                throw new BadRequestException("Product id can't be empty");
             }
 
             var uploadedLink = await UploadImage(image);
 
-            var productImage = new Domain.Entities.Image(productId, uploadedLink);
+            var productImage = new Domain.Entities.Image(productId, uploadedLink, _userContext.Identity.UserId);
 
             await _imageContext.Images.AddAsync(productImage);
 
@@ -109,7 +117,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (image == null)
             {
-                throw new Exception($"Image with id {id} was not found.");
+                throw new NotFoundException($"Image with id {id} was not found.");
             }
 
             _imageContext.Images.Remove(image);
@@ -123,7 +131,7 @@ namespace DeveloperCourse.SecondTask.Image.API.Services
 
             if (!contentType?.FirstOrDefault()?.Equals("image", StringComparison.InvariantCultureIgnoreCase) ?? false)
             {
-                throw new InvalidOperationException("Unsupported type");
+                throw new UnsupportedMediaTypeException("Unsupported type");
             }
 
             var fileLink = await _dataStorageService.UploadFile(image);

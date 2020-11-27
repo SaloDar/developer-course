@@ -1,6 +1,6 @@
 using System;
 using DeveloperCourse.SecondLesson.Domain.Entities;
-using Money;
+using DeveloperCourse.SecondLesson.Domain.Types;
 
 namespace DeveloperCourse.SecondTask.Price.Domain.Entities
 {
@@ -41,7 +41,7 @@ namespace DeveloperCourse.SecondTask.Price.Domain.Entities
         {
         }
 
-        public Price(Guid productId, decimal retail, decimal cost, Currency currency)
+        public Price(Guid productId, decimal retail, decimal cost, Currency currency, Guid userId) : base(userId)
         {
             Id = Guid.NewGuid();
             ProductId = productId;

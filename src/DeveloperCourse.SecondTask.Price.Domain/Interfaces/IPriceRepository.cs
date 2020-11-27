@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DeveloperCourse.SecondLesson.Domain.Interfaces;
-using Money;
+using DeveloperCourse.SecondLesson.Domain.Types;
 
 namespace DeveloperCourse.SecondTask.Price.Domain.Interfaces
 {

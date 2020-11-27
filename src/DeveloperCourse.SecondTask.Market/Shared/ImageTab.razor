@@ -2,9 +2,13 @@
 @using Refit
 @using AntDesign;
 @using System.IO
-@using DeveloperCourse.SecondTask.Market.Clients.Image
-@using DeveloperCourse.SecondTask.Market.Clients.Image.DTOs
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image.DTOs
+@using DeveloperCourse.SecondLesson.Domain.Types
+@using DeveloperCourse.SecondTask.Market.Interfaces
 @using DeveloperCourse.SecondTask.Market.Pages
+@using DeveloperCourse.SecondTask.Market.Services
+@inject AuthStateProvider AuthStateProvider
 @inject IImageClient ImageClient
 
 <TabPane Key="Image">
@@ -12,13 +16,15 @@
     <ChildContent>
         <AntList Loading="@(!IsImagesLoaded)" DataSource="@(Images ?? new List<ImageDto>())" ItemLayout="@(ListItemLayout.Horizontal)">
             <Header>
-                @if (Images != null)
+                @if (Images == null)
                 {
-                    <FileUpload Style="height: 5px;" OnChange="@FilesReady" Label="Add new image"></FileUpload>
+                    <Alert Type="@AlertType.Error" Message="Image service is unavailable" ShowIcon />
                 }
                 else
                 {
-                    <Alert Type="@AlertType.Error" Message="Image service is unavailable" ShowIcon />
+                    <AuthorizeView Roles="@nameof(UserRole.Administrator)">
+                        <FileUpload Style="height: 5px;" OnChange="@FilesReady" Label="Add new image"></FileUpload>
+                    </AuthorizeView>
                 }
             </Header>
             <ChildContent Context="item">
@@ -65,9 +71,34 @@
 
     #endregion
 
+    #region Fields
+    
     private readonly RenderFragment<Uri> _avatarLink = context => @<Avatar Shape="square" Size="64" Src="@(context.ToString())"></Avatar>;
 
     private readonly RenderFragment _avatarStandard = @<Avatar Shape="square" Size="64" Icon="loading"></Avatar>;
+    
+    #endregion
+
+    #region Ovveriden Methods
+    
+    protected override void OnParametersSet()
+    {
+        AuthStateProvider.AuthenticationStateChanged += (state) =>
+        {
+            StateHasChanged();
+        };
+        
+        base.OnParametersSet();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    #endregion
+    
+    #region Private Methods
 
     private async Task FilesReady(IMatFileUploadEntry[] files)
     {
@@ -87,17 +118,13 @@
             }
         }
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await UpdateData();
-    }
-
+    
     private async Task UpdateData()
     {
         try
         {
             var response = await ImageClient.GetImages(ProductId);
+            
             Images = response?.Images?.ToList() ?? new List<ImageDto>();
         }
         catch (Exception)
@@ -105,5 +132,7 @@
             Images = null;
         }
     }
+    
+    #endregion
 
 }

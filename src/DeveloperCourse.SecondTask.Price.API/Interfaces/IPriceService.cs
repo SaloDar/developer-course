@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Price.API.DTOs;
-using Money;
 
 namespace DeveloperCourse.SecondTask.Price.API.Interfaces
 {

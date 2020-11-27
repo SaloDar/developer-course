@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Dapper;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
 using DeveloperCourse.SecondLesson.Domain.Entities;
 using DeveloperCourse.SecondLesson.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Infrastructure.Configs;
@@ -19,24 +20,31 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 
         protected List<string> IgnoredFieldsWhenUpdate => new List<string>
         {
-            "Id", "CreatedDate", "IsDeleted"
+            "Id", "CreatedDate", "CreatedBy", "IsDeleted"
         };
-        
+
         private readonly DbOptions _dbOptions;
 
+        private readonly IUserContext _userContext;
+
+        #endregion
+
+        #region Props
+
         protected string TableName { get; }
-        
+
         #endregion
 
         #region Construcstors
 
-        public BaseRepository(IOptions<DbOptions> dbOptions) : this(dbOptions, typeof(TEntity).Name)
+        public BaseRepository(IOptions<DbOptions> dbOptions, IUserContext userContext) : this(dbOptions, userContext, typeof(TEntity).Name)
         {
         }
 
-        public BaseRepository(IOptions<DbOptions> dbOptions, string tableName)
+        public BaseRepository(IOptions<DbOptions> dbOptions, IUserContext userContext, string tableName)
         {
             _dbOptions = dbOptions.Value;
+            _userContext = userContext;
             TableName = tableName;
         }
 
@@ -48,7 +56,7 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.QueryFirstOrDefaultAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [Id] = @id AND [IsDeleted] = 0", new {id});
+            return await db.QueryFirstOrDefaultAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [Id] = @id AND [IsDeleted] = 0", new { id });
         }
 
         public virtual async Task<TEntity> Create(TEntity entity)
@@ -65,7 +73,7 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
 
         public virtual async Task<bool> Update(TEntity entity)
         {
-            entity.Changed();
+            entity.Changed(_userContext?.Identity?.UserId ?? Guid.Empty);
 
             var entityProps = GetEntityProps()
                 .Where(x => !IgnoredFieldsWhenUpdate.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
@@ -73,7 +81,7 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
             var values = string.Join(',', entityProps.Select(x => $"{x}=@{x}"));
 
             using var db = CreateConnection();
-            
+
             return await db.ExecuteAsync($"UPDATE [{TableName}] SET {values} WHERE [id] = @id AND [IsDeleted] = 0", entity) != 0;
         }
 
@@ -81,23 +89,33 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 1, LastSavedDate = @date WHERE [id] = @id AND [IsDeleted] = 0", new {id,date = DateTime.UtcNow}) != 0;
+            var parameters = new
+            {
+                id, date = DateTime.UtcNow, user = _userContext?.Identity?.UserId ?? Guid.Empty
+            };
+
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 1, LastSavedDate = @date, LastSavedBy = @user WHERE [id] = @id AND [IsDeleted] = 0", parameters) != 0;
         }
 
         public virtual async Task<bool> Restore(Guid id)
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 0, LastSavedDate = @date WHERE [id] = @id AND [IsDeleted] = 1", new {id,date = DateTime.UtcNow}) != 0;
+            var parameters = new
+            {
+                id, date = DateTime.UtcNow, user = _userContext?.Identity?.UserId ?? Guid.Empty
+            };
+
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = 0, LastSavedDate = @date, LastSavedBy = @user WHERE [id] = @id AND [IsDeleted] = 1", parameters) != 0;
         }
-        
+
         public virtual async Task<IEnumerable<TEntity>> GetAll()
         {
             using var db = CreateConnection();
 
             return await db.QueryAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [IsDeleted] = 0");
         }
-        
+
         public virtual async Task<IEnumerable<TEntity>> CreateMany(IEnumerable<TEntity> entities)
         {
             var entityProps = GetEntityProps();
@@ -108,17 +126,17 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
             using var db = CreateConnection();
 
             await db.ExecuteAsync($"INSERT INTO [{TableName}] ({valueNames}) VALUES ({valueVars})", entities);
-            
-            return await db.QueryAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [Id] IN ('{string.Join("','", entities.Select(x=>x.Id))}') AND [IsDeleted] = 0");
+
+            return await db.QueryAsync<TEntity>($"SELECT * FROM [{TableName}] WHERE [Id] IN ('{string.Join("','", entities.Select(x => x.Id))}') AND [IsDeleted] = 0");
         }
 
         public virtual async Task<bool> UpdateMany(IEnumerable<TEntity> entities)
         {
             foreach (var entity in entities)
             {
-                entity.Changed();
+                entity.Changed(_userContext?.Identity?.UserId ?? Guid.Empty);
             }
-            
+
             var entityProps = GetEntityProps()
                 .Where(x => !IgnoredFieldsWhenUpdate.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
 
@@ -133,14 +151,24 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '1', LastSavedDate = @date WHERE [Id] IN ('{string.Join("','", id)}')", new {date = DateTime.UtcNow}) != 0;
+            var parameters = new
+            {
+                date = DateTime.UtcNow, user = _userContext?.Identity?.UserId ?? Guid.Empty
+            };
+
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '1', LastSavedDate = @date, LastSavedBy = @user WHERE [Id] IN ('{string.Join("','", id)}')", parameters) != 0;
         }
 
         public virtual async Task<bool> RestoreMany(IEnumerable<Guid> id)
         {
             using var db = CreateConnection();
 
-            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '0', LastSavedDate = @date WHERE [Id] IN ('{string.Join("','", id)}')",new {date = DateTime.UtcNow}) != 0;
+            var parameters = new
+            {
+                date = DateTime.UtcNow, user = _userContext?.Identity?.UserId ?? Guid.Empty
+            };
+
+            return await db.ExecuteAsync($"UPDATE [{TableName}] SET IsDeleted = '0', LastSavedDate = @date, LastSavedBy = @user WHERE [Id] IN ('{string.Join("','", id)}')", parameters) != 0;
         }
 
         #endregion
@@ -155,10 +183,12 @@ namespace DeveloperCourse.SecondTask.Infrastructure.Repositories
                     y.AttributeType != typeof(IgnoreDataMemberAttribute)))
                 .Select(x =>
                 {
-                    var attributeData = (DataMemberAttribute) Attribute.GetCustomAttribute(x, typeof(DataMemberAttribute));
+                    var attributeData =
+                        (DataMemberAttribute) Attribute.GetCustomAttribute(x, typeof(DataMemberAttribute));
 
                     return attributeData?.Name ?? x.Name;
-                }).ToList();
+                })
+                .ToList();
         }
 
         protected virtual IDbConnection CreateConnection()

@@ -9,5 +9,7 @@ namespace DeveloperCourse.SecondTask.Market.Configs
         public Uri Product { get; set; }
 
         public Uri Image { get; set; }
+
+        public Uri Identity { get; set; }
     }
 }

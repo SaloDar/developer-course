@@ -1,9 +1,12 @@
-@using Money
+@using DeveloperCourse.SecondLesson.Domain.Types
 @using AntDesign;
-@using DeveloperCourse.SecondTask.Market.Clients.Price
-@using DeveloperCourse.SecondTask.Market.Clients.Price.DTOs
-@using DeveloperCourse.SecondTask.Market.Clients.Price.DTOs.Requests
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price.DTOs
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price.DTOs.Requests
+@using DeveloperCourse.SecondTask.Market.Interfaces
 @using DeveloperCourse.SecondTask.Market.Pages
+@using DeveloperCourse.SecondTask.Market.Services
+@inject AuthStateProvider AuthStateProvider
 @inject IPriceClient PriceClient
 
 <TabPane Key="Price">
@@ -11,29 +14,33 @@
     <ChildContent>
         <AntList Loading="@(!IsPricesLoaded)" DataSource="@((Prices ?? new List<PriceDto>()).OrderByDescending(x => x.IsLast))" ItemLayout="@(ListItemLayout.Horizontal)">
             <Header>
-                @if (Prices != null)
+                @if (Prices == null)
                 {
-                    <Form Style="text-align-last: center;display: flex;justify-content: center;" Layout="@(FormLayout.Inline)" Model="@_createPriceModel" OnFinish="CreatePrice">
-
-                        <FormItem Label="Retail">
-                            <AntDesign.InputNumber Min="0" @bind-Value="@_createPriceModel.Retail"/>
-                        </FormItem>
-
-                        <FormItem Label="Cost">
-                            <AntDesign.InputNumber Min="0" @bind-Value="@_createPriceModel.Cost"/>
-                        </FormItem>
-
-                        <FormItem Label="Currency">
-                            <Select LabelInValue Style="max-width: 100px;width: 100px;" @bind-Value="@_createPriceModel.Currency" Options="@_currencyOptions"></Select>
-                        </FormItem>
-                        <FormItem>
-                            <Button HtmlType="submit">Add</Button>
-                        </FormItem>
-                    </Form>
+                    <Alert Type="@AlertType.Error" Message="Price service is unavailable" ShowIcon/>
                 }
                 else
                 {
-                    <Alert Type="@AlertType.Error" Message="Price service is unavailable" ShowIcon/>
+                    <AuthorizeView Roles="@nameof(UserRole.Administrator)">
+                        <Authorized Context="auth">
+                            <Form Style="text-align-last: center;display: flex;justify-content: center;" Layout="@(FormLayout.Inline)" Model="@_createPriceModel" OnFinish="CreatePrice">
+                                <FormItem Label="Retail">
+                                    <AntDesign.InputNumber Min="0" @bind-Value="@_createPriceModel.Retail"/>
+                                </FormItem>
+
+                                <FormItem Label="Cost">
+                                    <AntDesign.InputNumber Min="0" @bind-Value="@_createPriceModel.Cost"/>
+                                </FormItem>
+
+                                <FormItem Label="Currency">
+                                    <Select LabelInValue Style="max-width: 100px;width: 100px;" @bind-Value="@_createPriceModel.Currency" Options="@_currencyOptions"></Select>
+                                </FormItem>
+
+                                <FormItem>
+                                    <Button HtmlType="submit">Add</Button>
+                                </FormItem>
+                            </Form>
+                        </Authorized>
+                    </AuthorizeView>
                 }
             </Header>
             <ChildContent Context="item">
@@ -98,6 +105,27 @@
 
     #endregion
 
+    #region Ovveriden Methods
+
+    protected override void OnParametersSet()
+    {
+        AuthStateProvider.AuthenticationStateChanged += (state) =>
+        {
+            StateHasChanged();
+        };
+
+        base.OnParametersSet();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateData();
+    }
+
+    #endregion
+
+    #region Private Methods
+
     private async void CreatePrice(EditContext editContext)
     {
         if (Enum.TryParse(typeof(Currency), _createPriceModel.Currency, true, out var currency))
@@ -117,11 +145,6 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await UpdateData();
-    }
-
     private async Task UpdateData()
     {
         try
@@ -136,6 +159,10 @@
         }
     }
 
+    #endregion
+
+    #region Models
+
     public class CreatePriceModel
     {
         public decimal Retail { get; set; }
@@ -144,5 +171,7 @@
 
         public string Currency { get; set; }
     }
+
+    #endregion
 
 }

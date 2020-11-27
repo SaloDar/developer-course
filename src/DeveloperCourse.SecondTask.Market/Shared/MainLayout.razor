@@ -1,5 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using DeveloperCourse.SecondTask.Market.Services
+@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
+@inject AuthStateProvider AuthStateProvider
 
 <div class="sidebar">
     <NavMenu/>
@@ -13,6 +15,18 @@
 
 @code {
 
+    #region Ovveriden Methods
+    
+    protected override void OnParametersSet()
+    {
+        AuthStateProvider.AuthenticationStateChanged += (state) =>
+        {
+            StateHasChanged();
+        };
+        
+        base.OnParametersSet();
+    }
+    
     protected override void OnInitialized()
     {
         if (NavigationManager.Uri == NavigationManager.BaseUri)
@@ -20,5 +34,7 @@
             NavigationManager.NavigateTo("/products");
         }
     }
-
+    
+    #endregion
+    
 }

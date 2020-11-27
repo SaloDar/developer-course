@@ -2,19 +2,21 @@
 @page "/product/{Id:guid}/{Tab}"
 @using AntDesign;
 @using AntDesign.JsInterop
-@using DeveloperCourse.SecondTask.Market.Clients.Image
-@using DeveloperCourse.SecondTask.Market.Clients.Image.DTOs
-@using DeveloperCourse.SecondTask.Market.Clients.Price
-@using DeveloperCourse.SecondTask.Market.Clients.Price.DTOs
-@using DeveloperCourse.SecondTask.Market.Clients.Product
-@using DeveloperCourse.SecondTask.Market.Clients.Product.DTOs
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image.DTOs
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price.DTOs
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product
+@using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product.DTOs
+@using DeveloperCourse.SecondTask.Market.Services
 @using Microsoft.JSInterop;
 @using DeveloperCourse.SecondTask.Market.Shared
 @inject IProductClient ProductClient
 @inject IImageClient ImageClient
 @inject IPriceClient PriceClient
-@inject IJSRuntime JS
+@inject IJSRuntime Js
 @inject DomEventService DomEventService
+@inject AuthStateProvider AuthStateProvider
 
 <div>
     <Tabs DefaultActiveKey="@(Tab)">
@@ -65,7 +67,7 @@
                                 <BSListGroup>
                                     @foreach (var productPrice in (Prices ?? new List<PriceDto>()).Where(x => x.IsLast))
                                     {
-                                        <BSListGroupItem>@productPrice?.Retail @productPrice?.Currency.ToString() </BSListGroupItem>
+                                        <BSListGroupItem>@productPrice.Retail @productPrice?.Currency.ToString() </BSListGroupItem>
                                     }
                                 </BSListGroup>
                             }
@@ -136,8 +138,20 @@
     #region Fields
 
     private string _tab;
-
+    
     #endregion
+    
+    #region Overridden Methods
+    
+    protected override void OnParametersSet()
+    {
+        AuthStateProvider.AuthenticationStateChanged += (state) =>
+        {
+            StateHasChanged();
+        };
+        
+        base.OnParametersSet();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -153,9 +167,13 @@
     {
         await UpdateData();
 
-        await JS.InvokeVoidAsync("fakeResize");
+        await Js.InvokeVoidAsync("fakeResize");
     }
-
+    
+    #endregion
+    
+    #region Private Methods
+    
     private void OnCarouselLoaded()
     {
         if (!CarouselIsLoaded)
@@ -182,5 +200,7 @@
             Prices = new List<PriceDto>();
         }
     }
+    
+    #endregion
 
 }

@@ -1,15 +1,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using DeveloperCourse.SecondTask.Infrastructure.Attributes;
+using DeveloperCourse.SecondLesson.Common.Web.Attributes;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Product.API.Controllers.DTOs;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace DeveloperCourse.SecondTask.Product.API.Controllers
 {
+    [Authorize(Roles = nameof(UserRole.Administrator))]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
@@ -32,6 +35,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         /// </summary>
         /// <returns>Returns products</returns>
         /// <response code="200">Returns products</response>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(typeof(GetProductsResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
@@ -51,6 +55,8 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CreateProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<CreateProductResponse> CreateProduct([FromBody] CreateProductRequest request)
         {
@@ -64,9 +70,11 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         /// </summary>
         /// <returns>Returns the product</returns>
         /// <response code="200">Returns the product</response>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(GetProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<GetProductResponse> GetProduct([FromMultiSource] GetProductRequest request)
         {
@@ -83,6 +91,9 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(UpdateProductResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<UpdateProductResponse> UpdateProduct([FromMultiSource] UpdateProductRequest request)
         {
@@ -98,6 +109,9 @@ namespace DeveloperCourse.SecondTask.Product.API.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(IDictionary<string, string>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task DeleteProduct([FromMultiSource] DeleteProductRequest request)
         {

@@ -1,19 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Domain.Types;
 using DeveloperCourse.SecondTask.Infrastructure.Repositories;
 using DeveloperCourse.SecondTask.Price.Domain.Interfaces;
 using DeveloperCourse.SecondTask.Price.DataAccess.Configs;
 using Microsoft.Extensions.Options;
-using Money;
 
 namespace DeveloperCourse.SecondTask.Price.DataAccess.Repositories
 {
     public class PriceRepository : BaseRepository<Domain.Entities.Price>, IPriceRepository
     {
-        public PriceRepository(IOptions<PriceDbOptions> dbOptions) : base(dbOptions, "price")
+        public PriceRepository(IOptions<PriceDbOptions> dbOptions, IUserContext userContext) : base(dbOptions, userContext, "price")
         {
         }
 

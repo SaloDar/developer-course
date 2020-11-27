@@ -11,6 +11,8 @@ namespace DeveloperCourse.SecondTask.Product.DataAccess.Configurations
             builder.HasKey(i => i.Id);
             builder.Property(c => c.Id).HasColumnName("id").HasColumnType("uuid");
             builder.Property(c => c.CreatedDate).HasColumnName("created_date");
+            builder.Property(c => c.CreatedBy).HasColumnName("created_by").HasColumnType("uuid");
+            builder.Property(c => c.LastSavedBy).HasColumnName("last_saved_by").HasColumnType("uuid");
             builder.Property(c => c.LastSavedDate).HasColumnName("last_saved_date");
             builder.Property(c => c.IsDeleted).HasColumnName("is_deleted");
             builder.Property(c => c.Name).HasColumnName("name").IsRequired();

@@ -1,12 +1,18 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using BlazorStrap;
 using BlazorStrap.Extensions;
-using DeveloperCourse.SecondTask.Market.Clients.Image;
-using DeveloperCourse.SecondTask.Market.Clients.Price;
-using DeveloperCourse.SecondTask.Market.Clients.Product;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Identity;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Product;
+using DeveloperCourse.SecondLesson.Common.Clients.MessageHandlers;
 using DeveloperCourse.SecondTask.Market.Configs;
+using DeveloperCourse.SecondTask.Market.Interfaces;
+using DeveloperCourse.SecondTask.Market.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,8 +37,13 @@ namespace DeveloperCourse.SecondTask.Market
 
             builder.Services.AddBootstrapCss();
             builder.Services.AddSvgLoader();
-
             builder.Services.AddAntDesign();
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddOptions();
+            builder.Services.AddTransient<IAuthService, AuthService>();
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<AuthStateProvider>());
 
             var appConfiguration = builder.Configuration.Get<AppConfiguration>();
 
@@ -48,23 +59,41 @@ namespace DeveloperCourse.SecondTask.Market
                     })
             };
 
+            builder.Services.AddTransient<AuthenticatedMessageHandler>(y =>
+                new AuthenticatedMessageHandler(async () =>
+                {
+                    var authService = y.GetService<IAuthService>();
+
+                    return await authService.GetToken();
+                }));
+
             builder.Services.AddRefitClient<IProductClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Product;
-                });
+                })
+                .AddHttpMessageHandler<AuthenticatedMessageHandler>();
 
             builder.Services.AddRefitClient<IPriceClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Price;
-                });
+                })
+                .AddHttpMessageHandler<AuthenticatedMessageHandler>();
 
             builder.Services.AddRefitClient<IImageClient>(refitSettings)
                 .ConfigureHttpClient(c =>
                 {
                     c.BaseAddress = appConfiguration.ServicesRoutes.Image;
-                });
+                })
+                .AddHttpMessageHandler<AuthenticatedMessageHandler>();
+
+            builder.Services.AddRefitClient<IIdentityClient>(refitSettings)
+                .ConfigureHttpClient(c =>
+                {
+                    c.BaseAddress = appConfiguration.ServicesRoutes.Identity;
+                })
+                .AddHttpMessageHandler<AuthenticatedMessageHandler>();
             
             builder.Services.AddScoped(sp => new HttpClient
             {

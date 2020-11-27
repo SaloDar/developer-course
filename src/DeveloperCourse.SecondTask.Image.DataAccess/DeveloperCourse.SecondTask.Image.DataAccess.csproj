@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Identity\DeveloperCourse.SecondLesson.Common.Identity.csproj" />
       <ProjectReference Include="..\DeveloperCourse.SecondTask.Image.Domain\DeveloperCourse.SecondTask.Image.Domain.csproj" />
     </ItemGroup>
 

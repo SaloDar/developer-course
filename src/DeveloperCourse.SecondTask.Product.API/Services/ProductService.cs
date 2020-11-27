@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using DeveloperCourse.SecondTask.Product.API.Clients;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Image;
+using DeveloperCourse.SecondLesson.Common.Clients.Clients.Price;
+using DeveloperCourse.SecondLesson.Common.Identity.Interfaces;
+using DeveloperCourse.SecondLesson.Common.Web.Exceptions;
 using DeveloperCourse.SecondTask.Product.API.DTOs;
 using DeveloperCourse.SecondTask.Product.API.Interfaces;
 using DeveloperCourse.SecondTask.Product.Domain.Interfaces;
@@ -24,14 +27,17 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         private readonly IProductContext _productContext;
 
+        private readonly IUserContext _userContext;
+
         public ProductService(ILogger<ProductService> logger, IImageClient imageClient, IPriceClient priceClient,
-            IMapper mapper, IProductContext productContext)
+            IMapper mapper, IProductContext productContext, IUserContext userContext)
         {
             _logger = logger;
             _imageClient = imageClient;
             _priceClient = priceClient;
             _mapper = mapper;
             _productContext = productContext;
+            _userContext = userContext;
         }
 
         public async Task<IEnumerable<ProductDto>> GetProducts()
@@ -52,10 +58,16 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
         public async Task<ProductDto> CreateProduct(string name, string description, string sku, string weight)
         {
-            var product = new Domain.Entities.Product(name, description, sku, weight);
+            if (!_userContext.IsAuthenticated || _userContext?.Identity == null ||
+                _userContext.Identity.UserId == Guid.Empty)
+            {
+                throw new UnauthorizedException("Is not authenticated.");
+            }
+
+            var product = new Domain.Entities.Product(name, description, sku, weight, _userContext.Identity.UserId);
 
             await _productContext.Products.AddAsync(product);
-            
+
             await _productContext.SaveChangesAsync();
 
             return _mapper.Map<ProductDto>(product);
@@ -67,7 +79,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
             if (product == null)
             {
-                throw new Exception($"Product with id {productId} not found.");
+                throw new NotFoundException($"Product with id {productId} not found.");
             }
 
             var productDto = _mapper.Map<ProductDto>(product);
@@ -85,7 +97,7 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
 
             if (product == null)
             {
-                throw new Exception($"Product with id {id} was not found.");
+                throw new NotFoundException($"Product with id {id} was not found.");
             }
 
             _productContext.Products.Remove(product);
@@ -97,31 +109,31 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
         {
             if (id == Guid.Empty)
             {
-                throw new InvalidOperationException("Product id can't be empty");
+                throw new BadRequestException("Product id can't be empty");
             }
-            
+
             var product = await _productContext.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if (product == null)
             {
-                throw new Exception($"Product with id {id} was not found.");
+                throw new NotFoundException($"Product with id {id} was not found.");
             }
 
             if (!string.IsNullOrWhiteSpace(name))
             {
                 product.ChangeName(name);
-            } 
-            
+            }
+
             if (!string.IsNullOrWhiteSpace(description))
             {
                 product.ChangeDescription(description);
-            } 
-            
+            }
+
             if (!string.IsNullOrWhiteSpace(sku))
             {
                 product.ChangeSKU(sku);
             }
-            
+
             if (!string.IsNullOrWhiteSpace(weight))
             {
                 product.ChangeWeight(weight);
@@ -140,7 +152,16 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             {
                 var response = await _priceClient.GetPrices(productId);
 
-                result = response.Prices?.ToList() ?? new List<PriceDto>();
+                result = response.Prices?.ToList()
+                    .Select(x => new PriceDto
+                    {
+                        Id = x.Id,
+                        ProductId = x.ProductId,
+                        Retail = x.Retail,
+                        Currency = x.Currency,
+                        IsLast = x.IsLast
+                    })
+                    .ToList() ?? new List<PriceDto>();
             }
             catch (Exception)
             {
@@ -158,7 +179,12 @@ namespace DeveloperCourse.SecondTask.Product.API.Services
             {
                 var response = await _imageClient.GetImages(productId);
 
-                result = response.Images?.ToList() ?? new List<ImageDto>();
+                result = response.Images?.Select(x=> new ImageDto
+                {
+                    Id = x.Id,
+                    ProductId = x.ProductId,
+                    Link = x.Link
+                }).ToList() ?? new List<ImageDto>();
             }
             catch (Exception)
             {

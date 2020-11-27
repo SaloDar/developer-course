@@ -4,22 +4,33 @@
         <TargetFramework>netstandard2.1</TargetFramework>
         <RazorLangVersion>3.0</RazorLangVersion>
         <RootNamespace>DeveloperCourse.SecondTask.Market</RootNamespace>
+        <BlazorWebAssemblyEnableLinking>false</BlazorWebAssemblyEnableLinking>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>none</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="AntDesign" Version="0.4.1" />
+        <PackageReference Include="Blazored.LocalStorage" Version="3.0.0" />
         <PackageReference Include="BlazorStrap" Version="1.5.0-preview-01" />
         <PackageReference Include="BlazorStrap.Extensions.SVGLoader" Version="1.5.0-preview-01" />
         <PackageReference Include="MatBlazor" Version="2.7.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="3.1.10" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.1" PrivateAssets="all" />
-        <PackageReference Include="Multi-Currency-Money" Version="1.1.0" />
         <PackageReference Include="Refit" Version="5.2.1" />
         <PackageReference Include="System.Net.Http.Json" Version="3.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.1" PrivateAssets="all" />
         <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="3.1.5" />
         <PackageReference Include="Refit.HttpClientFactory" Version="5.1.67" />
     </ItemGroup>
-    
 
+    <ItemGroup>
+      <ProjectReference Include="..\DeveloperCourse.SecondLesson.Common.Clients\DeveloperCourse.SecondLesson.Common.Clients.csproj" />
+      <ProjectReference Include="..\DeveloperCourse.SecondTask.Domain\DeveloperCourse.SecondTask.Domain.csproj" />
+    </ItemGroup>
+    
 </Project>
