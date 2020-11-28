@@ -1,0 +1,27 @@
+name: Deploy to remote server
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build docker compose and restart service
+        uses: appleboy/ssh-action@master
+        env:
+          REMOTE_TARGET: ${{ secrets.REMOTE_TARGET }}
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.CICD_SSH_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd $REMOTE_TARGET
+            git pull
+            sudo docker-compose build
+            sudo systemctl restart market.service
