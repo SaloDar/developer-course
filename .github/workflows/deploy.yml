@@ -20,6 +20,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.CICD_SSH_KEY }}
           port: ${{ secrets.REMOTE_PORT }}
+          envs: REMOTE_TARGET
           script: |
             cd $REMOTE_TARGET
             ls
