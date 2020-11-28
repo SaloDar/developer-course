@@ -13,19 +13,14 @@ jobs:
 
       - name: Build docker compose and restart service
         uses: appleboy/ssh-action@master
-        env:
-          REMOTE_TARGET: ${{ secrets.REMOTE_TARGET }}
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.CICD_SSH_KEY }}
           port: ${{ secrets.REMOTE_PORT }}
-          envs: REMOTE_TARGET
           script: |
-            cd $REMOTE_TARGET
-            ls
+            cd ~/deploy/developer-course/
             git pull
             cd src/
-            ls
             sudo docker-compose build
             sudo systemctl restart market.service
