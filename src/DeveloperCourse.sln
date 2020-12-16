@@ -61,6 +61,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondLesso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.SecondLesson.Common.Identity", "DeveloperCourse.SecondLesson.Common.Identity\DeveloperCourse.SecondLesson.Common.Identity.csproj", "{40BBE3C6-094A-4FD6-B65E-45FCA642D03E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdTask", "ThirdTask", "{326B77F2-C964-4610-8DEC-D7E435690D54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeveloperCourse.ThirdTask.Weather.API", "DeveloperCourse.ThirdTask.Weather.API\DeveloperCourse.ThirdTask.Weather.API.csproj", "{FAE5EEA9-30D8-456D-AF55-D3486C294F85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -143,6 +147,10 @@ Global
 		{40BBE3C6-094A-4FD6-B65E-45FCA642D03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40BBE3C6-094A-4FD6-B65E-45FCA642D03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40BBE3C6-094A-4FD6-B65E-45FCA642D03E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAE5EEA9-30D8-456D-AF55-D3486C294F85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAE5EEA9-30D8-456D-AF55-D3486C294F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAE5EEA9-30D8-456D-AF55-D3486C294F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAE5EEA9-30D8-456D-AF55-D3486C294F85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{510939D6-1F7D-491A-8D73-7F50AC49C881} = {CEAF1BBA-849D-414E-8DA8-E4F99F45A288}
@@ -171,5 +179,6 @@ Global
 		{2D94F633-C3C8-4911-94A9-654C3CBCA5A5} = {5DDB9E3D-1DC4-4726-8049-B09FEAFCCE5C}
 		{9081146D-C147-4B9E-824D-D5756F694060} = {5DDB9E3D-1DC4-4726-8049-B09FEAFCCE5C}
 		{40BBE3C6-094A-4FD6-B65E-45FCA642D03E} = {5DDB9E3D-1DC4-4726-8049-B09FEAFCCE5C}
+		{FAE5EEA9-30D8-456D-AF55-D3486C294F85} = {326B77F2-C964-4610-8DEC-D7E435690D54}
 	EndGlobalSection
 EndGlobal
